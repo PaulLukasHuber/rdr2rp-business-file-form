@@ -1,0 +1,78 @@
+/* Form validation styles */
+.input-error {
+  border-color: #e57373 !important;
+  box-shadow: 0 0 0 2px rgba(229, 115, 115, 0.3) !important;
+}
+
+.error-message {
+  color: #e57373;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-message i {
+  margin-right: 0.5rem;
+}
+
+.success-message {
+  background: rgba(76, 175, 80, 0.2);
+  color: #81c784;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--border-radius);
+  border-left: 4px solid #4caf50;
+  display: flex;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-message i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* Tooltip styles for form fields */
+.form-group {
+  position: relative;
+}
+
+/* Requirements list for complex validations */
+.requirements {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  padding-left: 1rem;
+}
+
+.requirements li {
+  margin-bottom: 0.2rem;
+}
+
+.requirements .valid {
+  color: #81c784;
+}
+
+.requirements .invalid {
+  color: #e57373;
+}
+
+/* Focus styles to improve accessibility */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(216, 166, 87, 0.25);
+}
+
+/* Enhanced placeholder text styles */
+input::placeholder, textarea::placeholder {
+  opacity: 0.6;
+  font-style: italic;
+}

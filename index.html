@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lizenz-Formular für Discord</title>
+  <title>Gewerbeakten-Formular</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,12 +11,13 @@
   <!-- FontAwesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
   <!-- Eigene Stylesheets -->
-  <link href="styles.css" rel="stylesheet">
+  <link href="assets/css/styles.css" rel="stylesheet">
+  <link href="assets/css/validation.css" rel="stylesheet">
 </head>
 <body>
   <div class="page-container">
     <div class="form-container">
-      <h1><i class="fa fa-id-card-alt"></i> Lizenz-Formular</h1>
+      <h1><i class="fa fa-id-card-alt"></i> Gewerbeakten-Formular</h1>
 
       <div class="tabs">
         <div class="tab active" data-tab="tab1"><i class="fa fa-info-circle"></i> Allgemein</div>
@@ -27,7 +28,9 @@
       <div id="tab1" class="tab-content active">
         <div class="form-group">
           <label for="note"><i class="fa fa-link"></i> Vermerk zum Gewerbeantrag (Link):</label>
-          <input type="url" id="note" placeholder="https://discord.com/channels/..." required>
+          <input type="url" id="note" placeholder="https://discord.com/channels/..." required
+            title="Bitte einen gültigen Link eingeben (beginnend mit http:// oder https://)">
+          <small class="requirements">Beispiel: https://discord.com/channels/123456789/987654321</small>
         </div>
         <div class="form-group">
           <label for="cityCode"><i class="fa fa-city"></i> Stadt-Kürzel:</label>
@@ -50,13 +53,14 @@
         </div>
         <div class="form-group">
           <label for="issuedDate"><i class="fa fa-calendar-alt"></i> Ausgestellt am (Gültig ab):</label>
-          <input type="date" id="issuedDate" min="1899-01-01" max="1899-12-31">
+          <input type="date" id="issuedDate" min="1899-01-01" max="1899-12-31" required>
+          <small class="requirements">Datum im Jahr 1899 auswählen</small>
         </div>
       </div>
 
       <div id="tab2" class="tab-content">
         <div class="form-group">
-          <label><i class="fa fa-users"></i> Mitarbeiter (Inhaber & Stellvertretungen) – MIT TELEGRAMM NUMMERN:</label>
+          <label><i class="fa fa-users"></i> Mitarbeiter (Inhaber & Stellvertretungen):</label>
           <div id="employees-container"></div>
           <button type="button" id="addEmployeeBtn" class="btn-secondary"><i class="fa fa-plus"></i> Mitarbeiter hinzufügen</button>
         </div>
@@ -95,14 +99,17 @@
   <!-- Footer -->
   <footer class="footer">
     <p>
-      RDR2RP Business License Generator | Version 1.1.0 | 
+      RDR2 RP Business file generator | Version 1.2.0 | 
       <a href="https://github.com/PaulLukasHuber/rdr2rp-business-license" target="_blank">
         <i class="fab fa-github"></i> GitHub Repository
       </a>
     </p>
   </footer>
 
-  <!-- JavaScript -->
-  <script src="script.js"></script>
+  <!-- JavaScript Modules - Order matters! -->
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/validation.js"></script>
+  <script src="assets/js/employees.js"></script>
+  <script src="assets/js/main.js"></script>
 </body>
 </html>
