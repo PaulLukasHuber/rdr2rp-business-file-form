@@ -1,0 +1,25 @@
+# Betriebssystem-Dateien
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor-Dateien
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Node (falls du später npm hinzufügst)
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Temporäre Dateien
+*.tmp
+*.bak
+*.swp
+*~
+
+# Lokale Konfigurationsdateien
+.env
+.env.local
