@@ -133,7 +133,7 @@ function generateLicense() {
   discordOutput.value = template;
   
   // Show success message
-  window.utils.showSuccessMessage('Lizenz erfolgreich generiert!');
+  window.utils.showSuccessMessage('Gewerbeakte erfolgreich generiert!');
   
   // Scroll to preview on small screens
   if (window.innerWidth <= 968) {
