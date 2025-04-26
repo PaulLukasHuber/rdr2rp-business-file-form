@@ -4,7 +4,7 @@ Ein Formular zur Erstellung von Geschäftslizenzen für den Red Dead Redemption 
 
 ## Beschreibung
 
-Dieses Tool ermöglicht es Administratoren, Geschäftslizenzen für verschiedene Betriebe in den Städten der RDR2RP-Welt zu erstellen. Das Formular generiert formatierte Discord-Nachrichten, die direkt in den entsprechenden Kanal kopiert werden können.
+Dieses Tool ermöglicht es Nutzern, Geschäftslizenzen für verschiedene Betriebe in den Städten der RDR2RP-Welt zu erstellen. Das Formular generiert formatierte Discord-Nachrichten, die direkt in den entsprechenden Kanal kopiert werden können.
 
 ## Features
 
