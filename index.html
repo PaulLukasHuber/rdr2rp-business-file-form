@@ -16,28 +16,23 @@
       --bg-dark: #1e1b18;
       --bg-medium: #2f2b27;
       --bg-light: #403a34;
-      --accent-light: #f0c078;
       --accent: #d8a657;
       --text-light: #f4ede0;
       --text-muted: #a39484;
       --border-radius: 12px;
-      --transition: 0.4s;
+      --transition: 0.3s;
       --shadow-strong: rgba(0, 0, 0, 0.6);
     }
 
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
       padding: 0;
       font-family: 'Roboto', sans-serif;
       color: var(--text-light);
-      background: linear-gradient(-45deg, #1e1b18, #2f2b27, #403a34, #2a2622);
-      background-size: 600% 600%;
-      animation: gradientBG 20s ease infinite;
-      overflow: hidden;
+      background: linear-gradient(-45deg, #1e1b18, #2f2b27, #403a34, #302d2a);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      overflow-y: auto;
     }
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
@@ -46,52 +41,16 @@
     }
 
     * { box-sizing: border-box; }
-
     .container {
-      position: relative;
-      z-index: 0;
-      width: 100%;
-      max-width: 1000px;
-      margin: auto;
+      max-width: 600px;
+      margin: 3rem auto;
       padding: 2rem;
-      background: rgba(30,27,24,0.8);
+      background: rgba(48, 45, 42, 0.85);
       border-radius: var(--border-radius);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
       box-shadow: 0 12px 40px var(--shadow-strong);
-    }
-    .container::before {
-      content: '';
-      position: absolute;
-      top: -20%; left: -20%;
-      width: 140%; height: 140%;
-      background: radial-gradient(circle at center, rgba(216,166,87,0.2), transparent 70%);
-      pointer-events: none;
-      z-index: -1;
-      border-radius: inherit;
-    }
-
-    /* Toast Notification */
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-medium);
-      color: var(--text-light);
-      padding: 1rem 1.5rem;
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 12px var(--shadow-strong);
-      display: none;
-      z-index: 1000;
-      font-weight: 500;
-    }
-
-    /* Required asterisk on labels */
-    .required::after {
-      content: ' *';
-      color: red;
-      margin-left: 0.25rem;
+      position: relative;
     }
 
     h1 {
@@ -99,26 +58,32 @@
       text-align: center;
       font-family: 'Montserrat', sans-serif;
       font-weight: 300;
-      font-size: 2.4rem;
+      font-size: 2.2rem;
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      text-shadow: 0 2px 8px var(--shadow-strong);
+      position: relative;
     }
-
-    .content-wrapper { display: flex; gap: 2rem; }
-    .form-section, .output-section { flex: 1; min-height: 600px; }
+    h1::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--accent);
+      margin: 0.5rem auto 0;
+      border-radius: 2px;
+    }
 
     .tabs {
       display: flex;
-      margin-bottom: 1.2rem;
+      margin-bottom: 2rem;
       border-radius: var(--border-radius);
       overflow: hidden;
       box-shadow: inset 0 -2px 8px rgba(0,0,0,0.5);
     }
     .tab {
       flex: 1;
-      padding: 0.8rem;
+      padding: 0.75rem;
       text-align: center;
       cursor: pointer;
       font-weight: 600;
@@ -131,85 +96,68 @@
       gap: 0.5rem;
       background: rgba(0,0,0,0.1);
     }
-    .tab:hover { background: rgba(216,166,87,0.15); }
+    .tab:hover {
+      background: rgba(216,166,87,0.1);
+    }
     .tab.active {
-      color: var(--bg-dark);
-      background: linear-gradient(90deg, var(--accent-light), var(--accent));
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      color: var(--text-light);
+      background: linear-gradient(90deg, #d8a657, #f0c078);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
     .tab.active::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 20%;
-      width: 60%; height: 4px;
+      bottom: 0;
+      left: 20%;
+      width: 60%;
+      height: 4px;
       background: var(--bg-dark);
       border-radius: var(--border-radius);
     }
 
-    .tab-content { display: none; animation: fadeIn 0.3s ease; }
-    .tab-content.active { display: block; }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .tab-content.active {
+      display: block;
+    }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .form-group { margin-bottom: 1.8rem; }
+    .form-group {
+      margin-bottom: 1.8rem;
+    }
     .form-group label {
       display: block;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.5rem;
       font-weight: 600;
       color: var(--text-light);
     }
     input, select, textarea {
-      position: relative; z-index: 1;
       width: 100%;
       padding: 1rem;
       font-size: 1rem;
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: var(--border-radius);
-      background: rgba(30,27,24,0.85);
+      background: rgba(30,27,24,0.9);
       color: var(--text-light);
       transition: border-color var(--transition), box-shadow var(--transition);
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
-      resize: none;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
     }
-
-    .employee-wrapper { margin-bottom: 1.5rem; }
-    .employee-header {
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted);
     }
-    .employee-role {
-      font-weight: 600;
-      color: var(--text-light);
+    input:hover, select:hover, textarea:hover {
+      border-color: var(--accent);
     }
-    .employee-role.required::after {
-      content: ' *';
-      color: red;
-      margin-left: 0.25rem;
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(216,166,87,0.3);
     }
-    .employee-row {
-      display: flex;
-      gap: 1rem;
-    }
-    .employee-row input {
-      flex: 1;
-      margin-bottom: 0;
-    }
-
-    .output-section {
-      background: rgba(30,27,24,0.9);
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      gap: 0.75rem;
-      border-radius: var(--border-radius);
-      box-shadow: inset 0 2px 12px rgba(0,0,0,0.4);
-    }
-    #generateBtn { margin-bottom: 0.75rem; }
-    #discordOutput { flex: 1; min-height: 0; }
 
     .btn-primary, .btn-secondary {
       display: flex;
@@ -217,143 +165,147 @@
       justify-content: center;
       gap: 0.5rem;
       width: 100%;
-      padding: 1.1rem;
+      padding: 1rem;
       font-family: 'Montserrat', sans-serif;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.05em;
       border-radius: var(--border-radius);
-      transition: transform var(--transition), box-shadow var(--transition);
+      transition: all var(--transition);
+      margin-top: 1.5rem;
       cursor: pointer;
+      text-decoration: none;
       border: none;
     }
     .btn-secondary {
       background: transparent;
       border: 2px solid var(--text-muted);
       color: var(--text-muted);
-      margin-bottom: 0.75rem;
     }
     .btn-secondary:hover {
       background: rgba(216,166,87,0.1);
       border-color: var(--accent);
       color: var(--accent);
-      transform: translateY(-1px);
     }
     .btn-primary {
-      background: linear-gradient(45deg, var(--accent-light), var(--accent));
+      background: var(--accent);
       color: var(--bg-dark);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     }
     .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     }
 
+    .employee-wrapper {
+      background: rgba(60,55,50,0.9);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+      margin-bottom: 1.5rem;
+    }
+    .employee-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
     .remove-employee-btn {
       background: none;
       border: none;
-      color: var(--accent-light);
-      font-weight: bold;
+      color: #e57373;
+      font-weight: 600;
       cursor: pointer;
       transition: color var(--transition);
     }
     .remove-employee-btn:hover {
-      color: var(--accent);
+      color: #f44336;
     }
+    .employee-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .employee-row input {
+      flex: 1 1 calc(33% - 1rem);
+    }
+
+    /* Disable manual resizing */
+    #discordOutput, #other { resize: none; overflow-y: auto; }
   </style>
 </head>
 <body>
 
   <div class="container">
     <h1><i class="fa fa-id-card-alt"></i> Lizenz-Formular</h1>
-    <div class="content-wrapper">
-      <div class="form-section">
 
-        <div class="tabs">
-          <div class="tab active" data-tab="tab1"><i class="fa fa-info-circle"></i> Allgemein</div>
-          <div class="tab" data-tab="tab2"><i class="fa fa-user-friends"></i> Mitarbeiter</div>
-          <div class="tab" data-tab="tab3"><i class="fa fa-ellipsis-h"></i> Weitere</div>
-        </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="tab1"><i class="fa fa-info-circle"></i> Allgemein</div>
+      <div class="tab" data-tab="tab2"><i class="fa fa-user-friends"></i> Mitarbeiter</div>
+      <div class="tab" data-tab="tab3"><i class="fa fa-ellipsis-h"></i> Weitere</div>
+    </div>
 
-        <div id="tab1" class="tab-content active">
-          <!-- Vermerk-Link -->
-          <div class="form-group">
-            <label for="note" class="required"><i class="fa fa-link"></i> Vermerk zum Gewerbeantrag (Link)</label>
-            <input type="url" id="note" placeholder="https://discord.com/channels/...">
-          </div>
-          <!-- Neuer Pflicht-Dropdown -->
-          <div class="form-group">
-            <label for="grundkurs" class="required"><i class="fa fa-check-circle"></i> Gewerbegrundkurs absolviert</label>
-            <select id="grundkurs">
-              <option value="">-- Bitte wählen --</option>
-              <option value="Ja">Ja</option>
-              <option value="Nein">Nein</option>
-              <option value="Angemeldet">Angemeldet (Ausstehend)</option>
-            </select>
-          </div>
-          <!-- Stadt & Betrieb -->
-          <div class="form-group">
-            <label for="cityCode" class="required"><i class="fa fa-city"></i> Stadt-Kürzel</label>
-            <select id="cityCode">
-              <option value="">-- Bitte wählen --</option>
-              <option value="AB">AB - Annesburg</option>
-              <option value="AD">AD - Armadillo</option>
-              <option value="BW">BW - Blackwater</option>
-              <option value="CO">CO - Colter</option>
-              <option value="RH">RH - Rhodes</option>
-              <option value="SB">SB - Strawberry</option>
-              <option value="SD">SD - Saint Denis</option>
-              <option value="TW">TW - Tumbleweed</option>
-              <option value="VA">VA - Valentine</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="operation" class="required"><i class="fa fa-briefcase"></i> Betrieb</label>
-            <select id="operation">
-              <option value="">-- zuerst Stadt wählen --</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="issuedDate" class="required"><i class="fa fa-calendar-alt"></i> Ausgestellt am (Gültig ab)</label>
-            <input type="date" id="issuedDate" min="1899-01-01" max="1899-12-31">
-          </div>
-        </div>
-
-        <div id="tab2" class="tab-content">
-          <div class="form-group">
-            <label><i class="fa fa-users"></i> Mitarbeiter (Inhaber & Stellvertretungen)</label>
-            <div id="employees-container"></div>
-            <button type="button" id="addEmployeeBtn" class="btn-secondary"><i class="fa fa-plus"></i> Stellvertretung hinzufügen</button>
-          </div>
-          <div class="form-group">
-            <label for="licenseCount"><i class="fa fa-hashtag"></i> Anzahl der Lizenzen</label>
-            <input type="number" id="licenseCount" readonly>
-          </div>
-        </div>
-
-        <div id="tab3" class="tab-content">
-          <div class="form-group">
-            <label for="specialPermit"><i class="fa fa-certificate"></i> Sondergenehmigung</label>
-            <textarea id="specialPermit" rows="3" placeholder="Details eingeben..."></textarea>
-          </div>
-          <div class="form-group">
-            <label for="other"><i class="fa fa-sticky-note"></i> Sonstiges</label>
-            <textarea id="other" rows="3" placeholder="Weitere Anmerkungen..."></textarea>
-          </div>
-        </div>
-
+    <div id="tab1" class="tab-content active">
+      <div class="form-group">
+        <label for="note"><i class="fa fa-link"></i> Vermerk zum Gewerbeantrag (Link):</label>
+        <input type="url" id="note" placeholder="https://discord.com/channels/..." required>
       </div>
-
-      <div class="output-section">
-        <button id="generateBtn" class="btn-primary"><i class="fa fa-paper-plane"></i> Discord Vorlage generieren</button>
-        <textarea id="discordOutput" readonly placeholder="Hier erscheint die formatierte Vorlage..."></textarea>
+      <div class="form-group">
+        <label for="cityCode"><i class="fa fa-city"></i> Stadt-Kürzel:</label>
+        <select id="cityCode">
+          <option value="">-- Bitte wählen --</option>
+          <option value="AB">AB - Annesburg</option>
+          <option value="AD">AD - Armadillo</option>
+          <option value="BW">BW - Blackwater</option>
+          <option value="CO">CO - Colter</option>
+          <option value="RH">RH - Rhodes</option>
+          <option value="SB">SB - Strawberry</option>
+          <option value="SD">SD - Saint Denis</option>
+          <option value="TW">TW - Tumbleweed</option>
+          <option value="VA">VA - Valentine</option>
+        </select>
       </div>
+      <div class="form-group">
+        <label for="operation"><i class="fa fa-briefcase"></i> Betrieb:</label>
+        <select id="operation"><option value="">-- zuerst Stadt wählen --</option></select>
+      </div>
+      <div class="form-group">
+        <label for="issuedDate"><i class="fa fa-calendar-alt"></i> Ausgestellt am (Gültig ab):</label>
+        <input type="date" id="issuedDate" min="1899-01-01" max="1899-12-31">
+      </div>
+    </div>
+
+    <div id="tab2" class="tab-content">
+      <div class="form-group">
+        <label><i class="fa fa-users"></i> Mitarbeiter (Inhaber & Stellvertretungen) – MIT TELEGRAMM NUMMERN:</label>
+        <div id="employees-container"></div>
+        <button type="button" id="addEmployeeBtn" class="btn-secondary"><i class="fa fa-plus"></i> Mitarbeiter hinzufügen</button>
+      </div>
+      <div class="form-group">
+        <label for="licenseCount"><i class="fa fa-hashtag"></i> Anzahl der herausgegebenen Lizenzen:</label>
+        <input type="number" id="licenseCount" readonly>
+      </div>
+    </div>
+
+    <div id="tab3" class="tab-content">
+      <div class="form-group">
+        <label for="specialPermit"><i class="fa fa-certificate"></i> Sondergenehmigung:</label>
+        <input type="text" id="specialPermit" placeholder="Details eingeben...">
+      </div>
+      <div class="form-group">
+        <label for="other"><i class="fa fa-sticky-note"></i> Sonstiges:</label>
+        <textarea id="other" rows="3" placeholder="Weitere Anmerkungen..."></textarea>
+      </div>
+    </div>
+
+    <button id="generateBtn" class="btn-primary"><i class="fa fa-paper-plane"></i> Discord Vorlage generieren</button>
+
+    <div class="form-group">
+      <label for="discordOutput"><i class="fa fa-code"></i> Discord-Ausgabe (kopieren und einfügen):</label>
+      <textarea id="discordOutput" rows="15" readonly placeholder="Hier erscheint die formatierte Vorlage..."></textarea>
     </div>
   </div>
 
-  <div id="toast"></div>
-
   <script>
-    // Tab navigation
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active'));
@@ -362,16 +314,6 @@
       });
     });
 
-    // Toast function
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      clearTimeout(toast.timeout);
-      toast.timeout = setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-
-    // Data logic
     const maxEmployees = 3;
     const operationsByCity = {
       AB: ['Mining Company Annesburg','Saloon Annesburg'],
@@ -382,7 +324,7 @@
       SB: ['Bäckerei Strawberry','Brauerei Strawberry','Gestüt Strawberry','Holzfäller Strawberry'],
       SD: ['Jagdbund Saint Denis','Bäckerei Saint Denis','Bestatter Saint Denis','Brauerei Valentine','Brauerei Saint Denis','Büchsenmacher Saint Denis','Gärtnerei Saint Denis','Gestüt Saint Denis','Kutschenbauer Saint Denis','Saloon Saint Denis','Tabakhändler Saint Denis','Theater Saint Denis','Train Company Saint Denis','Zeitung Saint Denis'],
       TW: ['Mining Company Tumbleweed'],
-      VA: ['Farm Valentine','Brauei Valentine','Saloon Valentine','Tierarzt Valentine','Büchsenmacher Valentine','Schneider Valentine']
+      VA: ['Farm Valentine','Brauerei Valentine','Saloon Valentine','Tierarzt Valentine','Büchsenmacher Valentine','Schneider Valentine']
     };
     const container = document.getElementById('employees-container');
     const addBtn = document.getElementById('addEmployeeBtn');
@@ -398,7 +340,6 @@
       const roleLabel = document.createElement('span');
       roleLabel.className = 'employee-role';
       roleLabel.textContent = roles[idx] || '';
-      if (idx === 0) roleLabel.classList.add('required');
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'remove-employee-btn';
@@ -418,7 +359,7 @@
         const inp = document.createElement('input');
         inp.type = 'text';
         inp.placeholder = ph;
-        inp.className = i===0 ? 'empFirstName' : i===1 ? 'empLastName' : 'empTelegram';
+        inp.className = i===0?'empFirstName':i===1?'empLastName':'empTelegram';
         row.appendChild(inp);
       });
       wrapper.appendChild(row);
@@ -428,17 +369,13 @@
     function updateEmployees() {
       const rows = container.querySelectorAll('.employee-wrapper');
       rows.forEach((w,i) => {
-        const label = w.querySelector('.employee-role');
-        label.textContent = roles[i] || '';
-        if (i===0) label.classList.add('required');
-        else label.classList.remove('required');
+        w.querySelector('.employee-role').textContent = roles[i] || '';
         w.querySelector('.remove-employee-btn').style.display = (i>0 && rows.length>1) ? 'inline-flex' : 'none';
       });
       addBtn.disabled = rows.length >= maxEmployees;
       licenseCountInput.value = rows.length;
     }
 
-    // initialize one employee row
     container.appendChild(createEmployeeRow());
     updateEmployees();
 
@@ -455,7 +392,7 @@
       op.innerHTML = city
         ? '<option value="">-- bitte Betrieb wählen --</option>'
         : '<option value="">-- zuerst Stadt wählen --</option>';
-      (operationsByCity[city]||[]).forEach(o => {
+      (operationsByCity[city] || []).forEach(o => {
         const opt = document.createElement('option');
         opt.value = o;
         opt.textContent = o;
@@ -465,21 +402,47 @@
 
     document.getElementById('generateBtn').addEventListener('click', () => {
       const note = document.getElementById('note').value.trim();
-      const grund = document.getElementById('grundkurs').value;
-      const city = document.getElementById('cityCode').value;
-      const operation = document.getElementById('operation').value;
-      const issued = document.getElementById('issuedDate').value;
-      const first = container.querySelector('.employee-wrapper .employee-row');
-      const fn = first.querySelector('.empFirstName').value.trim();
-      const ln = first.querySelector('.empLastName').value.trim();
-      const tg = first.querySelector('.empTelegram').value.trim();
-
-      if (!note || !grund || !city || !operation || !issued || !fn || !ln || !tg) {
-        showToast('Bitte füllen Sie alle Pflichtfelder aus.');
+      if (!note || !/^https?:\/\/.+/.test(note)) {
+        alert('Bitte gültigen Link eingeben.');
         return;
       }
-
-      // Template generation logic...
+      const city = document.getElementById('cityCode').value;
+      if (!city) {
+        alert('Bitte Stadt wählen.');
+        return;
+      }
+      const operation = document.getElementById('operation').value;
+      if (!operation) {
+        alert('Bitte Betrieb wählen.');
+        return;
+      }
+      const license = city + ' - ' + (() => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let r = '';
+        for (let i = 0; i < 8; i++) {
+          r += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return r;
+      })();
+      const issued = document.getElementById('issuedDate').value || '---';
+      const specialPermit = document.getElementById('specialPermit').value.trim() || '---';
+      const other = document.getElementById('other').value.trim() || '---';
+      const employees = [...container.querySelectorAll('.employee-row')].map(r => {
+        const fn = r.querySelector('.empFirstName').value.trim() || '---';
+        const ln = r.querySelector('.empLastName').value.trim() || '---';
+        const tg = r.querySelector('.empTelegram').value.trim() || '---';
+        return `${fn} ${ln} - ${tg}`;
+      }).join('\n');
+      const template =
+        `Vermerk zum Gewerbeantrag:\n\`\`\`${note}\`\`\`\n` +
+        `Lizenznummer:\n\`\`\`${license}\`\`\`\n` +
+        `Ausgestellt am (*Gültigkeit ab*):\n\`\`\`${issued}\`\`\`\n` +
+        `Betrieb:\n\`\`\`${operation}\`\`\`\n` +
+        `Mitarbeiter (Inhaber & Stellvertretungen)‼️MIT TELEGRAMM NUMMERN:\n\`\`\`${employees}\`\`\`\n` +
+        `Anzahl der herausgegebenen Lizenzen:\n\`\`\`${licenseCountInput.value}\`\`\`\n` +
+        `Sondergenehmigung:\n\`\`\`${specialPermit}\`\`\`\n` +
+        `Sonstiges:\n\`\`\`${other}\`\`\``;
+      document.getElementById('discordOutput').value = template;
     });
   </script>
 
