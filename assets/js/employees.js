@@ -1,4 +1,4 @@
-  // File: assets/js/employees.js
+// File: assets/js/employees.js
   // ==============================
   // Employee management functions
   
@@ -132,7 +132,7 @@
       w.querySelector('.remove-employee-btn').style.display = (i > 0 && rows.length > 1) ? 'inline-flex' : 'none';
     });
     
-    // Button ausblenden statt nur deaktivieren, wenn Maximum erreicht
+    // Hide button instead of just disabling it when maximum is reached
     if (rows.length >= maxEmployees) {
       addBtn.style.display = 'none';
     } else {

@@ -5,16 +5,16 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  # Ermöglicht manuelles Auslösen des Workflows
+  # Allows manual workflow triggering
   workflow_dispatch:
 
-# GITHUB_TOKEN Berechtigungen für Deployment
+# GITHUB_TOKEN permissions for deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Nur ein Deployment gleichzeitig erlauben
+# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -40,7 +40,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Lädt den gesamten Repository-Inhalt hoch
+          # Upload entire repository content
           path: '.'
           
       - name: Deploy to GitHub Pages
