@@ -15,11 +15,19 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   color: var(--text-light);
-  background: linear-gradient(-45deg, #1e1b18, #2f2b27, #403a34, #302d2a);
+  background: linear-gradient(270deg, var(--bg-dark), var(--bg-medium), var(--bg-light), var(--bg-dark));
+  background-size: 600% 600%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  animation: gradientAnimation 15s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 * { box-sizing: border-box; }
