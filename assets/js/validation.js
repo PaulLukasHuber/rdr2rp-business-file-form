@@ -1,4 +1,6 @@
 // File: assets/js/validation.js
+// Copyright (c) 2025 Paul-Lukas Huber and Tobias Schmidt
+// MIT License - see LICENSE file for details
 // ==============================
 // Form validation functions
 

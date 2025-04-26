@@ -1,4 +1,6 @@
 // File: assets/js/utils.js
+// Copyright (c) 2025 Paul-Lukas Huber and Tobias Schmidt
+// MIT License - see LICENSE file for details
 // ==============================
 // Utility functions used across the application
 

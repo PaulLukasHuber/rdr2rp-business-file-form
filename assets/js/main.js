@@ -1,4 +1,6 @@
 // File: assets/js/main.js
+// Copyright (c) 2025 Paul-Lukas Huber and Tobias Schmidt
+// MIT License - see LICENSE file for details
 // ==============================
 // Main application logic - initialize everything here
 
