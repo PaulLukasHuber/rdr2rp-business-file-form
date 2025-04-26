@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/Version-1.2.0-gold)
 ![License](https://img.shields.io/badge/Lizenz-MIT-blue)
 
-Ein interaktives Webformular zur einfachen Erstellung von formatierten Gewerbeakten für den Red Dead Redemption 2 Roleplay-Discord-Server.
+Ein interaktives Webformular zur einfachen Erstellung von formatierten Gewerbeakten für einen Red Dead Redemption 2 Roleplay-Discord-Server.
 
 
 ## 📋 Übersicht
