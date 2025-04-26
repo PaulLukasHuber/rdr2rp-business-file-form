@@ -71,19 +71,20 @@
       {
         placeholder: 'Vorname', 
         className: 'empFirstName',
-        required: idx === 0, // Only required for the first employee (Inhaber)
+        required: true, // Für alle Mitarbeiter erforderlich
         title: 'Vorname des Mitarbeiters'
       },
       {
         placeholder: 'Nachname', 
         className: 'empLastName',
-        required: idx === 0, // Only required for the first employee (Inhaber)
+        required: true, // Für alle Mitarbeiter erforderlich
         title: 'Nachname des Mitarbeiters'
       },
       {
         placeholder: 'Telegramm-Nummer', 
         className: 'empTelegram',
         pattern: '\\d{1,10}',
+        required: true, // Für alle Mitarbeiter erforderlich
         title: 'Telegramm-Nummer (1-10 Ziffern)'
       }
     ];
@@ -107,15 +108,21 @@
         if (errorMsg) errorMsg.remove();
       });
       
-      // For telegram field add specific validation
-      if (def.className === 'empTelegram') {
-        inp.addEventListener('blur', function() {
-          const value = this.value.trim();
-          if (value && value !== '---' && !window.validation.validateTelegramNumber(value)) {
-            window.validation.showError(this, 'Telegramm-Nummer muss zwischen 1 und 10 Ziffern haben');
-          }
-        });
-      }
+      // Für alle Felder Validierung hinzufügen
+      inp.addEventListener('blur', function() {
+        const value = this.value.trim();
+        
+        // Prüfen ob Wert leer ist
+        if (!value) {
+          window.validation.showError(this, `${def.placeholder} ist erforderlich`);
+          return;
+        }
+        
+        // Für Telegramm spezifische Validierung
+        if (def.className === 'empTelegram' && value !== '---' && !window.validation.validateTelegramNumber(value)) {
+          window.validation.showError(this, 'Telegramm-Nummer muss zwischen 1 und 10 Ziffern haben');
+        }
+      });
       
       row.appendChild(inp);
     });

@@ -98,20 +98,22 @@ function validateForm() {
     const lastNameInput = container.querySelector('.empLastName');
     const telegramInput = container.querySelector('.empTelegram');
     
-    // First employee (Inhaber) is required
-    if (index === 0) {
-      if (!firstNameInput.value.trim()) {
-        isValid = showError(firstNameInput, 'Vorname ist erforderlich');
-      }
-      
-      if (!lastNameInput.value.trim()) {
-        isValid = showError(lastNameInput, 'Nachname ist erforderlich');
-      }
+    // Für alle Mitarbeiter, die hinzugefügt wurden:
+    // Vorname ist Pflichtfeld
+    if (!firstNameInput.value.trim()) {
+      isValid = showError(firstNameInput, 'Vorname ist erforderlich');
     }
     
-    // Validate telegram format if provided
+    // Nachname ist Pflichtfeld
+    if (!lastNameInput.value.trim()) {
+      isValid = showError(lastNameInput, 'Nachname ist erforderlich');
+    }
+    
+    // Telegramm-Nummer ist Pflichtfeld
     const telegramValue = telegramInput.value.trim();
-    if (telegramValue && telegramValue !== "---" && !validateTelegramNumber(telegramValue)) {
+    if (!telegramValue) {
+      isValid = showError(telegramInput, 'Telegramm-Nummer ist erforderlich');
+    } else if (telegramValue !== "---" && !validateTelegramNumber(telegramValue)) {
       isValid = showError(telegramInput, 'Telegramm-Nummer muss zwischen 1 und 10 Ziffern haben');
     }
   });
