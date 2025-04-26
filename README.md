@@ -1,10 +1,10 @@
-# RDR2RP Business License Generator
+# RDR2RP Gewerbeakten Generator
 
-Ein Formular zur Erstellung von Geschäftslizenzen für den Red Dead Redemption 2 Roleplay-Discord-Server.
+Ein Formular zur Erstellung von Gewerbeakten für den Red Dead Redemption 2 Roleplay-Discord-Server.
 
 ## Beschreibung
 
-Dieses Tool ermöglicht es Nutzern, Geschäftslizenzen für verschiedene Betriebe in den Städten der RDR2RP-Welt zu erstellen. Das Formular generiert formatierte Discord-Nachrichten, die direkt in den entsprechenden Kanal kopiert werden können.
+Dieses Tool ermöglicht es Nutzern, Gewerbeakten für verschiedene Betriebe in den Städten der RDR2RP-Welt zu erstellen. Das Formular generiert formatierte Discord-Nachrichten, die direkt in den entsprechenden Kanal kopiert werden können.
 
 ## Features
 
