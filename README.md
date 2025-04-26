@@ -24,7 +24,7 @@ Der RDR2RP Gewerbeakten Generator ist ein benutzerfreundliches Tool, das speziel
 
 ### Online Version
 
-Die einfachste Möglichkeit, den Generator zu nutzen, ist die [Online-Version](https://PaulLukasHuber.github.io/rdr2rp-business-license/):
+Die einfachste Möglichkeit, den Generator zu nutzen, ist die [Online-Version](https://PaulLukasHuber.github.io/rdr2rp-business-file-form/):
 
 1. Öffne die Webseite in deinem Browser
 2. Fülle alle erforderlichen Felder aus:
