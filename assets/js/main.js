@@ -6,15 +6,15 @@
 
 // Data constants
 const operationsByCity = {
-  AB: ['Mining Company Annesburg','Saloon Annesburg'],
-  AD: ['Bestatter Armadillo','Bäckerei Armadillo','Brauerei Armadillo','Büchsenmacher Armadillo','Farm Armadillo','Gestüt Armadillo','Jagdbund Armadillo','Pizzeria Armadillo (Event Gewerbe)','Saloon Armadillo','Tierarzt Armadillo','Schneider Valentine'],
-  BW: ['Metzger Blackwater','Büchsenmacher Blackwater','Tabakhändler Blackwater','Saloon Blackwater','Farm Blackwater'],
-  CO: ['Schmied Colter','Saloon Colter'],
-  RH: ['Jagdbund Rhodes','Schmied Rhodes','Farm Rhodes'],
-  SB: ['Bäckerei Strawberry','Brauerei Strawberry','Gestüt Strawberry','Holzfäller Strawberry'],
-  SD: ['Jagdbund Saint Denis','Bäckerei Saint Denis','Bestatter Saint Denis','Brauerei Valentine','Brauerei Saint Denis','Büchsenmacher Saint Denis','Gärtnerei Saint Denis','Gestüt Saint Denis','Kutschenbauer Saint Denis','Saloon Saint Denis','Tabakhändler Saint Denis','Theater Saint Denis','Train Company Saint Denis','Zeitung Saint Denis'],
-  TW: ['Mining Company Tumbleweed'],
-  VA: ['Farm Valentine','Brauerei Valentine','Saloon Valentine','Tierarzt Valentine','Büchsenmacher Valentine','Schneider Valentine']
+  AB: ['Mining Company','Saloon'],
+  AD: ['Bestatter','Brauer','Büchsenmacher','Farm','Gestüt','Jagdbund','Pizzeria (Event Gewerbe)','Saloon','Tierarzt'],
+  BW: ['Büchsenmacher','Farm','Metzger','Saloon','Schmied','Tabakhändler'],
+  CO: ['Büchsenmacher','Saloon','Schmied'],
+  RH: ['Farm','Jagdbund','Jagdbund','Schmied'],
+  SB: ['Bäckerei','Brauerei','Gestüt','Holzfäller'],
+  SD: ['Bestatter','Bäckerei','Büchsenmacher','Gestüt','Gärtnerei','Jagdbund','Kutschenbauer','Saloon','Tabakhändler','Theater','Train Company','Zeitung'],
+  TW: ['Mining Company'],
+  VA: ['Brauerei','Büchsenmacher','Farm','Gestüt','Schneider','Tierarzt']
 };
 
 // DOM elements
