@@ -4,11 +4,6 @@ import { FormContainer } from './components/FormContainer';
 import { PreviewContainer } from './components/PreviewContainer';
 import { Footer } from './components/Footer';
 
-// Import CSS
-import './styles/styles.css';
-import './styles/validation.css';
-import './styles/navbar.css';
-
 // Data constants for the application
 const operationsByCity = {
   AB: ['Mining Company','Saloon'],
@@ -150,7 +145,7 @@ export default function App() {
     // Validate note (link)
     if (!formData.note.trim()) {
       newErrors.note = 'Bitte geben Sie einen Link ein';
-    } else if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(formData.note)) {
+    } else if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/.test(formData.note)) {
       newErrors.note = 'Bitte geben Sie einen gültigen Link ein';
     }
     
