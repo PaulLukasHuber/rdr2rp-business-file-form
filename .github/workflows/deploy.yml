@@ -39,12 +39,7 @@ jobs:
         run: npm ci
         
       - name: Build React App
-<<<<<<< HEAD
-        run: |
-          PUBLIC_URL="https://paullukashuber.github.io/rdr2rp-business-file-form/" CI=false npm run build
-=======
         run: CI=false npm run build
->>>>>>> origin/main
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
