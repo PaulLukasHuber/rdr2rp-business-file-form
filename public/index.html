@@ -20,6 +20,24 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Debug-Skript -->
+    <script type="text/javascript">
+      // Einfaches Debugging-Skript für weiße Seiten
+      window.onerror = function(message, source, lineno, colno, error) {
+        var errorDiv = document.createElement('div');
+        errorDiv.style.backgroundColor = '#f8d7da';
+        errorDiv.style.color = '#721c24';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.margin = '20px';
+        errorDiv.style.borderRadius = '5px';
+        errorDiv.style.fontFamily = 'sans-serif';
+        errorDiv.innerHTML = '<h3>Ein Fehler ist aufgetreten:</h3><p>' + message + '</p>';
+        document.body.appendChild(errorDiv);
+        console.error('Fehler auf der Seite:', message, error);
+        return true;
+      };
+    </script>
   </head>
   <body>
     <noscript>Du musst JavaScript aktivieren, um diese App zu benutzen.</noscript>
