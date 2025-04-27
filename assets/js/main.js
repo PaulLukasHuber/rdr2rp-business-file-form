@@ -10,7 +10,7 @@ const operationsByCity = {
   AD: ['Bestatter','Brauer','Büchsenmacher','Farm','Gestüt','Jagdbund','Pizzeria (Event Gewerbe)','Saloon','Tierarzt'],
   BW: ['Büchsenmacher','Farm','Metzger','Saloon','Schmied','Tabakhändler'],
   CO: ['Büchsenmacher','Saloon','Schmied'],
-  RH: ['Farm','Jagdbund','Jagdbund','Schmied'],
+  RH: ['Farm','Jagdbund','Schmied'],
   SB: ['Bäckerei','Brauerei','Gestüt','Holzfäller'],
   SD: ['Bestatter','Bäckerei','Büchsenmacher','Gestüt','Gärtnerei','Jagdbund','Kutschenbauer','Saloon','Tabakhändler','Theater','Train Company','Zeitung'],
   TW: ['Mining Company'],
