@@ -9,7 +9,7 @@ body {
     border: 1px solid rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px); 
-    margin: 2rem auto;
+    margin: 1.5rem auto;  /* Reduziert von 2rem auf 0.75rem */
     padding: 1rem 2rem;
     max-width: 1400px;
     border-radius: 12px;
@@ -24,7 +24,7 @@ body {
     color: #f5c979;
     font-weight: bold;
     letter-spacing: 2px;
-    margin-right: 2rem; /* <<< HIER Abstand eingefügt */
+    margin-right: 2rem;
     display: flex;
     align-items: center;
   }
@@ -47,4 +47,3 @@ body {
   .navbar-links li a:hover {
     color: #ffffff;
   }
-  
