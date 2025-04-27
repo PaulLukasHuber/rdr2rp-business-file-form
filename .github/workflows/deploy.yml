@@ -1,20 +1,20 @@
-name: Deploy to GitHub Pages
+name: Deploy React App to GitHub Pages
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  # Allows manual workflow triggering
+  # Erlaubt manuelle Auslösung des Workflows
   workflow_dispatch:
 
-# GITHUB_TOKEN permissions for deployment
+# Berechtigungen für das GITHUB_TOKEN
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
+# Nur ein gleichzeitiges Deployment zulassen
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -29,19 +29,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Build React App
+        run: npm run build
+        
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        
-      - name: Check HTML files
-        run: |
-          echo "Validating HTML files..."
-          find . -name "*.html" | xargs ls -la
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository content
-          path: '.'
+          # Upload the build directory
+          path: './build'
           
       - name: Deploy to GitHub Pages
         id: deployment

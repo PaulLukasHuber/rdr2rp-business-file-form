@@ -1,3 +1,14 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production build
+/build
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -8,18 +19,39 @@ desktop.ini
 .vscode/
 *.sublime-project
 *.sublime-workspace
+.editorconfig
 
-# Node (if you add npm later)
-node_modules/
-package-lock.json
+# Logs
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Temporary files
 *.tmp
 *.bak
 *.swp
 *~
+.eslintcache
 
-# Local configuration files
+# Environment variables
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Package manager lockfiles (uncomment if not versioning these)
+# package-lock.json
+# yarn.lock
+
+# TypeScript incremental compilation cache
+*.tsbuildinfo
+
+# Sentry auth token
+.sentryclirc
+
+# Debug logs
+debug.log
+
+# Local development certificates
+/certs
