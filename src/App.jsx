@@ -3,6 +3,8 @@ import { Navbar } from './components/Navbar';
 import { FormContainer } from './components/FormContainer';
 import { PreviewContainer } from './components/PreviewContainer';
 import { Footer } from './components/Footer';
+import { BetaToast } from './components/BetaToast';
+import { HomePage } from './components/HomePage';
 
 // Data constants for the application
 const operationsByCity = {
@@ -48,6 +50,9 @@ function generateRandomString(length) {
 }
 
 export default function App() {
+  // State for current page
+  const [currentPage, setCurrentPage] = useState('home');
+  
   // State for the form data
   const [formData, setFormData] = useState(initialFormState);
   
@@ -62,6 +67,13 @@ export default function App() {
   
   // State for validation errors
   const [errors, setErrors] = useState({});
+  
+  // Navigation function
+  const navigateTo = (page) => {
+    setCurrentPage(page);
+    // Reset any success messages when changing pages
+    setSuccessMessage('');
+  };
   
   // Handle input changes
   const handleInputChange = (e) => {
@@ -247,31 +259,45 @@ export default function App() {
     }
   };
   
+  // Render the content based on the current page
+  const renderContent = () => {
+    if (currentPage === 'home') {
+      return <HomePage navigateTo={navigateTo} />;
+    } else if (currentPage === 'business-license') {
+      return (
+        <div className="page-container">
+          <FormContainer 
+            formData={formData}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            handleInputChange={handleInputChange}
+            handleEmployeeChange={handleEmployeeChange}
+            addEmployee={addEmployee}
+            removeEmployee={removeEmployee}
+            generateLicense={generateLicense}
+            operationsByCity={operationsByCity}
+            errors={errors}
+          />
+          
+          <PreviewContainer 
+            discordOutput={discordOutput}
+            copyToClipboard={copyToClipboard}
+          />
+        </div>
+      );
+    }
+  };
+  
   return (
     <div className="app">
-      <Navbar />
+      <Navbar currentPage={currentPage} navigateTo={navigateTo} />
       
-      <div className="page-container">
-        <FormContainer 
-          formData={formData}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          handleInputChange={handleInputChange}
-          handleEmployeeChange={handleEmployeeChange}
-          addEmployee={addEmployee}
-          removeEmployee={removeEmployee}
-          generateLicense={generateLicense}
-          operationsByCity={operationsByCity}
-          errors={errors}
-        />
-        
-        <PreviewContainer 
-          discordOutput={discordOutput}
-          copyToClipboard={copyToClipboard}
-        />
-      </div>
+      {renderContent()}
       
       <Footer />
+      
+      {/* Beta Toast Benachrichtigung */}
+      <BetaToast />
       
       {/* Success message rendered outside normal document flow */}
       {successMessage && (
