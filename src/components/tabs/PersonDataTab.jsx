@@ -4,13 +4,6 @@ import { FormGroup } from '../FormGroup';
 export const PersonDataTab = ({ formData, handleInputChange, errors, goToNextStep }) => {
   return (
     <>
-      <div className="workflow-tip">
-        <div className="tip-icon"><i className="fa fa-lightbulb"></i></div>
-        <div className="tip-content">
-          <h4>Hinweis zum Ablauf:</h4>
-          <p>Nachdem Sie die Personendaten ausgefüllt haben, erstellen Sie die Discord-Vorlage und laden sie im Discord unter dem Reiter „Anträge“ hoch. Nach Erhalt des Prüfergebnisses importieren Sie die vorhandene Akte, ergänzen das Ergebnis im nächsten Tab und ersetzen anschließend die ursprüngliche Akte im Reiter „Anträge“ durch die aktualisierte Version.</p>
-        </div>
-      </div>
       
       <FormGroup 
         id="personName"
