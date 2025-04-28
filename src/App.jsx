@@ -69,6 +69,9 @@ export default function App() {
   // State for the verification form data
   const [verificationFormData, setVerificationFormData] = useState(initialVerificationFormState);
   
+  // State for the verification role (office or examiner)
+  const [verificationRole, setVerificationRole] = useState('office');
+  
   // State for the active tab (for business license)
   const [activeTab, setActiveTab] = useState('tab1');
   
@@ -183,6 +186,74 @@ export default function App() {
     }
   };
   
+  // Handle discord import function
+  const handleDiscordImport = (discordText, role) => {
+    try {
+      // Extrahiere Person
+      const personMatch = discordText.match(/Zu überprüfende Person:\s*```\s*(.*?)\s*```/s);
+      if (personMatch && personMatch[1] && personMatch[1] !== '---') {
+        setVerificationFormData(prev => ({...prev, personName: personMatch[1].trim()}));
+      }
+      
+      // Extrahiere Telegramm
+      const telegramMatch = discordText.match(/Telegrammnummer \(Für Rückfragen\):\s*```\s*(.*?)\s*```/s);
+      if (telegramMatch && telegramMatch[1] && telegramMatch[1] !== '---') {
+        setVerificationFormData(prev => ({...prev, telegramNumber: telegramMatch[1].trim()}));
+      }
+      
+      // Wenn Prüfer-Rolle ausgewählt ist, auch die anderen Felder extrahieren
+      if (role === 'examiner') {
+        // Extrahiere Prüfer
+        const checkedByMatch = discordText.match(/Geprüft durch:\s*```\s*(.*?)\s*```/s);
+        if (checkedByMatch && checkedByMatch[1] && checkedByMatch[1] !== '---') {
+          setVerificationFormData(prev => ({...prev, checkedBy: checkedByMatch[1].trim()}));
+        }
+        
+        // Extrahiere Datum
+        const dateMatch = discordText.match(/Geprüft am:\s*```\s*(.*?)\s*```/s);
+        if (dateMatch && dateMatch[1] && dateMatch[1] !== '---') {
+          // Format to YYYY-MM-DD if needed
+          const date = dateMatch[1].trim();
+          const formattedDate = formatDateIfNeeded(date);
+          setVerificationFormData(prev => ({...prev, checkedDate: formattedDate}));
+        }
+        
+        // Extrahiere Ergebnis
+        const resultMatch = discordText.match(/Prüfungsergebnis:\s*```\s*(.*?)\s*```/s);
+        if (resultMatch && resultMatch[1] && resultMatch[1] !== '---') {
+          setVerificationFormData(prev => ({...prev, checkResult: resultMatch[1].trim()}));
+        }
+      }
+      
+      return true; // Erfolgreicher Import
+    } catch(err) {
+      console.error("Fehler beim Parsen der Discord-Nachricht:", err);
+      return false; // Fehler beim Import
+    }
+  };
+  
+  // Helfer-Funktion zum Formatieren des Datums
+  const formatDateIfNeeded = (dateStr) => {
+    // Wenn bereits im Format YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      return dateStr;
+    }
+    
+    try {
+      // Versuche, verschiedene Datumsformate zu parsen und in YYYY-MM-DD zu konvertieren
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return getDefaultDate(); // Falls ungültiges Datum
+      
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}`;
+    } catch(e) {
+      return getDefaultDate(); // Im Fehlerfall das Standarddatum zurückgeben
+    }
+  };
+  
   // Validate the business license form
   const validateBusinessForm = () => {
     const newErrors = {};
@@ -248,19 +319,22 @@ export default function App() {
       newErrors.telegramNumber = 'Telegramm-Nummer muss zwischen 1 und 10 Ziffern haben';
     }
     
-    // Validate checked by
-    if (!verificationFormData.checkedBy.trim()) {
-      newErrors.checkedBy = 'Bitte geben Sie den Namen des Prüfers ein';
-    }
-    
-    // Validate checked date
-    if (!verificationFormData.checkedDate) {
-      newErrors.checkedDate = 'Bitte wählen Sie ein Datum';
-    }
-    
-    // Validate check result
-    if (!verificationFormData.checkResult.trim()) {
-      newErrors.checkResult = 'Bitte geben Sie ein Prüfungsergebnis ein';
+    // Prüfer-spezifische Validierungen, wenn Prüfer-Rolle ausgewählt ist
+    if (verificationRole === 'examiner') {
+      // Validate checked by
+      if (!verificationFormData.checkedBy.trim()) {
+        newErrors.checkedBy = 'Bitte geben Sie den Namen des Prüfers ein';
+      }
+      
+      // Validate checked date
+      if (!verificationFormData.checkedDate) {
+        newErrors.checkedDate = 'Bitte wählen Sie ein Datum';
+      }
+      
+      // Validate check result
+      if (!verificationFormData.checkResult.trim()) {
+        newErrors.checkResult = 'Bitte geben Sie ein Prüfungsergebnis ein';
+      }
     }
     
     setErrors(newErrors);
@@ -320,15 +394,15 @@ export default function App() {
       return;
     }
     
-    // Generate discord template with line break at the beginning and placeholder for result
+    // Generate discord template with line break at the beginning
     const template =
       `\n# Vorlage | Personenprüfungsakte\n` +
       `Formular für Personenprüfungen\n` +
       `Zu überprüfende Person:\n\`\`\`\n${verificationFormData.personName || '---'}\n\`\`\`\n` +
       `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${verificationFormData.telegramNumber || '---'}\n\`\`\`\n` +
-      `Geprüft durch:\n\`\`\`\n${verificationFormData.checkedBy || '---'}\n\`\`\`\n` +
-      `Geprüft am:\n\`\`\`\n${verificationFormData.checkedDate || '---'}\n\`\`\`\n` +
-      `Prüfungsergebnis:\n\`\`\`\n---\n\`\`\``;
+      `Geprüft durch:\n\`\`\`\n${verificationRole === 'examiner' ? verificationFormData.checkedBy : '---'}\n\`\`\`\n` +
+      `Geprüft am:\n\`\`\`\n${verificationRole === 'examiner' ? verificationFormData.checkedDate : '---'}\n\`\`\`\n` +
+      `Prüfungsergebnis:\n\`\`\`\n${verificationRole === 'examiner' ? verificationFormData.checkResult : '---'}\n\`\`\``;
       
     setDiscordOutput(template);
     
@@ -390,6 +464,9 @@ export default function App() {
             handleInputChange={handleVerificationInputChange}
             generateVerification={generateVerification}
             errors={errors}
+            role={verificationRole}
+            setRole={setVerificationRole}
+            handleDiscordImport={handleDiscordImport}
           />
           
           <PreviewContainer 

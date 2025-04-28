@@ -46,8 +46,11 @@ export const HomePage = ({ navigateTo }) => {
             <i className="fa fa-user-check"></i>
           </div>
           <div className="card-content">
-            <h3>Personenprüfungsakte erstellen</h3>
-            <p>Erstelle offizielle Personenprüfungsakten für Bürger der Städte.</p>
+            <div className="card-header">
+              <h3>Personenprüfungsakte</h3>
+              <span className="card-beta-badge">BETA</span>
+            </div>
+            <p>Erstelle Personenprüfungsakten für Bürger welche ein Gewerbe gründen wollen.</p>
             <button 
               className="card-button" 
               onClick={() => navigateTo('person-verification')}
