@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PersonVerificationTabNav } from './PersonVerificationTabNav';
-import { PersonVerificationOfficeTab } from './tabs/PersonVerificationOfficeTab';
-import { PersonVerificationExaminerTab } from './tabs/PersonVerificationExaminerTab';
+import { PersonDataTab } from './tabs/PersonDataTab';
+import { CheckResultTab } from './tabs/CheckResultTab';
 import { DiscordImport } from './DiscordImport';
 
 export const PersonVerificationContainer = ({
@@ -9,8 +9,6 @@ export const PersonVerificationContainer = ({
   handleInputChange,
   generateVerification,
   errors,
-  role,
-  setRole,
   handleDiscordImport
 }) => {
   const [showImport, setShowImport] = useState(false);
@@ -26,27 +24,22 @@ export const PersonVerificationContainer = ({
       <div className="beta-warning">
         <div className="beta-badge">BETA</div>
         <div className="beta-message">
-          <h3>Diese Funktion befindet sich noch in der Entwicklung</h3>
-          <p>Das Formular kann je nach Rolle unterschiedlich ausgefüllt werden. Prüfe die generierte Ausgabe sorgfältig.</p>
+          <h3>Personenprüfungen für Gewerbeanmeldungen</h3>
+          <p>Dieses Formular hilft bei der Dokumentation von Personenüberprüfungen durch die Sheriffs. Erstellen Sie zuerst die Anfrage und tragen Sie später das Prüfungsergebnis ein.</p>
         </div>
       </div>
       
-      <div className="role-selector">
-        <button 
-          className={`role-button ${role === 'office' ? 'active' : ''}`} 
-          onClick={() => {
-            setRole('office');
-            setActiveTab('person-tab'); // Bei Wechsel zu Office immer zum ersten Tab
-          }}
-        >
-          <i className="fa fa-building"></i> Gewerbeamt-Mitarbeiter
-        </button>
-        <button 
-          className={`role-button ${role === 'examiner' ? 'active' : ''}`} 
-          onClick={() => setRole('examiner')}
-        >
-          <i className="fa fa-clipboard-check"></i> Prüfer
-        </button>
+      <div className="workflow-status">
+        <div className="workflow-steps">
+          <div className={`workflow-step ${activeTab === 'person-tab' ? 'active' : 'completed'}`}>
+            <span className="step-number">1</span>
+            <span className="step-text">Personendaten erfassen</span>
+          </div>
+          <div className={`workflow-step ${activeTab === 'result-tab' ? 'active' : ''}`}>
+            <span className="step-number">2</span>
+            <span className="step-text">Prüfungsergebnis eintragen</span>
+          </div>
+        </div>
       </div>
       
       <button 
@@ -60,7 +53,7 @@ export const PersonVerificationContainer = ({
       {showImport && (
         <DiscordImport 
           handleDiscordImport={handleDiscordImport} 
-          role={role}
+          hasCheckResult={formData.checkResult !== ''}
         />
       )}
       
@@ -68,28 +61,25 @@ export const PersonVerificationContainer = ({
       <PersonVerificationTabNav 
         activeTab={activeTab} 
         setActiveTab={setActiveTab}
-        role={role}
       />
       
       {/* Tab-Inhalte */}
       <div id="person-tab" className={`tab-content ${activeTab === 'person-tab' ? 'active' : ''}`}>
-        <PersonVerificationOfficeTab 
+        <PersonDataTab 
           formData={formData}
           handleInputChange={handleInputChange}
           errors={errors}
-          role={role}
+          goToNextStep={() => setActiveTab('result-tab')}
         />
       </div>
       
-      {role === 'examiner' && (
-        <div id="examiner-tab" className={`tab-content ${activeTab === 'examiner-tab' ? 'active' : ''}`}>
-          <PersonVerificationExaminerTab 
-            formData={formData}
-            handleInputChange={handleInputChange}
-            errors={errors}
-          />
-        </div>
-      )}
+      <div id="result-tab" className={`tab-content ${activeTab === 'result-tab' ? 'active' : ''}`}>
+        <CheckResultTab 
+          formData={formData}
+          handleInputChange={handleInputChange}
+          errors={errors}
+        />
+      </div>
       
       <button onClick={generateVerification} className="btn-primary">
         <i className="fa fa-paper-plane"></i> Discord Vorlage generieren
