@@ -6,7 +6,7 @@ export const CheckResultTab = ({ formData, handleInputChange, errors }) => {
     <>
       <div className="tab-info result-tab-info">
         <i className="fa fa-info-circle"></i>
-        Hier tragen Sie das Prüfungsergebnis ein, nachdem Sie die Antwort vom Sheriff erhalten haben.
+        Hier tragen Sie das Prüfungsergebnis ein, nachdem Sie die Antwort vom Sheriff oder Deputy erhalten haben.
       </div>
       
       <div className="person-summary">
@@ -23,7 +23,7 @@ export const CheckResultTab = ({ formData, handleInputChange, errors }) => {
         <input 
           type="text" 
           id="checkedBy" 
-          placeholder="Name des Sheriffs eingeben..." 
+          placeholder="Name des Sheriffs / Deputy eingeben..." 
           value={formData.checkedBy}
           onChange={handleInputChange}
           className={errors.checkedBy ? 'input-error' : ''}

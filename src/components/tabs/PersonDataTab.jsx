@@ -4,9 +4,12 @@ import { FormGroup } from '../FormGroup';
 export const PersonDataTab = ({ formData, handleInputChange, errors, goToNextStep }) => {
   return (
     <>
-      <div className="tab-info">
-        <i className="fa fa-info-circle"></i>
-        Geben Sie hier die Daten der zu überprüfenden Person ein. Nach Erstellung der Anfrage können Sie die Sheriffs kontaktieren.
+      <div className="workflow-tip">
+        <div className="tip-icon"><i className="fa fa-lightbulb"></i></div>
+        <div className="tip-content">
+          <h4>Hinweis zum Ablauf:</h4>
+          <p>Nachdem Sie die Personendaten ausgefüllt haben, erstellen Sie die Discord-Vorlage und laden sie im Discord unter dem Reiter „Anträge“ hoch. Nach Erhalt des Prüfergebnisses importieren Sie die vorhandene Akte, ergänzen das Ergebnis im nächsten Tab und ersetzen anschließend die ursprüngliche Akte im Reiter „Anträge“ durch die aktualisierte Version.</p>
+        </div>
       </div>
       
       <FormGroup 
@@ -40,14 +43,6 @@ export const PersonDataTab = ({ formData, handleInputChange, errors, goToNextSte
           className={errors.telegramNumber ? 'input-error' : ''}
         />
       </FormGroup>
-      
-      <div className="workflow-tip">
-        <div className="tip-icon"><i className="fa fa-lightbulb"></i></div>
-        <div className="tip-content">
-          <h4>Hinweis zum Ablauf:</h4>
-          <p>Nach dem Ausfüllen der Personendaten können Sie die Discord-Vorlage generieren und an die Sheriffs senden. Sobald Sie das Ergebnis der Überprüfung erhalten, tragen Sie es im nächsten Tab ein.</p>
-        </div>
-      </div>
       
       <div className="tab-actions">
         <button 
