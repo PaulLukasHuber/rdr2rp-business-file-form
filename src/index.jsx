@@ -9,6 +9,7 @@ import './styles/validation.css';
 import './styles/navbar.css';
 import './styles/beta-toast.css';
 import './styles/homepage.css';
+import './styles/verification.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

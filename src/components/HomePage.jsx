@@ -40,15 +40,20 @@ export const HomePage = ({ navigateTo }) => {
           </div>
         </div>
         
-        {/* Personenakte Karte - inaktiv */}
-        <div className="feature-card disabled">
+        {/* Personenakte Karte - aktiv */}
+        <div className="feature-card">
           <div className="card-icon">
             <i className="fa fa-user-check"></i>
           </div>
           <div className="card-content">
             <h3>Personenprüfungsakte erstellen</h3>
-            <p>Erstelle offizielle Personenprüfungsakten für Bürger der Städte (in Entwicklung).</p>
-            <div className="coming-soon-badge">In Kürze verfügbar</div>
+            <p>Erstelle offizielle Personenprüfungsakten für Bürger der Städte.</p>
+            <button 
+              className="card-button" 
+              onClick={() => navigateTo('person-verification')}
+            >
+              Formular öffnen <i className="fa fa-arrow-right"></i>
+            </button>
           </div>
         </div>
       </div>

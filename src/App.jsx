@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { FormContainer } from './components/FormContainer';
+import { PersonVerificationContainer } from './components/PersonVerificationContainer';
 import { PreviewContainer } from './components/PreviewContainer';
 import { Footer } from './components/Footer';
 import { BetaToast } from './components/BetaToast';
@@ -19,8 +20,8 @@ const operationsByCity = {
   VA: ['Brauerei','Büchsenmacher','Farm','Gestüt','Schneider','Tierarzt']
 };
 
-// Initial form state
-const initialFormState = {
+// Initial form state for business license
+const initialBusinessFormState = {
   note: '',
   cityCode: '',
   operation: '',
@@ -28,6 +29,15 @@ const initialFormState = {
   employees: [{ firstName: '', lastName: '', telegram: '' }],
   specialPermit: '',
   other: ''
+};
+
+// Initial form state for person verification
+const initialVerificationFormState = {
+  personName: '',
+  telegramNumber: '',
+  checkedBy: '',
+  checkedDate: getDefaultDate(),
+  checkResult: ''
 };
 
 // Get default date for the form (current day in 1899)
@@ -53,10 +63,13 @@ export default function App() {
   // State for current page
   const [currentPage, setCurrentPage] = useState('home');
   
-  // State for the form data
-  const [formData, setFormData] = useState(initialFormState);
+  // State for the business form data
+  const [businessFormData, setBusinessFormData] = useState(initialBusinessFormState);
   
-  // State for the active tab
+  // State for the verification form data
+  const [verificationFormData, setVerificationFormData] = useState(initialVerificationFormState);
+  
+  // State for the active tab (for business license)
   const [activeTab, setActiveTab] = useState('tab1');
   
   // State for the generated output
@@ -73,22 +86,24 @@ export default function App() {
     setCurrentPage(page);
     // Reset any success messages when changing pages
     setSuccessMessage('');
+    // Reset Discord output when changing pages
+    setDiscordOutput('');
   };
   
-  // Handle input changes
-  const handleInputChange = (e) => {
+  // Handle input changes for business license
+  const handleBusinessInputChange = (e) => {
     const { id, value } = e.target;
     
     if (id === 'cityCode') {
       // Reset operation when city changes
-      setFormData({
-        ...formData,
+      setBusinessFormData({
+        ...businessFormData,
         cityCode: value,
         operation: ''
       });
     } else {
-      setFormData({
-        ...formData,
+      setBusinessFormData({
+        ...businessFormData,
         [id]: value
       });
     }
@@ -102,16 +117,34 @@ export default function App() {
     }
   };
   
+  // Handle input changes for person verification
+  const handleVerificationInputChange = (e) => {
+    const { id, value } = e.target;
+    
+    setVerificationFormData({
+      ...verificationFormData,
+      [id]: value
+    });
+    
+    // Clear error for this field
+    if (errors[id]) {
+      setErrors({
+        ...errors,
+        [id]: null
+      });
+    }
+  };
+  
   // Handle employee changes
   const handleEmployeeChange = (index, field, value) => {
-    const newEmployees = [...formData.employees];
+    const newEmployees = [...businessFormData.employees];
     newEmployees[index] = {
       ...newEmployees[index],
       [field]: value
     };
     
-    setFormData({
-      ...formData,
+    setBusinessFormData({
+      ...businessFormData,
       employees: newEmployees
     });
     
@@ -127,11 +160,11 @@ export default function App() {
   
   // Add employee
   const addEmployee = () => {
-    if (formData.employees.length < 3) {
-      setFormData({
-        ...formData,
+    if (businessFormData.employees.length < 3) {
+      setBusinessFormData({
+        ...businessFormData,
         employees: [
-          ...formData.employees,
+          ...businessFormData.employees,
           { firstName: '', lastName: '', telegram: '' }
         ]
       });
@@ -140,44 +173,44 @@ export default function App() {
   
   // Remove employee
   const removeEmployee = (index) => {
-    if (formData.employees.length > 1) {
-      const newEmployees = [...formData.employees];
+    if (businessFormData.employees.length > 1) {
+      const newEmployees = [...businessFormData.employees];
       newEmployees.splice(index, 1);
-      setFormData({
-        ...formData,
+      setBusinessFormData({
+        ...businessFormData,
         employees: newEmployees
       });
     }
   };
   
-  // Validate the form
-  const validateForm = () => {
+  // Validate the business license form
+  const validateBusinessForm = () => {
     const newErrors = {};
     
     // Validate note (link)
-    if (!formData.note.trim()) {
+    if (!businessFormData.note.trim()) {
       newErrors.note = 'Bitte geben Sie einen Link ein';
-    } else if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/.test(formData.note)) {
+    } else if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/.test(businessFormData.note)) {
       newErrors.note = 'Bitte geben Sie einen gültigen Link ein';
     }
     
     // Validate city
-    if (!formData.cityCode) {
+    if (!businessFormData.cityCode) {
       newErrors.cityCode = 'Bitte wählen Sie eine Stadt';
     }
     
     // Validate operation
-    if (!formData.operation) {
+    if (!businessFormData.operation) {
       newErrors.operation = 'Bitte wählen Sie einen Betrieb';
     }
     
     // Validate date
-    if (!formData.issuedDate) {
+    if (!businessFormData.issuedDate) {
       newErrors.issuedDate = 'Bitte wählen Sie ein Datum';
     }
     
     // Validate employees
-    formData.employees.forEach((emp, index) => {
+    businessFormData.employees.forEach((emp, index) => {
       if (!emp.firstName.trim()) {
         newErrors[`employee_${index}_firstName`] = 'Vorname ist erforderlich';
       }
@@ -198,9 +231,45 @@ export default function App() {
     return Object.keys(newErrors).length === 0;
   };
   
-  // Generate the license
+  // Validate the person verification form
+  const validateVerificationForm = () => {
+    const newErrors = {};
+    
+    // Validate person name
+    if (!verificationFormData.personName.trim()) {
+      newErrors.personName = 'Bitte geben Sie einen Namen ein';
+    }
+    
+    // Validate telegram number
+    const telegramValue = verificationFormData.telegramNumber.trim();
+    if (!telegramValue) {
+      newErrors.telegramNumber = 'Telegramm-Nummer ist erforderlich';
+    } else if (telegramValue !== "---" && !/^\d{1,10}$/.test(telegramValue)) {
+      newErrors.telegramNumber = 'Telegramm-Nummer muss zwischen 1 und 10 Ziffern haben';
+    }
+    
+    // Validate checked by
+    if (!verificationFormData.checkedBy.trim()) {
+      newErrors.checkedBy = 'Bitte geben Sie den Namen des Prüfers ein';
+    }
+    
+    // Validate checked date
+    if (!verificationFormData.checkedDate) {
+      newErrors.checkedDate = 'Bitte wählen Sie ein Datum';
+    }
+    
+    // Validate check result
+    if (!verificationFormData.checkResult.trim()) {
+      newErrors.checkResult = 'Bitte geben Sie ein Prüfungsergebnis ein';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  // Generate the business license
   const generateLicense = () => {
-    if (!validateForm()) {
+    if (!validateBusinessForm()) {
       // Only navigate to a tab with errors if there are errors
       const firstErrorField = Object.keys(errors)[0];
       if (firstErrorField?.startsWith('employee_')) {
@@ -215,28 +284,56 @@ export default function App() {
     }
     
     // Generate license number
-    const licenseNumber = formData.cityCode + ' - ' + generateRandomString(8);
+    const licenseNumber = businessFormData.cityCode + ' - ' + generateRandomString(8);
     
     // Format employees
-    const formattedEmployees = formData.employees.map(emp => 
+    const formattedEmployees = businessFormData.employees.map(emp => 
       `${emp.firstName || '---'} ${emp.lastName || '---'} - ${emp.telegram || '---'}`
     ).join('\n');
     
     // Generate discord template
     const template =
-      `Vermerk zum Gewerbeantrag:\n\`\`\`${formData.note}\`\`\`\n` +
+      `Vermerk zum Gewerbeantrag:\n\`\`\`${businessFormData.note}\`\`\`\n` +
       `Lizenznummer:\n\`\`\`${licenseNumber}\`\`\`\n` +
-      `Ausgestellt am (*Gültigkeit ab*):\n\`\`\`${formData.issuedDate}\`\`\`\n` +
-      `Betrieb:\n\`\`\`${formData.operation}\`\`\`\n` +
+      `Ausgestellt am (*Gültigkeit ab*):\n\`\`\`${businessFormData.issuedDate}\`\`\`\n` +
+      `Betrieb:\n\`\`\`${businessFormData.operation}\`\`\`\n` +
       `Mitarbeiter (Inhaber & Stellvertretungen):\n\`\`\`${formattedEmployees}\`\`\`\n` +
-      `Anzahl der herausgegebenen Lizenzen:\n\`\`\`${formData.employees.length}\`\`\`\n` +
-      `Sondergenehmigung:\n\`\`\`${formData.specialPermit || '---'}\`\`\`\n` +
-      `Sonstiges:\n\`\`\`${formData.other || '---'}\`\`\``;
+      `Anzahl der herausgegebenen Lizenzen:\n\`\`\`${businessFormData.employees.length}\`\`\`\n` +
+      `Sondergenehmigung:\n\`\`\`${businessFormData.specialPermit || '---'}\`\`\`\n` +
+      `Sonstiges:\n\`\`\`${businessFormData.other || '---'}\`\`\``;
       
     setDiscordOutput(template);
     
     // Show success message
     setSuccessMessage('Gewerbeakte erfolgreich generiert!');
+    setTimeout(() => setSuccessMessage(''), 3000);
+    
+    // Scroll to preview on small screens
+    if (window.innerWidth <= 968) {
+      document.querySelector('.preview-container')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
+  // Generate the person verification
+  const generateVerification = () => {
+    if (!validateVerificationForm()) {
+      return;
+    }
+    
+    // Generate discord template with line break at the beginning and placeholder for result
+    const template =
+      `\n# Vorlage | Personenprüfungsakte\n` +
+      `Formular für Personenprüfungen\n` +
+      `Zu überprüfende Person:\n\`\`\`\n${verificationFormData.personName || '---'}\n\`\`\`\n` +
+      `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${verificationFormData.telegramNumber || '---'}\n\`\`\`\n` +
+      `Geprüft durch:\n\`\`\`\n${verificationFormData.checkedBy || '---'}\n\`\`\`\n` +
+      `Geprüft am:\n\`\`\`\n${verificationFormData.checkedDate || '---'}\n\`\`\`\n` +
+      `Prüfungsergebnis:\n\`\`\`\n---\n\`\`\``;
+      
+    setDiscordOutput(template);
+    
+    // Show success message
+    setSuccessMessage('Personenprüfungsakte erfolgreich generiert!');
     setTimeout(() => setSuccessMessage(''), 3000);
     
     // Scroll to preview on small screens
@@ -267,15 +364,31 @@ export default function App() {
       return (
         <div className="page-container">
           <FormContainer 
-            formData={formData}
+            formData={businessFormData}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            handleInputChange={handleInputChange}
+            handleInputChange={handleBusinessInputChange}
             handleEmployeeChange={handleEmployeeChange}
             addEmployee={addEmployee}
             removeEmployee={removeEmployee}
             generateLicense={generateLicense}
             operationsByCity={operationsByCity}
+            errors={errors}
+          />
+          
+          <PreviewContainer 
+            discordOutput={discordOutput}
+            copyToClipboard={copyToClipboard}
+          />
+        </div>
+      );
+    } else if (currentPage === 'person-verification') {
+      return (
+        <div className="page-container">
+          <PersonVerificationContainer 
+            formData={verificationFormData}
+            handleInputChange={handleVerificationInputChange}
+            generateVerification={generateVerification}
             errors={errors}
           />
           
