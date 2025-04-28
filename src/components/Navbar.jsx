@@ -34,9 +34,8 @@ export const Navbar = ({ currentPage, navigateTo }) => {
         </li>
         <li>
           <button 
-            className="nav-button disabled-link"
-            title="Funktion noch nicht verfügbar"
-            disabled
+            className={`nav-button ${currentPage === 'person-verification' ? 'active' : ''}`}
+            onClick={() => navigateTo('person-verification')}
           >
             <i className="fa fa-user-check"></i> Personenprüfungsakte erstellen
           </button>
