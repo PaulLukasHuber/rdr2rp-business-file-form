@@ -64,7 +64,7 @@ export const CheckResultTab = ({ formData, handleInputChange, errors }) => {
               onChange={handleInputChange}
             />
             <span className="result-icon"><i className="fa fa-check-circle"></i></span>
-            <span className="result-text">Bestanden</span>
+            <span className="result-text"> Bestanden</span>
           </label>
           
           <label className={`result-button ${formData.checkResult === 'straffällig' ? 'active' : ''}`}>
@@ -77,7 +77,7 @@ export const CheckResultTab = ({ formData, handleInputChange, errors }) => {
               onChange={handleInputChange}
             />
             <span className="result-icon"><i className="fa fa-exclamation-triangle"></i></span>
-            <span className="result-text">Durchgefallen</span>
+            <span className="result-text"> Durchgefallen</span>
           </label>
         </div>
         
