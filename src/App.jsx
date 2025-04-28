@@ -37,7 +37,8 @@ const initialVerificationFormState = {
   telegramNumber: '',
   checkedBy: '',
   checkedDate: getDefaultDate(),
-  checkResult: ''
+  checkResult: '',
+  resultNotes: ''
 };
 
 // Get default date for the form (current day in 1899)
@@ -221,7 +222,21 @@ export default function App() {
         // Extrahiere Ergebnis
         const resultMatch = discordText.match(/Prüfungsergebnis:\s*```\s*(.*?)\s*```/s);
         if (resultMatch && resultMatch[1] && resultMatch[1] !== '---') {
-          setVerificationFormData(prev => ({...prev, checkResult: resultMatch[1].trim()}));
+          const result = resultMatch[1].trim().toLowerCase();
+          // Normalisieren des Ergebnisses auf "sauber" oder "straffällig"
+          if (result.includes('sauber')) {
+            setVerificationFormData(prev => ({...prev, checkResult: 'sauber'}));
+          } else if (result.includes('straff')) { // Teilabgleich für "straffällig" mit Umlauten
+            setVerificationFormData(prev => ({...prev, checkResult: 'straffällig'}));
+          } else {
+            setVerificationFormData(prev => ({...prev, checkResult: result}));
+          }
+        }
+        
+        // Extrahiere Anmerkungen (falls vorhanden)
+        const notesMatch = discordText.match(/Anmerkungen:\s*```\s*(.*?)\s*```/s);
+        if (notesMatch && notesMatch[1]) {
+          setVerificationFormData(prev => ({...prev, resultNotes: notesMatch[1].trim()}));
         }
       }
       
@@ -332,8 +347,10 @@ export default function App() {
       }
       
       // Validate check result
-      if (!verificationFormData.checkResult.trim()) {
-        newErrors.checkResult = 'Bitte geben Sie ein Prüfungsergebnis ein';
+      if (!verificationFormData.checkResult) {
+        newErrors.checkResult = 'Bitte wählen Sie ein Prüfungsergebnis aus';
+      } else if (verificationFormData.checkResult !== 'sauber' && verificationFormData.checkResult !== 'straffällig') {
+        newErrors.checkResult = 'Bitte wählen Sie "sauber" oder "straffällig"';
       }
     }
     
@@ -400,9 +417,11 @@ export default function App() {
       `Formular für Personenprüfungen\n` +
       `Zu überprüfende Person:\n\`\`\`\n${verificationFormData.personName || '---'}\n\`\`\`\n` +
       `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${verificationFormData.telegramNumber || '---'}\n\`\`\`\n` +
-      `Geprüft durch:\n\`\`\`\n${verificationRole === 'examiner' ? verificationFormData.checkedBy : '---'}\n\`\`\`\n` +
-      `Geprüft am:\n\`\`\`\n${verificationRole === 'examiner' ? verificationFormData.checkedDate : '---'}\n\`\`\`\n` +
-      `Prüfungsergebnis:\n\`\`\`\n${verificationRole === 'examiner' ? verificationFormData.checkResult : '---'}\n\`\`\``;
+      `Geprüft durch:\n\`\`\`\n${verificationFormData.checkedBy || '---'}\n\`\`\`\n` +
+      `Geprüft am:\n\`\`\`\n${verificationFormData.checkedDate || '---'}\n\`\`\`\n` +
+      `Prüfungsergebnis:\n\`\`\`\n${verificationFormData.checkResult || '---'}\n\`\`\`\n` +
+      (verificationFormData.resultNotes ? 
+      `Anmerkungen:\n\`\`\`\n${verificationFormData.resultNotes}\n\`\`\`\n` : '');
       
     setDiscordOutput(template);
     
@@ -464,8 +483,6 @@ export default function App() {
             handleInputChange={handleVerificationInputChange}
             generateVerification={generateVerification}
             errors={errors}
-            role={verificationRole}
-            setRole={setVerificationRole}
             handleDiscordImport={handleDiscordImport}
           />
           
