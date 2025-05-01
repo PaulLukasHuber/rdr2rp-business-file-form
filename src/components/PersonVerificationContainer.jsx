@@ -24,8 +24,7 @@ export const PersonVerificationContainer = ({
       <div className="beta-warning">
         <div className="beta-badge">BETA</div>
         <div className="beta-message">
-          <h3>Personenprüfungen für Gewerbeanmeldungen</h3>
-          <p>Nachdem Sie die Personendaten ausgefüllt haben, erstellen Sie die Discord-Vorlage und laden sie im Discord unter dem Reiter „Anträge“ hoch. Nach Erhalt des Prüfergebnisses importieren Sie die vorhandene Akte, ergänzen das Ergebnis im nächsten Tab und ersetzen anschließend die ursprüngliche Akte im Reiter „Anträge“ durch die aktualisierte Version.</p>
+          <h3>Personenprüfungesakten</h3>
         </div>
       </div>
       

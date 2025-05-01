@@ -4,7 +4,11 @@ import { FormGroup } from '../FormGroup';
 export const PersonDataTab = ({ formData, handleInputChange, errors, goToNextStep }) => {
   return (
     <>
-      
+      <div className="tab-info result-tab-info">
+        <i className="fa fa-info-circle"></i>
+        Hier tragen Sie die Personenbezogenen Daten ein, welche im Anschluss von einem Sheriff oder Deputy bearbeitet werden.
+      </div>
+
       <FormGroup 
         id="personName"
         label="Zu überprüfende Person:"
