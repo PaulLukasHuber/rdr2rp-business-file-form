@@ -25,6 +25,7 @@ export const PersonVerificationContainer = ({
         <div className="beta-badge">BETA</div>
         <div className="beta-message">
           <h3>Personenprüfungesakten</h3>
+          <p>Die Funktion ist noch in der Beta-Phase und kann Fehler enthalten.</p>
         </div>
       </div>
       
