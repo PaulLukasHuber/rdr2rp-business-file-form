@@ -1,0 +1,116 @@
+body {
+	margin: 0;
+	font-family: 'Roboto', sans-serif;
+	background-color: #413b35;
+}
+#root {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+.app {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+.navbar {
+	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
+	border: 1px solid rgba(255,255,255,0.1);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	margin: 1.5rem auto;
+	padding: 1rem 2rem;
+	max-width: 1400px;
+	border-radius: 12px;
+	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.navbar-logo {
+	font-size: 1.5rem;
+	color: #f5c979;
+	font-weight: bold;
+	letter-spacing: 2px;
+	margin-right: 2rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+	transition: transform 0.3s;
+}
+.navbar-logo:hover {
+	transform: scale(1.05);
+}
+.navbar-links {
+	list-style: none;
+	display: flex;
+	gap: 2rem;
+	margin: 0;
+	padding: 0;
+}
+/* Stil für die Navigations-Buttons, die wie Links aussehen */
+.nav-button {
+	background: none;
+	border: none;
+	padding: 0;
+	text-decoration: none;
+	color: #f5c979;
+	font-size: 1rem;
+	font-family: 'Roboto', sans-serif;
+	transition: color 0.3s;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+}
+.nav-button:hover {
+	color: #ffffff;
+}
+/* Stil für aktiven Navigationspunkt */
+.nav-button.active {
+	color: #ffffff;
+	position: relative;
+}
+.nav-button.active::after {
+	content: '';
+	position: absolute;
+	bottom: -5px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: #f5c979;
+	border-radius: 2px;
+}
+/* Stil für ausgegraute (disabled) Buttons */
+.nav-button.disabled-link {
+	color: #a39484;
+	cursor: not-allowed;
+	opacity: 0.7;
+}
+/* Responsive Design */
+@media (max-width: 992px) {
+	.navbar {
+		flex-direction: column;
+		padding: 1rem;
+	}
+	.navbar-logo {
+		margin-right: 0;
+		margin-bottom: 1rem;
+	}
+	.navbar-links {
+		width: 100%;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 1rem 1.5rem;
+	}
+}
+@media (max-width: 576px) {
+	.navbar-links {
+		flex-direction: column;
+		align-items: center;
+	}
+	.nav-button {
+		padding: 0.5rem 0;
+	}
+}

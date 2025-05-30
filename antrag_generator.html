@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anträge bearbeiten - Gewerbeamt Saint Denis</title>
+
+    <!--  Favicon -->
+    <link rel="icon" href="assets/img/favicon.ico" sizes="128x128">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="assets/css/antrag_generator/antrag_stylesheet.css">
+    <link rel="stylesheet" href="assets/css/global/navbar.css">
+    <link rel="stylesheet" href="assets/css/global/footer.css">
+    <link rel="stylesheet" href="assets/css/global/bg_animation.css">
+    <link rel="stylesheet" href="assets/css/global/popup.css">
+    <link rel="stylesheet" href="assets/css/global/form_style.css">
+    <link rel="stylesheet" href="assets/css/global/main_content.css">
+    <link rel="stylesheet" href="assets/css/global/preview.css">
+    <link rel="stylesheet" href="assets/css/global/import_section.css">
+    <link rel="stylesheet" href="assets/css/global/scrollbar.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+<nav class="navbar">
+    <div class="navbar-logo">
+        <i class="fas fa-scroll"></i> Gewerbeamt
+    </div>
+    <ul class="navbar-links">
+        <li>
+            <a href="index.html" class="nav-button">
+                <i class="fa fa-house"></i> Startseite
+            </a>
+        </li>
+        <li>
+            <a href="gewerbeakte_generator.html" class="nav-button">
+                <i class="fa fa-id-card-alt"></i> Gewerbeakten erstellen
+            </a>
+        </li>
+        <li>
+            <a href="personenpruefung_generator.html" class="nav-button">
+                <i class="fa fa-user-check"></i> Personenprüfungsakten erstellen
+            </a>
+        </li>
+        <li>
+            <a href="antrag_generator.html" class="nav-button active">
+                <i class="fa fa-file-alt"></i> Anträge erstellen
+            </a>
+        </li>
+    </ul>
+</nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Form Section -->
+        <section class="form-section">
+            <h1 class="section-title"><i class="fa-solid fa-file-pen"></i> Antragsbearbeitung</h1>
+
+            <!-- Import Section -->
+            <div class="import-section">
+                <div class="import-header" id="import-header" onclick="toggleImport()">
+                    <div class="import-title">
+                        <i class="fa-solid fa-file-import"></i> Bestehenden Antrag importieren
+                    </div>
+                    <div class="import-toggle" id="import-toggle">
+                        <i class="fa-solid fa-angle-down"></i>
+                    </div>
+                </div>
+                <div class="import-content" id="import-content">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-file"></i> Discord-Antrag hier einfügen:</label>
+                        <textarea class="form-input form-textarea" id="import-text" 
+                                placeholder="Kopieren Sie hier den kompletten Antrag aus Discord ein..." 
+                                style="min-height: 120px;"></textarea>
+                    </div>
+                    
+                    <button class="import-button" onclick="importAntrag()" disabled id="import-button">
+                        <i class="fa-solid fa-file-import"></i> Antrag importieren & bearbeiten
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Antrag Type Selector -->
+            <div class="antrag-selector">
+                <div class="antrag-title"><i class="fa-solid fa-clipboard-list"></i> Antragstyp auswählen:</div>
+                <div class="form-group">
+                    <select class="form-select" id="antrag-type" onchange="switchAntragType()">
+                        <option value="">— Bitte Antragstyp wählen —</option>
+                        <option value="gewerbeantrag"><i class="fa-solid fa-warehouse"></i> Gewerbeantrag (Gewerbekonzept)</option>
+                        <option value="gewerbeauslage"><i class="fa-solid fa-inbox"></i> Gewerbeauslage</option>
+                        <option value="gewerbekutsche"><i class="fa-solid fa-trailer"></i> Gewerbekutsche-Genehmigung</option>
+                        <option value="gewerbetelegramm"><i class="fa-solid fa-mobile-retro"></i> Gewerbetelegrammnummer</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Gewerbeantrag Form -->
+            <div id="gewerbeantrag-form" class="dynamic-form">
+                <div class="form-subtitle"><i class="fa-solid fa-warehouse"></i> Gewerbeantrag (Gewerbekonzept)</div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-user"></i> Antragstellende Person:</label>
+                    <input type="text" class="form-input" id="gewerbeantrag-person" placeholder="Vor- und Nachname eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Für Gewerbe:</label>
+                    <input type="text" class="form-input" id="gewerbeantrag-gewerbe" placeholder="Name des Gewerbes eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
+                    <input type="text" class="form-input" id="gewerbeantrag-telegram" placeholder="Telegrammnummer eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-clipboard-list"></i> Gewerbekonzept:</label>
+                    <textarea class="form-input form-textarea" id="gewerbeantrag-konzept" placeholder="Detailliertes Gewerbekonzept beschreiben..."></textarea>
+                </div>
+            </div>
+
+            <!-- Gewerbeauslage Form -->
+            <div id="gewerbeauslage-form" class="dynamic-form">
+                <div class="form-subtitle"><i class="fa-solid fa-store"></i> Gewerbeauslage</div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-user"></i> Antragstellende Person:</label>
+                    <input type="text" class="form-input" id="gewerbeauslage-person" placeholder="Vor- und Nachname eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
+                    <input type="text" class="form-input" id="gewerbeauslage-telegram" placeholder="Telegrammnummer eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Für Gewerbe:</label>
+                    <input type="text" class="form-input" id="gewerbeauslage-gewerbe" placeholder="Name des Gewerbes eingeben...">
+                </div>
+            </div>
+
+            <!-- Gewerbekutsche Form -->
+            <div id="gewerbekutsche-form" class="dynamic-form">
+                <div class="form-subtitle"><i class="fa-solid fa-trailer"></i> Gewerbekutsche-Genehmigung</div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-circle-info"></i> Genehmigungs-Nummer:</label>
+                    <input type="text" class="form-input" id="gewerbekutsche-nummer" placeholder="Wird automatisch generiert..." readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-user-tie"></i> Ausstellende Person:</label>
+                    <input type="text" class="form-input" id="gewerbekutsche-aussteller" placeholder="Name des Bearbeiters eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
+                    <input type="text" class="form-input" id="gewerbekutsche-aussteller-telegram" placeholder="Telegrammnummer des Bearbeiters...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-user"></i> Antragstellende Person:</label>
+                    <input type="text" class="form-input" id="gewerbekutsche-person" placeholder="Vor- und Nachname eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Gewerbe:</label>
+                    <input type="text" class="form-input" id="gewerbekutsche-gewerbe" placeholder="Name des Gewerbes eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-sliders"></i> Kutschen Größe:</label>
+                    <select class="form-select" id="gewerbekutsche-groesse">
+                        <option value="">— Größe wählen —</option>
+                        <option value="Klein (1500kg)">Klein (1500kg)</option>
+                        <option value="Groß (2000kg)">Groß (2000kg)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Gewerbetelegramm Form -->
+            <div id="gewerbetelegramm-form" class="dynamic-form">
+                <div class="form-subtitle"><i class="fa-solid fa-mobile-retro"></i> Gewerbetelegrammnummer</div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-user"></i> Antragstellende Person:</label>
+                    <input type="text" class="form-input" id="gewerbetelegramm-person" placeholder="Vor- und Nachname eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Für Gewerbe:</label>
+                    <input type="text" class="form-input" id="gewerbetelegramm-gewerbe" placeholder="Name des Gewerbes eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
+                    <input type="text" class="form-input" id="gewerbetelegramm-telegram" placeholder="Telegrammnummer eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Gewünschte Gewerbetelegrammnummer:</label>
+                    <input type="text" class="form-input" id="gewerbetelegramm-wunsch" placeholder="Gewünschte Nummer eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-receipt"></i> Bearbeitungsgebühr (100$) bezahlt?:</label>
+                    <div class="checkbox-group" onclick="toggleCheckbox('gewerbetelegramm-bezahlt')">
+                        <input type="checkbox" id="gewerbetelegramm-bezahlt">
+                        <label for="gewerbetelegramm-bezahlt">
+                            <i class="fa-solid fa-check" style="color: green;"></i>
+                            <span style="color: inherit;">Ja, Bearbeitungsgebühr wurde bezahlt</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-group" onclick="toggleCheckbox('gewerbetelegramm-ausstehend')" style="margin-top: 0.5rem;">
+                        <input type="checkbox" id="gewerbetelegramm-ausstehend">
+                        <label for="gewerbetelegramm-ausstehend">
+                            <i class="fa-solid fa-hourglass-half" style="color: orange;"></i>
+                            <span style="color: inherit;">Nein, Bearbeitungsgebühr ausstehend</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="generate-button" onclick="showGeneratePopup()" disabled id="generate-btn">
+                <i class="fa fa-paper-plane"></i> Antrag generieren
+            </button>
+        </section>
+
+        <!-- Preview Section -->
+        <section class="preview-section">
+            <h2 class="section-title"><i class="fa fa-eye"></i> Vorschau</h2>
+            <p style="color: #D8C5B0; margin-bottom: 1rem; text-align: left;">
+                Discord-Ausgabe:
+            </p>
+            
+            <div class="preview-output" id="preview-output">
+                <div style="text-align: center; color: #D8C5B0; font-style: italic; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fa fa-clipboard"></i></div>
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch keine Vorlage generiert</div>
+                    <div style="font-size: 0.9rem;">Klicken Sie auf "<i class="fa fa-paper-plane"></i> Discord Vorlage generieren" um die formatierte Ausgabe zu sehen</div>
+                </div>
+            </div>
+            
+            <button class="copy-button" onclick="showCopyPopup()">
+                <i class="fa fa-clipboard"></i> In Zwischenablage kopieren
+            </button>
+        </section>
+    </main>
+
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title" id="popup-title"><i class="fa fa-paper-plane"></i> Antrag wird generiert...</h3>
+                <button class="popup-close" onclick="closePopup()">×</button>
+            </div>
+            <div class="popup-icon" id="popup-icon">⚙️</div>
+            <div class="popup-message" id="popup-message">
+                Bitte warten Sie, während der Antrag formatiert wird...
+            </div>
+            <div class="popup-buttons" id="popup-buttons" style="display: none;"> </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            © 2025 Tobias Schmidt | Internes Verwaltungssystem | Nur für Sundown Rising
+        </p>
+    </footer>
+
+    <script src="assets/js/antrag_generator/script.js"></script>
+    <script src="assets/js/antrag_generator/import_script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personenprüfungsakte erstellen - Gewerbeamt Saint Denis</title>
+
+    <!--  Favicon -->
+    <link rel="icon" href="assets/img/favicon.ico" sizes="128x128">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="assets/css/personenpruefung_generator/pp_stylesheet.css">
+    <link rel="stylesheet" href="assets/css/global/navbar.css">
+    <link rel="stylesheet" href="assets/css/global/footer.css">
+    <link rel="stylesheet" href="assets/css/global/bg_animation.css">
+    <link rel="stylesheet" href="assets/css/global/popup.css">
+    <link rel="stylesheet" href="assets/css/global/form_style.css">
+    <link rel="stylesheet" href="assets/css/global/main_content.css">
+    <link rel="stylesheet" href="assets/css/global/preview.css">
+    <link rel="stylesheet" href="assets/css/global/import_section.css">
+    <link rel="stylesheet" href="assets/css/global/scrollbar.css">
+        
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+<nav class="navbar">
+    <div class="navbar-logo">
+        <i class="fas fa-scroll"></i> Gewerbeamt
+    </div>
+    <ul class="navbar-links">
+        <li>
+            <a href="index.html" class="nav-button">
+                <i class="fa fa-house"></i> Startseite
+            </a>
+        </li>
+        <li>
+            <a href="gewerbeakte_generator.html" class="nav-button">
+                <i class="fa fa-id-card-alt"></i> Gewerbeakten erstellen
+            </a>
+        </li>
+        <li>
+            <a href="personenpruefung_generator.html" class="nav-button active">
+                <i class="fa fa-user-check"></i> Personenprüfungsakten erstellen
+            </a>
+        </li>
+        <li>
+            <a href="antrag_generator.html" class="nav-button">
+                <i class="fa fa-file-alt"></i> Anträge erstellen
+            </a>
+        </li>
+    </ul>
+</nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Form Section -->
+        <section class="form-section">
+            <h1 class="section-title"><i class="fa-solid fa-magnifying-glass"></i> Personenprüfungsakte</h1>
+
+            <!-- Collapsible Import Section -->
+            <div class="import-section">
+                <div class="import-header" onclick="toggleImport()">
+                    <div class="import-title">
+                        <span><i class="fa-solid fa-file-import"></i></span>
+                        <span>Bestehende Akte importieren</span>
+                    </div>
+                    <div class="import-toggle" id="import-toggle"><i class="fa-solid fa-angle-down"></i></div>
+                </div>
+                <div class="import-content" id="import-content">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-file"></i> Akte einfügen:</label>
+                        <textarea class="form-input form-textarea" id="import-text" placeholder="Kopieren Sie hier die komplette Akte aus Discord ein..." style="min-height: 80px;"></textarea>
+                    </div>
+                    <button type="button" class="import-button" onclick="importAkte()" disabled id="import-button">
+                        <i class="fa-solid fa-file-import"></i> Akte importieren & bearbeiten
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-user"></i> Zu überprüfende Person:</label>
+                <input type="text" class="form-input" id="person" placeholder="Vor- und Nachname eingeben..." required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
+                <input type="text" class="form-input" id="telegram" placeholder="Telegrammnummer eingeben..." required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-user-secret"></i> Geprüft durch:</label>
+                <input type="text" class="form-input" id="pruefer" placeholder="Name des Prüfers...">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-calendar-check"></i> Geprüft am:</label>
+                <input type="date" class="form-input" id="datum" max="1899-12-31" required>
+            </div>
+
+            <div class="ergebnis-section">
+                <div class="ergebnis-title"><i class="fa-solid fa-clipboard-question"></i> Prüfungsergebnis</div>
+                
+                <div class="radio-group" onclick="selectResult('ausstehend')">
+                    <input type="radio" name="ergebnis" value="ausstehend" id="ausstehend">
+                    <label for="ausstehend">
+                        <i class="fa-solid fa-hourglass-half" style="color: orange;"></i>
+                        <span style="color: inherit;">Ausstehend</span>
+                    </label>
+                </div>
+                <br>
+                <div class="ergebnis-options">
+                    <div class="radio-group" onclick="selectResult('bestanden')">
+                        <input type="radio" name="ergebnis" value="bestanden" id="bestanden">
+                        <label for="bestanden">
+                            <i class="fa-solid fa-check" style="color: green;"></i>
+                            <span style="color: inherit;">Bestanden</span>
+                        </label>
+                    </div>
+                    
+                    <div class="radio-group" onclick="selectResult('nicht-bestanden')">
+                        <input type="radio" name="ergebnis" value="nicht-bestanden" id="nicht-bestanden">
+                        <label for="nicht-bestanden">
+                            <i class="fa-solid fa-xmark" style="color: red;"></i>
+                            <span style="color: inherit;">Nicht bestanden</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-file-pen"></i> Detaillierte Bewertung/Anmerkungen:</label>
+                    <textarea class="form-input form-textarea" id="details" placeholder="Detaillierte Beschreibung des Prüfungsergebnisses, Anmerkungen, Verbesserungsvorschläge..."></textarea>
+                </div>
+            </div>
+
+            <button class="copy-button" onclick="showGeneratePopup()"><i class="fa-solid fa-paper-plane"></i> Prüfungsakte generieren</button>
+        </section>
+
+        <!-- Preview Section -->
+        <section class="preview-section">
+            <h2 class="section-title"><i class="fa fa-eye"></i> Vorschau</h2>
+            <p style="color: #D8C5B0; margin-bottom: 1rem; text-align: left;">
+                Discord-Ausgabe:
+            </p>
+            
+            <div class="preview-output" id="preview-output">
+                <div style="text-align: center; color: #D8C5B0; font-style: italic; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fa fa-clipboard"></i></div>
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch keine Vorlage generiert</div>
+                    <div style="font-size: 0.9rem;">Klicken Sie auf "<i class="fa fa-paper-plane"></i> Discord Vorlage generieren" um die formatierte Ausgabe zu sehen</div>
+                </div>
+            </div>
+            
+            <button class="copy-button" onclick="showCopyPopup()">
+                <i class="fa fa-clipboard"></i> In Zwischenablage kopieren
+            </button>
+        </section>
+    </main>
+
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title" id="popup-title">🔄 Prüfungsakte wird generiert...</h3>
+                <button class="popup-close" onclick="closePopup()">×</button>
+            </div>
+            <div class="popup-icon" id="popup-icon">⚙️</div>
+            <div class="popup-message" id="popup-message">
+                Bitte warten Sie, während die Personenprüfungsakte formatiert wird...
+            </div>
+            <div class="popup-buttons" id="popup-buttons" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            © 2025 Tobias Schmidt | Internes Verwaltungssystem | Nur für Sundown Rising
+        </p>
+    </footer>
+
+    <script src="assets/js/personenpruefung_generator/script.js"></script>
+    <script src="assets/js/personenpruefung_generator/import_script.js"></script>
+
+</body>
+</html>

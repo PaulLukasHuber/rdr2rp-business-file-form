@@ -1,0 +1,89 @@
+ /* Collapsible Import Section */
+.import-section {
+	margin-bottom: 2rem;
+}
+.import-header {
+	border: 1px solid rgba(255,255,255,0.1);
+	border-radius: 10px;
+	padding: 1rem 1.5rem;
+	background: rgba(203, 131, 88, 0.1);
+	cursor: pointer;
+	transition: all 0.3s ease;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.import-header:hover {
+	background: rgba(203, 131, 88, 0.2);
+	border-color: #F4C066;
+}
+.import-header.expanded {
+	border-radius: 10px 10px 0 0;
+	border-bottom: none;
+}
+.import-title {
+	color: #F4C066;
+	font-weight: bold;
+	font-size: 1.1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.import-toggle {
+	color: #F4C066;
+	font-size: 1.5rem;
+	transition: transform 0.3s ease;
+}
+.import-toggle.expanded {
+	transform: rotate(180deg);
+}
+.import-content {
+	border: 1px solid rgba(255,255,255,0.1);
+	border-top: none;
+	border-radius: 0 0 10px 10px;
+	padding: 1.5rem;
+	background: rgba(203, 131, 88, 0.05);
+	display: none;
+	animation: slideDown 0.3s ease;
+}
+.import-content.expanded {
+	display: block;
+}
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.import-button {
+	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
+	color: #2C2623;
+	border: none;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: all 0.3s ease;
+	margin-top: 1rem;
+	width: 100%;
+}
+.import-button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
+}
+.import-button:disabled {
+	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
+	cursor: not-allowed;
+	opacity: 0.6;
+	transform: none;
+	box-shadow: none;
+}
+.import-button:disabled:hover {
+	transform: none;
+	box-shadow: none;
+	border-color: transparent;
+}

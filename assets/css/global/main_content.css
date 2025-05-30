@@ -1,0 +1,72 @@
+/* Main Content */
+.main-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 3rem 2rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 3rem;
+	align-items: start;
+	/* WICHTIG: Verhindert gleiche Höhe */
+}
+.form-section {
+	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
+	padding: 2rem;
+	border-radius: 15px;
+	border: 1px solid rgba(255,255,255,0.1);
+	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+}
+.preview-section {
+	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
+	padding: 2rem;
+	border-radius: 15px;
+	border: 1px solid rgba(255,255,255,0.1);
+	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+	height: 900px;
+	/* FESTE HÖHE */
+	display: flex;
+	flex-direction: column;
+	position: sticky;
+	/* Optional: Bleibt beim Scrollen sichtbar */
+	top: 2rem;
+	/* Abstand von oben beim Sticky */
+}
+/* Preview Output Container anpassen */
+.preview-output {
+	background: rgba(30, 26, 23, 0.8);
+	border: 2px solid #A85F3D;
+	border-radius: 8px;
+	padding: 1.5rem;
+	font-family: 'Courier New', monospace;
+	color: #D8C5B0;
+	white-space: pre-wrap;
+	line-height: 1.6;
+	flex: 1;
+	/* Nimmt verfügbaren Platz ein */
+	overflow-y: auto;
+	/* Scrollbar bei langem Inhalt */
+	min-height: 0;
+	/* Wichtig für Flex-Container */
+}
+.section-title {
+	font-size: 1.8rem;
+	color: #F4C066;
+	margin-bottom: 1.5rem;
+	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+	text-align: center;
+}
+/* Copy Button bleibt unten */
+.copy-button {
+	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
+	color: #2C2623;
+	border: none;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: all 0.3s ease;
+	margin-top: 1rem;
+	width: 100%;
+	flex-shrink: 0;
+	/* Button behält seine Größe */
+}
