@@ -1,13 +1,17 @@
-# Dependencies
-/node_modules
-/.pnp
-.pnp.js
+# === RDR2RP Business License Generator ===
 
-# Testing
-/coverage
+# Build outputs (falls später Build-Prozess hinzugefügt wird)
+/dist/
+/build/
+*.min.js
+*.min.css
 
-# Production build
-/build
+# Development files
+/src/temp/
+/tools/cache/
+
+# Backup from migration
+/backup/
 
 # OS files
 .DS_Store
@@ -25,6 +29,7 @@ desktop.ini
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+debug.log
 
 # Temporary files
 *.tmp
@@ -33,25 +38,29 @@ yarn-error.log*
 *~
 .eslintcache
 
-# Environment variables
+# Environment variables (falls später verwendet)
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Package manager lockfiles (uncomment if not versioning these)
-# package-lock.json
-# yarn.lock
+# Node modules (falls später Node.js verwendet wird)
+node_modules/
+package-lock.json
+yarn.lock
 
-# TypeScript incremental compilation cache
-*.tsbuildinfo
-
-# Sentry auth token
-.sentryclirc
-
-# Debug logs
-debug.log
+# Python cache (für Migration Scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
 
 # Local development certificates
-/certs
+/certs/
+
+# === Was NICHT ignoriert wird ===
+# public/ - wird komplett getrackt (ist die Website)
+# docs/ - Dokumentation wird getrackt
+# tools/ - Build-Tools werden getrackt
+# src/ - Source-Code wird getrackt (falls verwendet)
