@@ -1,13 +1,15 @@
- /* Form Styles */
+/* Form Styles */
 .form-group {
 	margin-bottom: 1.5rem;
 }
+
 .form-label {
 	display: block;
 	color: #F5F5F5;
 	font-weight: bold;
 	margin-bottom: 0.5rem;
 }
+
 .form-input {
 	width: 100%;
 	padding: 0.8rem;
@@ -18,15 +20,18 @@
 	font-size: 1rem;
 	transition: all 0.3s ease;
 }
+
 .form-input:focus {
 	outline: none;
 	border-color: #F4C066;
 	box-shadow: 0 0 12px rgba(244, 192, 102, 0.3);
 }
+
 .form-textarea {
 	min-height: 100px;
 	resize: vertical;
 }
+
 .form-select {
 	width: 100%;
 	padding: 0.8rem;
@@ -37,10 +42,12 @@
 	font-size: 1rem;
 	cursor: pointer;
 }
+
 .form-select option {
 	background: #1E1A17;
 	color: #F5F5F5;
 }
+
 .antrag-selector {
 	border: 1px solid rgba(255,255,255,0.1);
 	border-radius: 12px;
@@ -48,6 +55,7 @@
 	margin-bottom: 2rem;
 	background: rgba(203, 131, 88, 0.1);
 }
+
 .antrag-title {
 	color: #F4C066;
 	font-weight: bold;
@@ -55,6 +63,7 @@
 	margin-bottom: 1rem;
 	text-align: left;
 }
+
 .dynamic-form {
 	display: none;
 	border: 1px solid rgba(255,255,255,0.1);
@@ -63,10 +72,12 @@
 	margin-bottom: 1.5rem;
 	background: rgba(203, 131, 88, 0.05);
 }
+
 .dynamic-form.active {
 	display: block;
 	animation: fadeIn 0.5s ease;
 }
+
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -77,6 +88,7 @@
 		transform: translateY(0);
 	}
 }
+
 .form-subtitle {
 	color: #D8C5B0;
 	font-weight: bold;
@@ -85,6 +97,7 @@
 	border-bottom: 2px solid #CB8358;
 	padding-bottom: 0.5rem;
 }
+
 .generate-button {
 	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
 	color: #2C2623;
@@ -97,10 +110,12 @@
 	margin-top: 1rem;
 	width: 100%;
 }
+
 .generate-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
 }
+
 .generate-button:disabled {
 	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
 	cursor: not-allowed;
@@ -109,9 +124,7 @@
 	box-shadow: none;
 }
 
-
-/* === From assets/css/global/popup.css === */
- /* Popup Styles */
+/* Popup Styles */
 .popup-overlay {
 	position: fixed;
 	top: 0;
@@ -126,17 +139,11 @@
 	z-index: 1000;
 	animation: fadeIn 0.3s ease;
 }
+
 .popup-overlay.active {
 	display: flex;
 }
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
+
 @keyframes slideIn {
 	from {
 		transform: translateY(-50px) scale(0.9);
@@ -147,6 +154,7 @@
 		opacity: 1;
 	}
 }
+
 .popup-content {
 	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
 	border: 1px solid rgba(255,255,255,0.1);
@@ -159,18 +167,21 @@
 	animation: slideIn 0.4s ease;
 	position: relative;
 }
+
 .popup-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 1.5rem;
 }
+
 .popup-title {
 	font-size: 1.5rem;
 	color: #F4C066;
 	font-weight: bold;
 	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
+
 .popup-close {
 	background: #C8491D;
 	color: #F5F5F5;
@@ -185,15 +196,18 @@
 	justify-content: center;
 	transition: all 0.3s ease;
 }
+
 .popup-close:hover {
 	background: #FF8232;
 	transform: scale(1.1);
 }
+
 .popup-icon {
 	font-size: 3rem;
 	margin-bottom: 1rem;
 	animation: bounce 2s infinite;
 }
+
 @keyframes bounce {
 	0%, 20%, 50%, 80%, 100% {
 		transform: translateY(0);
@@ -205,20 +219,24 @@
 		transform: translateY(-5px);
 	}
 }
+
 .popup-message {
 	color: #F5F5F5;
 	font-size: 1.1rem;
 	line-height: 1.6;
 	margin-bottom: 1.5rem;
 }
+
 .popup-success {
 	color: #35A2A2;
 }
+
 .popup-buttons {
 	display: flex;
 	gap: 1rem;
 	justify-content: center;
 }
+
 .popup-button {
 	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
 	color: #2C2623;
@@ -230,26 +248,28 @@
 	transition: all 0.3s ease;
 	border: 2px solid transparent;
 }
+
 .popup-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.4);
 	border-color: #CB8358;
 }
+
 .popup-button.secondary {
 	background: linear-gradient(135deg, #CB8358 0%, #A85F3D 100%);
 	color: #F5F5F5;
 }
+
 .form-input.error {
 	border-color: #FF8232 !important;
 	box-shadow: 0 0 8px rgba(255, 130, 50, 0.3) !important;
 }
+
 .form-select.error {
 	border-color: #FF8232 !important;
 	box-shadow: 0 0 8px rgba(255, 130, 50, 0.3) !important;
 }
 
-
-/* === From assets/css/global/preview.css === */
 /* Preview */
 .preview-output {
 	background: rgba(30, 26, 23, 0.8);
@@ -261,19 +281,12 @@
 	white-space: pre-wrap;
 	min-height: 400px;
 	line-height: 1.6;
-	/* Horizontal Scroll hinzufügen */
 	overflow-x: auto;
 	overflow-y: auto;
 	word-break: break-all;
 	max-width: 100%;
 }
-/* Main Container Grid anpassen für bessere Responsivität */
-@media (max-width: 1024px) {
-	.main-container {
-		grid-template-columns: 1fr;
-		gap: 2rem;
-	}
-}
+
 .copy-button {
 	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
 	color: #2C2623;
@@ -286,17 +299,17 @@
 	margin-top: 1rem;
 	width: 100%;
 }
+
 .copy-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
 }
 
-
-/* === From assets/css/global/import_section.css === */
- /* Collapsible Import Section */
+/* Import Section */
 .import-section {
 	margin-bottom: 2rem;
 }
+
 .import-header {
 	border: 1px solid rgba(255,255,255,0.1);
 	border-radius: 10px;
@@ -308,14 +321,17 @@
 	justify-content: space-between;
 	align-items: center;
 }
+
 .import-header:hover {
 	background: rgba(203, 131, 88, 0.2);
 	border-color: #F4C066;
 }
+
 .import-header.expanded {
 	border-radius: 10px 10px 0 0;
 	border-bottom: none;
 }
+
 .import-title {
 	color: #F4C066;
 	font-weight: bold;
@@ -324,14 +340,17 @@
 	align-items: center;
 	gap: 0.5rem;
 }
+
 .import-toggle {
 	color: #F4C066;
 	font-size: 1.5rem;
 	transition: transform 0.3s ease;
 }
+
 .import-toggle.expanded {
 	transform: rotate(180deg);
 }
+
 .import-content {
 	border: 1px solid rgba(255,255,255,0.1);
 	border-top: none;
@@ -341,9 +360,11 @@
 	display: none;
 	animation: slideDown 0.3s ease;
 }
+
 .import-content.expanded {
 	display: block;
 }
+
 @keyframes slideDown {
 	from {
 		opacity: 0;
@@ -354,6 +375,7 @@
 		transform: translateY(0);
 	}
 }
+
 .import-button {
 	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
 	color: #2C2623;
@@ -366,10 +388,12 @@
 	margin-top: 1rem;
 	width: 100%;
 }
+
 .import-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
 }
+
 .import-button:disabled {
 	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
 	cursor: not-allowed;
@@ -377,8 +401,39 @@
 	transform: none;
 	box-shadow: none;
 }
+
 .import-button:disabled:hover {
 	transform: none;
 	box-shadow: none;
 	border-color: transparent;
+}
+
+.checkbox-group {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.8rem;
+	border: 1px solid rgba(255,255,255,0.1);
+	border-radius: 8px;
+	background: rgba(30, 26, 23, 0.5);
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.checkbox-group:hover {
+	border-color: #F4C066;
+	background: rgba(244, 192, 102, 0.1);
+}
+
+.checkbox-group input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: #F4C066;
+}
+
+.checkbox-group label {
+	color: #F5F5F5;
+	font-weight: 500;
+	cursor: pointer;
+	margin: 0;
 }

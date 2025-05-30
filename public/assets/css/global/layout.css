@@ -3,16 +3,20 @@ body {
 	font-family: 'Roboto', sans-serif;
 	background-color: #413b35;
 }
+
 #root {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
 }
+
 .app {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
 }
+
+/* NAVBAR */
 .navbar {
 	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
 	border: 1px solid rgba(255,255,255,0.1);
@@ -27,6 +31,7 @@ body {
 	justify-content: space-between;
 	align-items: center;
 }
+
 .navbar-logo {
 	font-size: 1.5rem;
 	color: #f5c979;
@@ -39,9 +44,11 @@ body {
 	cursor: pointer;
 	transition: transform 0.3s;
 }
+
 .navbar-logo:hover {
 	transform: scale(1.05);
 }
+
 .navbar-links {
 	list-style: none;
 	display: flex;
@@ -49,6 +56,7 @@ body {
 	margin: 0;
 	padding: 0;
 }
+
 /* Stil für die Navigations-Buttons, die wie Links aussehen */
 .nav-button {
 	background: none;
@@ -64,14 +72,17 @@ body {
 	gap: 0.5rem;
 	cursor: pointer;
 }
+
 .nav-button:hover {
 	color: #ffffff;
 }
+
 /* Stil für aktiven Navigationspunkt */
 .nav-button.active {
 	color: #ffffff;
 	position: relative;
 }
+
 .nav-button.active::after {
 	content: '';
 	position: absolute;
@@ -82,12 +93,33 @@ body {
 	background: #f5c979;
 	border-radius: 2px;
 }
+
 /* Stil für ausgegraute (disabled) Buttons */
 .nav-button.disabled-link {
 	color: #a39484;
 	cursor: not-allowed;
 	opacity: 0.7;
 }
+
+/* FOOTER */
+.footer {
+    background: linear-gradient(135deg, #1E1A17 0%, #2C2623 100%);
+    padding: 2rem;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 4rem;
+}
+
+.footer-text {
+    color: #D8C5B0;
+    font-size: 0.9rem;
+}
+
+.service-card-link *,.service-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
 	.navbar {
@@ -105,6 +137,7 @@ body {
 		gap: 1rem 1.5rem;
 	}
 }
+
 @media (max-width: 576px) {
 	.navbar-links {
 		flex-direction: column;
@@ -115,20 +148,6 @@ body {
 	}
 }
 
-
-/* === From assets/css/global/footer.css === */
-/* Footer */
-.footer {
-    background: linear-gradient(135deg, #1E1A17 0%, #2C2623 100%);
-    padding: 2rem;
-    text-align: center;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    margin-top: 4rem;
-}
-.footer-text {
-    color: #D8C5B0;
-    font-size: 0.9rem;
-}
 /* Responsive */
 @media (max-width: 768px) {
     .nav-menu {
@@ -145,83 +164,4 @@ body {
     .main-container {
         padding: 2rem 1rem;
     }
-}
-.service-card-link *,.service-card-link {
-    text-decoration: none;
-    color: inherit;
-}
-​
-
-/* === From assets/css/global/main_content.css === */
-/* Main Content */
-.main-container {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 3rem 2rem;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 3rem;
-	align-items: start;
-	/* WICHTIG: Verhindert gleiche Höhe */
-}
-.form-section {
-	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
-	padding: 2rem;
-	border-radius: 15px;
-	border: 1px solid rgba(255,255,255,0.1);
-	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
-}
-.preview-section {
-	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
-	padding: 2rem;
-	border-radius: 15px;
-	border: 1px solid rgba(255,255,255,0.1);
-	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
-	height: 900px;
-	/* FESTE HÖHE */
-	display: flex;
-	flex-direction: column;
-	position: sticky;
-	/* Optional: Bleibt beim Scrollen sichtbar */
-	top: 2rem;
-	/* Abstand von oben beim Sticky */
-}
-/* Preview Output Container anpassen */
-.preview-output {
-	background: rgba(30, 26, 23, 0.8);
-	border: 2px solid #A85F3D;
-	border-radius: 8px;
-	padding: 1.5rem;
-	font-family: 'Courier New', monospace;
-	color: #D8C5B0;
-	white-space: pre-wrap;
-	line-height: 1.6;
-	flex: 1;
-	/* Nimmt verfügbaren Platz ein */
-	overflow-y: auto;
-	/* Scrollbar bei langem Inhalt */
-	min-height: 0;
-	/* Wichtig für Flex-Container */
-}
-.section-title {
-	font-size: 1.8rem;
-	color: #F4C066;
-	margin-bottom: 1.5rem;
-	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-	text-align: center;
-}
-/* Copy Button bleibt unten */
-.copy-button {
-	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
-	color: #2C2623;
-	border: none;
-	padding: 0.8rem 1.5rem;
-	border-radius: 8px;
-	cursor: pointer;
-	font-weight: bold;
-	transition: all 0.3s ease;
-	margin-top: 1rem;
-	width: 100%;
-	flex-shrink: 0;
-	/* Button behält seine Größe */
 }

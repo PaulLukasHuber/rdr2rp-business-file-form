@@ -3,6 +3,7 @@
 	padding: 0;
 	box-sizing: border-box;
 }
+
 body {
 	font-family: 'Roboto', serif;
 	background: linear-gradient(135deg, #1E1A17 0%, #2C2623 50%, #1E1A17 100%);
@@ -13,12 +14,15 @@ body {
 	position: relative;
 	overflow-x: hidden;
 }
-/* Main Content */
+
+/* Main Content - NUR FÜR HOME */
 .main-container {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 3rem 2rem;
+	/* KEIN GRID! */
 }
+
 .hero-section {
 	text-align: center;
 	margin-bottom: 4rem;
@@ -28,18 +32,21 @@ body {
 	border: 1px solid rgba(255,255,255,0.1);
 	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
 }
+
 .hero-title {
 	font-size: 3rem;
 	color: #F4C066;
 	margin-bottom: 1rem;
 	text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
 }
+
 .hero-subtitle {
 	font-size: 1.3rem;
 	color: #D8C5B0;
 	margin-bottom: 2rem;
 	font-style: italic;
 }
+
 .hero-description {
 	font-size: 1.1rem;
 	color: #F5F5F5;
@@ -47,10 +54,12 @@ body {
 	max-width: 800px;
 	margin: 0 auto;
 }
+
 /* Services Grid */
 .services-section {
 	margin-bottom: 4rem;
 }
+
 .section-title {
 	font-size: 2.2rem;
 	color: #F4C066;
@@ -58,12 +67,14 @@ body {
 	margin-bottom: 2rem;
 	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
+
 .services-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 	gap: 2rem;
 	margin-top: 2rem;
 }
+
 .service-card {
 	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
 	padding: 2rem;
@@ -73,17 +84,20 @@ body {
 	transition: all 0.3s ease;
 	cursor: pointer;
 }
+
 .service-card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 12px 32px rgba(244, 192, 102, 0.2);
 	border-color: #F4C066;
 }
+
 .service-icon {
 	font-size: 2.5rem;
 	color: #F4C066;
 	margin-bottom: 1rem;
 	text-align: center;
 }
+
 .service-title {
 	font-size: 1.4rem;
 	color: #F5F5F5;
@@ -91,12 +105,13 @@ body {
 	text-align: center;
 	font-weight: bold;
 }
+
 .service-description {
 	color: #D8C5B0;
 	line-height: 1.5;
 	text-align: center;
 }
-/* Info Section */
+
 .info-section {
 	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
 	padding: 3rem 2rem;
@@ -104,22 +119,26 @@ body {
 	border: 1px solid rgba(255,255,255,0.1);
 	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
 }
+
 .info-content {
 	max-width: 800px;
 	margin: 0 auto;
 	text-align: center;
 }
+
 .info-title {
 	font-size: 2rem;
 	color: #F4C066;
 	margin-bottom: 1.5rem;
 	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
+
 .info-text {
 	color: #D8C5B0;
 	line-height: 1.6;
 	font-size: 1.1rem;
 }
+
 .cta-button {
 	display: inline-block;
 	background: linear-gradient(135deg, #C8491D 0%, #FF8232 100%);
@@ -132,6 +151,7 @@ body {
 	transition: all 0.3s ease;
 	border: 2px solid transparent;
 }
+
 .cta-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 6px 18px rgba(255, 130, 50, 0.4);

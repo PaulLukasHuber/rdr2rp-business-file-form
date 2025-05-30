@@ -5,36 +5,44 @@ html {
 	scrollbar-color: #F4C066 transparent;
 	/* Firefox: thumb track */
 }
+
 /* Webkit Scrollbar (Chrome, Safari, Edge) */
 html::-webkit-scrollbar {
 	width: 12px;
 }
+
 html::-webkit-scrollbar-track {
 	background: transparent;
 }
+
 html::-webkit-scrollbar-thumb {
 	background: #F4C066;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 6px;
 	transition: background 0.3s ease;
 }
+
 html::-webkit-scrollbar-thumb:hover {
 	background: #F4C066;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 /* Alternative: Body statt html (falls html nicht funktioniert) */
 body::-webkit-scrollbar {
 	width: 12px;
 }
+
 body::-webkit-scrollbar-track {
 	background: transparent;
 }
+
 body::-webkit-scrollbar-thumb {
 	background: #F4C066;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 6px;
 	transition: background 0.3s ease;
 }
+
 body::-webkit-scrollbar-thumb:hover {
 	background: #F4C066;
 	border: 1px solid rgba(255, 255, 255, 0.1);
