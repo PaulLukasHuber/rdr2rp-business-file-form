@@ -3,14 +3,14 @@
         // Stadt-Betrieb Zuordnung
         const stadtBetriebe = {
             'AB': ['Mining Company', 'Saloon'],
-            'AD': ['Bestatter', 'Brauerei', 'Büchsenmacher', 'Farm', 'Gestüt', 'Jagdbund', 'Pizzeria (Event Gewerbe)', 'Saloon', 'Tierarzt'],
-            'BW': ['Büchsenmacher', 'Farm', 'Metzger', 'Saloon', 'Schmied', 'Tabakhändler'],
+            'AD': ['Bestatter', 'Brauerei', 'Büchsenmacher', 'Farm', 'Gestüt McFarlane', 'Jagdbund', 'Pizzeria (Event Gewerbe)', 'Saloon', 'Tierarzt'],
+            'BW': ['Büchsenmacher', 'Farm', 'Metzger Manzanita Post', 'Schmied', 'Tabakhändler'],
             'CO': ['Büchsenmacher', 'Saloon', 'Schmied'],
-            'RH': ['Farm', 'Jagdbund', 'Schmied'],
-            'SB': ['Bäckerei', 'Brauerei', 'Gestüt', 'Holzfäller'],
-            'SD': ['Bestatter', 'Bäckerei', 'Büchsenmacher', 'Gestüt', 'Gärtnerei', 'Jagdbund', 'Kutschenbauer', 'Saloon', 'Tabakhändler', 'Theater', 'Train Company', 'Zeitung'],
+            'RH': ['Brauerei', 'Farm', 'Jagdbund', 'Schmied'],
+            'SB': ['Bäckerei', 'Gestüt Lavendel'],
+            'SD': ['Bestatter', 'Bäckerei', 'Büchsenmacher', 'Gestüt Saint Denis', 'Gärtnerei', 'Holzfäller', 'Jagdbund', 'Kutschenbauer', 'Saloon', 'Tabakhändler', 'Theater', 'Train Company', 'Zeitung'],
             'TW': ['Mining Company'],
-            'VA': ['Brauerei', 'Büchsenmacher', 'Farm', 'Gestüt', 'Schneider', 'Tierarzt']
+            'VA': ['Büchsenmacher', 'Farm', 'Gestüt Emerald', 'Schneider', 'Tierarzt']
         };
 
         // Tab switching
