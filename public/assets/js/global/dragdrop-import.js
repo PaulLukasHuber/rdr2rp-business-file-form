@@ -1,12 +1,12 @@
 // ===================================
-// UNIVERSAL DRAG & DROP IMPORT SYSTEM v3.0
-// Komplett überarbeitet mit Cache-Busting
+// UNIVERSAL DRAG & DROP IMPORT SYSTEM v3.1
+// Erweitert mit vollständigem Gewerbeakte-Support
 // ===================================
 
 class DragDropImporter {
     constructor() {
-        this.version = "3.0";
-        console.log(`🚀 DragDropImporter v${this.version} initializing...`);
+        this.version = "3.1";
+        console.log(`🚀 DragDropImporter v${this.version} initializing with Gewerbeakte support...`);
         this.initializeDragDrop();
         this.setupEventListeners();
         this.initializeFlexibleParsing();
@@ -37,13 +37,18 @@ class DragDropImporter {
             window.parseAntragText = (text) => this.parseAntragFlexible(text);
         }
         
-        // Override fillAntragForm to ensure compatibility
+        // Override form filling functions
         if (typeof window.fillAntragForm === 'function') {
             window.fillAntragFormOriginal = window.fillAntragForm;
             window.fillAntragForm = (data) => this.fillAntragFormEnhanced(data);
         }
         
-        console.log(`🔧 Flexible parsing v${this.version} integrated`);
+        if (typeof window.fillGewerbeakteForm === 'function') {
+            window.fillGewerbeakteFormOriginal = window.fillGewerbeakteForm;
+            window.fillGewerbeakteForm = (data) => this.fillGewerbeakteFormEnhanced(data);
+        }
+        
+        console.log(`🔧 Flexible parsing v${this.version} integrated with Gewerbeakte support`);
     }
 
     // Initialize Drag & Drop für alle Import-Bereiche
@@ -214,9 +219,17 @@ class DragDropImporter {
         switch (pageType) {
             case 'gewerbeakte':
                 if (typeof importAkte === 'function') {
-                    console.log('🔧 Calling importAkte...');
-                    importAkte();
-                    this.postImportCleanup();
+                    console.log('🔧 Calling importAkte (Gewerbeakte)...');
+                    const testParse = this.parseGewerbeakteFlexible(importText);
+                    console.log(`🔍 v${this.version}: Pre-import Gewerbeakte parse test:`, JSON.stringify(testParse, null, 2));
+                    
+                    if (testParse && this.validateGewerbeakteData(testParse)) {
+                        importAkte();
+                        this.postImportCleanup();
+                    } else {
+                        console.error('❌ Gewerbeakte parse test failed, not importing');
+                        this.showParseErrorToast();
+                    }
                 } else {
                     console.error('❌ importAkte function not found');
                 }
@@ -252,7 +265,386 @@ class DragDropImporter {
         }
     }
 
-    // KOMPLETT NEUE ANTRAG-PARSER LOGIK
+    // ===== GEWERBEAKTE PARSER FUNKTIONEN =====
+    parseGewerbeakteFlexible(text) {
+        console.log(`🏢 v${this.version}: Starting flexible Gewerbeakte parsing...`);
+        
+        // Versuche zuerst den ursprünglichen Parser
+        if (window.parseGewerbeakteTextOriginal) {
+            const originalResult = window.parseGewerbeakteTextOriginal(text);
+            console.log(`📊 Original Gewerbeakte parser returned:`, JSON.stringify(originalResult, null, 2));
+            
+            if (originalResult && this.validateGewerbeakteData(originalResult)) {
+                console.log('✅ Using original Gewerbeakte parser result');
+                return originalResult;
+            } else {
+                console.log('⚠️ Original Gewerbeakte parser insufficient, trying flexible parser');
+            }
+        }
+        
+        // Verwende flexible Parsing-Logik
+        const flexibleResult = this.parseGewerbeakteTextFlexible(text);
+        console.log(`📊 v${this.version}: Flexible Gewerbeakte parser returned:`, JSON.stringify(flexibleResult, null, 2));
+        
+        return flexibleResult;
+    }
+
+    parseGewerbeakteTextFlexible(text) {
+        const data = {
+            mitarbeiter: []
+        };
+
+        try {
+            console.log(`🔄 v${this.version}: Starting flexible Gewerbeakte parsing...`);
+            
+            // ===== VALIDIERUNG: Prüfen ob es eine Gewerbeakte ist =====
+            const requiredFields = [
+                /Vermerk zum Gewerbeantrag:/i,
+                /Lizenznummer:/i,
+                /Betrieb:/i,
+                /Mitarbeiter.*MIT TELEGRAMM NUMMERN/i
+            ];
+
+            const foundFields = requiredFields.filter(pattern => pattern.test(text));
+            
+            if (foundFields.length < 3) {
+                console.log(`❌ Gewerbeakte validation failed: Only ${foundFields.length}/4 required fields found`);
+                return null;
+            }
+
+            console.log(`✅ v${this.version}: Gewerbeakte validation passed: ${foundFields.length}/4 fields found`);
+
+            // Extract basic data using flexible patterns
+            const patterns = {
+                vermerk: [
+                    /Vermerk zum Gewerbeantrag:\s*```\s*([^`]+?)\s*```/i,
+                    /Vermerk zum Gewerbeantrag:\s*([^\n]+)/i
+                ],
+                lizenznummer: [
+                    /Lizenznummer:\s*```\s*([^`]+?)\s*```/i,
+                    /Lizenznummer:\s*([^\n]+)/i
+                ],
+                datum: [
+                    /Ausgestellt am.*?:\s*```\s*([^`]+?)\s*```/i,
+                    /Ausgestellt am.*?:\s*([^\n]+)/i
+                ],
+                betrieb: [
+                    /Betrieb:\s*```\s*([^`]+?)\s*```/i,
+                    /Betrieb:\s*([^\n]+)/i
+                ],
+                anzahlLizenzen: [
+                    /Anzahl der herausgebenden Lizenzen.*?:\s*```\s*([^`]+?)\s*```/i,
+                    /Anzahl.*Lizenzen.*?:\s*([^\n]+)/i
+                ],
+                sondergenehmigung: [
+                    /Sondergenehmigung:\s*```\s*([^`]+?)\s*```/i,
+                    /Sondergenehmigung:\s*([^\n]+)/i
+                ],
+                sonstiges: [
+                    /Sonstiges:\s*```\s*([^`]+?)\s*```/i,
+                    /Sonstiges:\s*([^\n]+)/i
+                ]
+            };
+
+            // Extract each field using multiple patterns
+            for (const [key, patternArray] of Object.entries(patterns)) {
+                for (const pattern of patternArray) {
+                    const match = text.match(pattern);
+                    if (match && match[1] && match[1].trim() !== '---') {
+                        data[key] = match[1].trim();
+                        console.log(`✅ v${this.version}: Found ${key}:`, data[key]);
+                        break; // Stop after first successful match
+                    }
+                }
+            }
+
+            // Extract Mitarbeiter section (complex parsing)
+            data.mitarbeiter = this.extractMitarbeiterFlexible(text);
+
+            // Extract Stadt and Betrieb from Lizenznummer if available
+            if (data.lizenznummer) {
+                const lizenzMatch = data.lizenznummer.match(/^([A-Z]+)-([A-Z]+)-/);
+                if (lizenzMatch) {
+                    data.stadt = lizenzMatch[1];
+                    data.betriebPrefix = lizenzMatch[2];
+                    console.log(`✅ v${this.version}: Extracted from Lizenznummer - Stadt: ${data.stadt}, BetriebPrefix: ${data.betriebPrefix}`);
+                }
+            }
+
+            console.log(`📊 v${this.version}: Final Gewerbeakte parse result:`, JSON.stringify(data, null, 2));
+            return data;
+
+        } catch (error) {
+            console.error(`❌ v${this.version}: Flexible Gewerbeakte parse error:`, error);
+            return null;
+        }
+    }
+
+    extractMitarbeiterFlexible(text) {
+        const mitarbeiter = [];
+        
+        try {
+            console.log(`👥 v${this.version}: Extracting Mitarbeiter from Gewerbeakte...`);
+            
+            // Method 1: Standard code block extraction
+            const mitarbeiterMatch = text.match(/Mitarbeiter.*?```\s*(.*?)\s*```/is);
+            if (mitarbeiterMatch && mitarbeiterMatch[1]) {
+                const mitarbeiterText = mitarbeiterMatch[1].trim();
+                console.log(`📝 Mitarbeiter block content:`, mitarbeiterText);
+                
+                if (mitarbeiterText !== '---') {
+                    const lines = mitarbeiterText.split('\n').filter(line => line.trim());
+                    lines.forEach(line => {
+                        const parsedMitarbeiter = this.parseMitarbeiterLine(line);
+                        if (parsedMitarbeiter) {
+                            mitarbeiter.push(parsedMitarbeiter);
+                        }
+                    });
+                }
+            }
+            
+            // Method 2: Fallback - line by line search if no code block found
+            if (mitarbeiter.length === 0) {
+                console.log(`🔍 v${this.version}: No code block found, trying line-by-line extraction...`);
+                const lines = text.split('\n');
+                let inMitarbeiterSection = false;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    
+                    if (line.toLowerCase().includes('mitarbeiter') && line.toLowerCase().includes('telegramm')) {
+                        inMitarbeiterSection = true;
+                        continue;
+                    }
+                    
+                    if (inMitarbeiterSection) {
+                        if (line.includes(':') && (line.includes('Inhaber') || line.includes('Stellvertretung'))) {
+                            const parsedMitarbeiter = this.parseMitarbeiterLine(line);
+                            if (parsedMitarbeiter) {
+                                mitarbeiter.push(parsedMitarbeiter);
+                            }
+                        } else if (line.trim() === '' || line.includes('Anzahl') || line.includes('Sondergenehmigung')) {
+                            // End of Mitarbeiter section
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            console.log(`👥 v${this.version}: Extracted ${mitarbeiter.length} Mitarbeiter:`, mitarbeiter);
+            return mitarbeiter;
+            
+        } catch (error) {
+            console.error(`❌ v${this.version}: Mitarbeiter extraction error:`, error);
+            return [];
+        }
+    }
+
+    parseMitarbeiterLine(line) {
+        const trimmedLine = line.trim();
+        console.log(`👤 v${this.version}: Parsing Mitarbeiter line:`, trimmedLine);
+        
+        // Pattern: "Rolle: Vorname Nachname (Telegram)"
+        const match = trimmedLine.match(/^(.*?):\s*(.+?)\s*\(([^)]+)\)$/);
+        if (match) {
+            const [, rolle, fullName, telegram] = match;
+            const nameParts = fullName.trim().split(' ');
+            const vorname = nameParts[0] || '';
+            const nachname = nameParts.slice(1).join(' ') || '';
+
+            const mitarbeiter = {
+                rolle: rolle.trim(),
+                vorname: vorname,
+                nachname: nachname,
+                telegram: telegram.trim()
+            };
+            
+            console.log(`✅ v${this.version}: Parsed Mitarbeiter:`, mitarbeiter);
+            return mitarbeiter;
+        }
+        
+        console.log(`⚠️ v${this.version}: Could not parse Mitarbeiter line:`, trimmedLine);
+        return null;
+    }
+
+    validateGewerbeakteData(data) {
+        if (!data || typeof data !== 'object') {
+            return false;
+        }
+
+        // Check if at least some key fields are present
+        const hasVermerk = data.vermerk && data.vermerk.length > 0;
+        const hasLizenznummer = data.lizenznummer && data.lizenznummer.length > 0;
+        const hasBetrieb = data.betrieb && data.betrieb.length > 0;
+        const hasMitarbeiter = data.mitarbeiter && Array.isArray(data.mitarbeiter) && data.mitarbeiter.length > 0;
+
+        const validFields = [hasVermerk, hasLizenznummer, hasBetrieb, hasMitarbeiter].filter(Boolean).length;
+
+        console.log(`📊 v${this.version}: Gewerbeakte validation - valid fields: ${validFields}/4`);
+        
+        // Mindestens 2 Hauptfelder müssen vorhanden sein
+        return validFields >= 2;
+    }
+
+    // Enhanced fillGewerbeakteForm with better debugging
+    fillGewerbeakteFormEnhanced(data) {
+        console.log(`🏢 v${this.version}: Enhanced fillGewerbeakteForm called with data:`, JSON.stringify(data, null, 2));
+        
+        if (!data || typeof data !== 'object') {
+            console.error('❌ No valid data provided to fillGewerbeakteForm');
+            return;
+        }
+        
+        try {
+            if (window.fillGewerbeakteFormOriginal) {
+                console.log('🔧 Calling original fillGewerbeakteForm...');
+                window.fillGewerbeakteFormOriginal(data);
+                
+                setTimeout(() => {
+                    this.verifyGewerbeakteFormFilling(data);
+                }, 500);
+            } else {
+                console.log('🔧 Using fallback Gewerbeakte form filling...');
+                this.fillGewerbeakteFormDirect(data);
+            }
+        } catch (error) {
+            console.error('❌ Error in fillGewerbeakteForm, using direct fallback:', error);
+            this.fillGewerbeakteFormDirect(data);
+        }
+    }
+
+    fillGewerbeakteFormDirect(data) {
+        console.log(`🎯 v${this.version}: Direct Gewerbeakte form filling`);
+        
+        // Fill basic text fields
+        if (data.vermerk) {
+            this.fillField('vermerk', data.vermerk);
+        }
+        if (data.sondergenehmigung) {
+            this.fillField('sondergenehmigung', data.sondergenehmigung);
+        }
+        if (data.sonstiges) {
+            this.fillField('sonstiges', data.sonstiges);
+        }
+
+        // Set Stadt dropdown
+        if (data.stadt) {
+            const stadtSelect = document.getElementById('stadt');
+            if (stadtSelect) {
+                stadtSelect.value = data.stadt;
+                stadtSelect.dispatchEvent(new Event('change'));
+                
+                // Set Betrieb after options are populated (with delay)
+                setTimeout(() => {
+                    if (data.betrieb) {
+                        this.fillField('betrieb', data.betrieb);
+                    }
+                }, 200);
+            }
+        }
+
+        // Set current date (with year 1899) - Override imported date
+        const today = new Date();
+        const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+        const currentDay = String(today.getDate()).padStart(2, '0');
+        const datumField = document.getElementById('datum');
+        if (datumField) {
+            datumField.value = `1899-${currentMonth}-${currentDay}`;
+        }
+
+        // Handle Mitarbeiter data
+        this.fillMitarbeiterData(data.mitarbeiter || []);
+    }
+
+    fillMitarbeiterData(mitarbeiterArray) {
+        console.log(`👥 v${this.version}: Filling Mitarbeiter data:`, mitarbeiterArray);
+        
+        const mitarbeiterContainer = document.getElementById('mitarbeiter-container');
+        if (!mitarbeiterContainer) {
+            console.error('❌ Mitarbeiter container not found');
+            return;
+        }
+
+        // Clear existing Stellvertreter (keep only Inhaber section)
+        const stellvertreterSections = mitarbeiterContainer.querySelectorAll('.mitarbeiter-section:not(:first-child)');
+        stellvertreterSections.forEach(section => section.remove());
+
+        // Reset stellvertreter counter if it exists
+        if (typeof window.stellvertreterCounter !== 'undefined') {
+            window.stellvertreterCounter = 1;
+        }
+
+        if (mitarbeiterArray && mitarbeiterArray.length > 0) {
+            mitarbeiterArray.forEach((mitarbeiter, index) => {
+                if (mitarbeiter.rolle === 'Inhaber') {
+                    // Fill Inhaber (first section)
+                    const inhaberSection = mitarbeiterContainer.querySelector('.mitarbeiter-section:first-child');
+                    if (inhaberSection) {
+                        this.fillMitarbeiterSection(inhaberSection, mitarbeiter, 0);
+                    }
+                } else {
+                    // Add Stellvertreter
+                    if (typeof window.addStellvertreter === 'function') {
+                        window.addStellvertreter();
+
+                        // Get the newly added stellvertreter section
+                        const stellvertreterSections = mitarbeiterContainer.querySelectorAll('.mitarbeiter-section:not(:first-child)');
+                        const currentSection = stellvertreterSections[stellvertreterSections.length - 1];
+                        const stellvertreterIndex = stellvertreterSections.length;
+
+                        if (currentSection) {
+                            this.fillMitarbeiterSection(currentSection, mitarbeiter, stellvertreterIndex);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update license count and button state
+        setTimeout(() => {
+            if (typeof window.updateLizenzAnzahl === 'function') {
+                window.updateLizenzAnzahl();
+            }
+            if (typeof window.updateAddButton === 'function') {
+                window.updateAddButton();
+            }
+        }, 100);
+    }
+
+    fillMitarbeiterSection(section, mitarbeiter, index) {
+        const vornameField = section.querySelector(`[data-field="vorname"][data-index="${index}"]`);
+        const nachnameField = section.querySelector(`[data-field="nachname"][data-index="${index}"]`);
+        const telegramField = section.querySelector(`[data-field="telegram"][data-index="${index}"]`);
+
+        if (vornameField) vornameField.value = mitarbeiter.vorname || '';
+        if (nachnameField) nachnameField.value = mitarbeiter.nachname || '';
+        if (telegramField) telegramField.value = mitarbeiter.telegram || '';
+        
+        console.log(`✅ v${this.version}: Filled Mitarbeiter section ${index}:`, mitarbeiter);
+    }
+
+    verifyGewerbeakteFormFilling(data) {
+        console.log(`🔍 v${this.version}: Verifying Gewerbeakte form filling...`);
+        
+        const vermerkField = document.getElementById('vermerk');
+        const stadtField = document.getElementById('stadt');
+        const betriebField = document.getElementById('betrieb');
+        
+        const hasVermerk = vermerkField && vermerkField.value.trim() !== '';
+        const hasStadt = stadtField && stadtField.value !== '';
+        const hasBetrieb = betriebField && betriebField.value !== '';
+        
+        console.log(`📊 v${this.version}: Form verification - Vermerk: ${hasVermerk}, Stadt: ${hasStadt}, Betrieb: ${hasBetrieb}`);
+        
+        if (!hasVermerk && !hasStadt && !hasBetrieb) {
+            console.log('⚠️ Gewerbeakte form appears empty, trying direct filling...');
+            this.fillGewerbeakteFormDirect(data);
+        } else {
+            console.log('✅ Gewerbeakte form appears to be filled correctly');
+        }
+    }
+
+    // ===== ANTRAG PARSER FUNKTIONEN =====
     parseAntragFlexible(text) {
         if (window.parseAntragTextOriginal) {
             const originalResult = window.parseAntragTextOriginal(text);
@@ -275,7 +667,6 @@ class DragDropImporter {
         return flexibleResult;
     }
 
-    // KERN-FUNKTION: Flexible Antrag Parser
     parseAntragTextFlexible(text) {
         const data = {};
         
@@ -349,7 +740,6 @@ class DragDropImporter {
         }
     }
 
-    // NEUE EINFACHE FIELD-EXTRAKTION
     extractFieldSimple(text, fieldName) {
         console.log(`🔍 v${this.version}: Extracting field "${fieldName}"`);
         
@@ -399,7 +789,6 @@ class DragDropImporter {
         return null;
     }
 
-    // SPEZIAL-FUNKTION für Gewerbe-Feld
     extractGewerbeField(text) {
         console.log(`🎯 v${this.version}: SPECIAL GEWERBE EXTRACTION`);
         console.log(`📄 Text for Gewerbe extraction:`, text);
@@ -458,7 +847,7 @@ class DragDropImporter {
                 gewerbe: 'Für Gewerbe',
                 telegram: 'Telegrammnummer (Für Rückfragen)',
                 wunsch: 'Gewünschte Gewerbetelegrammnummer',
-                bezahlt: 'Bearbeitungsgebühr (100$) bezahlt?' // FEHLTE!
+                bezahlt: 'Bearbeitungsgebühr (100$) bezahlt?'
             }
         };
         return mappings[type] || {};
@@ -491,7 +880,6 @@ class DragDropImporter {
         }
     }
 
-    // Direct form filling as fallback
     fillAntragFormDirect(data) {
         console.log(`🎯 v${this.version}: Direct form filling for type:`, data.type);
         
@@ -532,7 +920,7 @@ class DragDropImporter {
                 this.fillField('gewerbekutsche-aussteller', data.aussteller);
                 this.fillField('gewerbekutsche-aussteller-telegram', data.telegram);
                 this.fillField('gewerbekutsche-person', data.person);
-                this.fillField('gewerbekutsche-gewerbe', data.gewerbe); // KRITISCH!
+                this.fillField('gewerbekutsche-gewerbe', data.gewerbe);
                 this.fillField('gewerbekutsche-groesse', data.groesse);
                 break;
 
@@ -615,6 +1003,16 @@ class DragDropImporter {
         return hasValue;
     }
 
+    // Placeholder functions for other parsers
+    parsePersonenprüfungFlexible(text) {
+        if (window.parsePersonenprüfungsakteTextOriginal) {
+            return window.parsePersonenprüfungsakteTextOriginal(text);
+        }
+        return null;
+    }
+
+    // ===== GEMEINSAME UTILITY-FUNKTIONEN =====
+    
     // Cleanup nach erfolgreichem Import
     postImportCleanup() {
         setTimeout(() => {
@@ -793,21 +1191,6 @@ class DragDropImporter {
                 }
             }
         });
-    }
-
-    // Placeholder functions for other parsers
-    parseGewerbeakteFlexible(text) {
-        if (window.parseGewerbeakteTextOriginal) {
-            return window.parseGewerbeakteTextOriginal(text);
-        }
-        return null;
-    }
-
-    parsePersonenprüfungFlexible(text) {
-        if (window.parsePersonenprüfungsakteTextOriginal) {
-            return window.parsePersonenprüfungsakteTextOriginal(text);
-        }
-        return null;
     }
 }
 
@@ -988,7 +1371,7 @@ function initializeDragDropImport() {
     addDragDropStyles();
     const importer = new DragDropImporter();
     importer.enhanceImportSections();
-    console.log('🎯 Drag & Drop Import System v3.0 CACHE-BUSTED - Multi-word Gewerbe support');
+    console.log('🎯 Drag & Drop Import System v3.1 - Vollständiger Gewerbeakte Support');
     return importer;
 }
 
