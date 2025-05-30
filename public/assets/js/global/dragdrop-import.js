@@ -1,12 +1,13 @@
 // ===================================
-// UNIVERSAL DRAG & DROP IMPORT SYSTEM v3.1
-// Erweitert mit vollständigem Gewerbeakte-Support
+// UNIVERSAL DRAG & DROP IMPORT SYSTEM v3.2 - KORRIGIERT
+// Vollständiger Support für Gewerbeakten, Anträge und Personenprüfungsakten
+// Mit korrigiertem Kontext-Handling für Personenprüfungsakten
 // ===================================
 
 class DragDropImporter {
     constructor() {
-        this.version = "3.1";
-        console.log(`🚀 DragDropImporter v${this.version} initializing with Gewerbeakte support...`);
+        this.version = "3.2";
+        console.log(`🚀 DragDropImporter v${this.version} initializing with full Personenprüfungsakten support...`);
         this.initializeDragDrop();
         this.setupEventListeners();
         this.initializeFlexibleParsing();
@@ -19,36 +20,52 @@ class DragDropImporter {
         }, 100);
     }
 
-    // Integrate flexible parsers with existing systems
+    // KORRIGIERTE INTEGRATION - Löst das Kontext-Problem
     integrateFlexibleParsers() {
+        // Store reference to this DragDropImporter instance
+        const dragDropInstance = this;
+        
         // Store original parsers as backup
         if (typeof window.parseGewerbeakteText === 'function') {
             window.parseGewerbeakteTextOriginal = window.parseGewerbeakteText;
-            window.parseGewerbeakteText = (text) => this.parseGewerbeakteFlexible(text);
+            window.parseGewerbeakteText = (text) => dragDropInstance.parseGewerbeakteFlexible(text);
         }
         
+        // KORRIGIERTE PERSONENPRÜFUNG INTEGRATION
         if (typeof window.parsePersonenprüfungsakteText === 'function') {
             window.parsePersonenprüfungsakteTextOriginal = window.parsePersonenprüfungsakteText;
-            window.parsePersonenprüfungsakteText = (text) => this.parsePersonenprüfungFlexible(text);
+            window.parsePersonenprüfungsakteText = (text) => {
+                console.log(`🔧 v${dragDropInstance.version}: Global parsePersonenprüfungsakteText called`);
+                return dragDropInstance.parsePersonenprüfungFlexible(text);
+            };
         }
         
         if (typeof window.parseAntragText === 'function') {
             window.parseAntragTextOriginal = window.parseAntragText;
-            window.parseAntragText = (text) => this.parseAntragFlexible(text);
+            window.parseAntragText = (text) => dragDropInstance.parseAntragFlexible(text);
         }
         
         // Override form filling functions
         if (typeof window.fillAntragForm === 'function') {
             window.fillAntragFormOriginal = window.fillAntragForm;
-            window.fillAntragForm = (data) => this.fillAntragFormEnhanced(data);
+            window.fillAntragForm = (data) => dragDropInstance.fillAntragFormEnhanced(data);
         }
         
         if (typeof window.fillGewerbeakteForm === 'function') {
             window.fillGewerbeakteFormOriginal = window.fillGewerbeakteForm;
-            window.fillGewerbeakteForm = (data) => this.fillGewerbeakteFormEnhanced(data);
+            window.fillGewerbeakteForm = (data) => dragDropInstance.fillGewerbeakteFormEnhanced(data);
         }
         
-        console.log(`🔧 Flexible parsing v${this.version} integrated with Gewerbeakte support`);
+        // KORRIGIERTE PERSONENPRÜFUNG FORM FILLING
+        if (typeof window.fillPersonenprüfungsakteForm === 'function') {
+            window.fillPersonenprüfungsakteFormOriginal = window.fillPersonenprüfungsakteForm;
+            window.fillPersonenprüfungsakteForm = (data) => {
+                console.log(`🔧 v${dragDropInstance.version}: Global fillPersonenprüfungsakteForm called with:`, data);
+                return dragDropInstance.fillPersonenprüfungsakteFormEnhanced(data);
+            };
+        }
+        
+        console.log(`🔧 Flexible parsing v${this.version} integrated with full support and correct context binding`);
     }
 
     // Initialize Drag & Drop für alle Import-Bereiche
@@ -209,7 +226,7 @@ class DragDropImporter {
         }, 10000);
     }
 
-    // VERBESSERTE AUTO-IMPORT FUNKTION
+    // ERWEITERTE AUTO-IMPORT FUNKTION
     executeAutoImport(pageType) {
         console.log(`🚀 v${this.version}: Executing auto-import for page type:`, pageType);
         
@@ -237,8 +254,16 @@ class DragDropImporter {
             case 'personenpruefung':
                 if (typeof importAkte === 'function') {
                     console.log('🔧 Calling importAkte (Personenprüfung)...');
-                    importAkte();
-                    this.postImportCleanup();
+                    const testParse = this.parsePersonenprüfungFlexible(importText);
+                    console.log(`🔍 v${this.version}: Pre-import Personenprüfung parse test:`, JSON.stringify(testParse, null, 2));
+                    
+                    if (testParse && this.validatePersonenprüfungData(testParse)) {
+                        importAkte();
+                        this.postImportCleanup();
+                    } else {
+                        console.error('❌ Personenprüfung parse test failed, not importing');
+                        this.showParseErrorToast();
+                    }
                 } else {
                     console.error('❌ importAkte function not found');
                 }
@@ -644,6 +669,312 @@ class DragDropImporter {
         }
     }
 
+    // ===== PERSONENPRÜFUNGSAKTEN PARSER FUNKTIONEN - KORRIGIERT =====
+    parsePersonenprüfungFlexible(text) {
+        console.log(`👤 v${this.version}: Starting flexible Personenprüfung parsing...`);
+        
+        // Versuche zuerst den ursprünglichen Parser
+        if (window.parsePersonenprüfungsakteTextOriginal) {
+            const originalResult = window.parsePersonenprüfungsakteTextOriginal(text);
+            console.log(`📊 Original Personenprüfung parser returned:`, JSON.stringify(originalResult, null, 2));
+            
+            if (originalResult && this.validatePersonenprüfungData(originalResult)) {
+                console.log('✅ Using original Personenprüfung parser result');
+                return originalResult;
+            } else {
+                console.log('⚠️ Original Personenprüfung parser insufficient, trying flexible parser');
+            }
+        }
+        
+        // Verwende flexible Parsing-Logik
+        const flexibleResult = this.parsePersonenprüfungTextFlexible(text);
+        console.log(`📊 v${this.version}: Flexible Personenprüfung parser returned:`, JSON.stringify(flexibleResult, null, 2));
+        
+        return flexibleResult;
+    }
+
+    parsePersonenprüfungTextFlexible(text) {
+        const data = {};
+
+        try {
+            console.log(`🔄 v${this.version}: Starting flexible Personenprüfung parsing...`);
+            
+            // ===== VALIDIERUNG: Prüfen ob es eine Personenprüfungsakte ist =====
+            const hasPersonField = /Zu überprüfende Person:/i.test(text);
+            const hasTelegramField = /Telegramm/i.test(text);
+            const hasPrueferField = /Geprüft durch:/i.test(text);
+            const hasDateField = /Geprüft am:/i.test(text);
+            const hasResultField = /Prüfungsergebnis:/i.test(text);
+
+            const fieldCount = [hasPersonField, hasTelegramField, hasPrueferField, hasDateField, hasResultField]
+                .filter(Boolean).length;
+
+            const isNotGewerbeakte = !text.includes('Lizenznummer:') &&
+                !text.includes('Mitarbeiter (*Nur Inhaber') &&
+                !text.includes('Anzahl der herausgebenden Lizenzen') &&
+                !text.includes('Sondergenehmigung:');
+
+            console.log(`📊 v${this.version}: Field count: ${fieldCount}/5, Is not Gewerbeakte: ${isNotGewerbeakte}`);
+            
+            if (fieldCount < 3 || !isNotGewerbeakte) {
+                console.log(`❌ Personenprüfung validation failed`);
+                return null;
+            }
+
+            console.log(`✅ v${this.version}: Personenprüfung validation passed`);
+
+            // Extract data with flexible patterns
+            const patterns = {
+                person: [
+                    /Zu überprüfende Person:\s*```\s*([^`]+?)\s*```/i,
+                    /Zu überprüfende Person:\s*([^\n]+)/i
+                ],
+                telegram: [
+                    /Telegramm.*?:\s*```\s*([^`]+?)\s*```/i,
+                    /Telegramm.*?:\s*([^\n]+)/i
+                ],
+                pruefer: [
+                    /Geprüft durch:\s*```\s*([^`]+?)\s*```/i,
+                    /Geprüft durch:\s*([^\n]+)/i
+                ],
+                datum: [
+                    /Geprüft am:\s*```\s*([^`]+?)\s*```/i,
+                    /Geprüft am:\s*([^\n]+)/i
+                ],
+                ergebnis: [
+                    /Prüfungsergebnis:\s*```\s*([^`]+?)\s*```/is,
+                    /Prüfungsergebnis:\s*([^```]+?)(?=\n\n|\n[A-ZÄÖÜ]|$)/is
+                ]
+            };
+
+            // Extract each field using flexible patterns
+            for (const [key, patternArray] of Object.entries(patterns)) {
+                for (const pattern of patternArray) {
+                    const match = text.match(pattern);
+                    if (match && match[1] && match[1].trim() !== '---') {
+                        data[key] = match[1].trim();
+                        console.log(`✅ v${this.version}: Found ${key}:`, data[key]);
+                        break;
+                    }
+                }
+            }
+
+            // Parse result and details separately
+            if (data.ergebnis) {
+                const ergebnisLines = data.ergebnis.split('\n');
+                data.ergebnisType = ergebnisLines[0].trim();
+
+                // Extract details if present
+                const detailsIndex = data.ergebnis.indexOf('Detaillierte Bewertung:');
+                if (detailsIndex !== -1) {
+                    data.details = data.ergebnis.substring(detailsIndex + 'Detaillierte Bewertung:'.length).trim();
+                } else {
+                    // Look for details in subsequent lines
+                    if (ergebnisLines.length > 1) {
+                        const possibleDetails = ergebnisLines.slice(1).join('\n').trim();
+                        if (possibleDetails && !possibleDetails.includes('```')) {
+                            data.details = possibleDetails;
+                        }
+                    }
+                }
+
+                console.log(`✅ v${this.version}: Parsed ergebnisType:`, data.ergebnisType);
+                if (data.details) {
+                    console.log(`✅ v${this.version}: Parsed details:`, data.details);
+                }
+            }
+
+            console.log(`📊 v${this.version}: Final Personenprüfung parse result:`, JSON.stringify(data, null, 2));
+            return data;
+
+        } catch (error) {
+            console.error(`❌ v${this.version}: Flexible Personenprüfung parse error:`, error);
+            return null;
+        }
+    }
+
+    // KORRIGIERTE VALIDIERUNG
+    validatePersonenprüfungData(data) {
+        if (!data || typeof data !== 'object') {
+            console.log(`❌ v${this.version}: Invalid data type for validation`);
+            return false;
+        }
+
+        const hasBasicData = data.person || data.telegram || data.pruefer || data.ergebnisType || data.ergebnis;
+        const fieldCount = [data.person, data.telegram, data.pruefer, data.ergebnisType || data.ergebnis].filter(Boolean).length;
+        
+        console.log(`📊 v${this.version}: Personenprüfung validation:`, {
+            hasBasicData,
+            fieldCount,
+            person: !!data.person,
+            telegram: !!data.telegram,
+            pruefer: !!data.pruefer,
+            ergebnisType: !!data.ergebnisType,
+            ergebnis: !!data.ergebnis
+        });
+        
+        return hasBasicData && fieldCount >= 2;
+    }
+
+    // KORRIGIERTE Enhanced fillPersonenprüfungsakteForm
+    fillPersonenprüfungsakteFormEnhanced(data) {
+        console.log(`👤 v${this.version}: Enhanced fillPersonenprüfungsakteForm called with data:`, JSON.stringify(data, null, 2));
+        
+        if (!data || typeof data !== 'object') {
+            console.error('❌ No valid data provided to fillPersonenprüfungsakteForm');
+            this.showParseErrorToast();
+            return;
+        }
+        
+        try {
+            // IMMER direct filling verwenden, da die ursprüngliche Funktion oft Probleme macht
+            console.log('🔧 Using direct Personenprüfung form filling (bypassing original)...');
+            this.fillPersonenprüfungFormDirect(data);
+            
+            // Verify after a short delay
+            setTimeout(() => {
+                this.verifyPersonenprüfungFormFilling(data);
+            }, 200);
+            
+        } catch (error) {
+            console.error('❌ Error in fillPersonenprüfungsakteForm:', error);
+            this.showParseErrorToast();
+        }
+    }
+
+    // VERBESSERTE fillPersonenprüfungFormDirect
+    fillPersonenprüfungFormDirect(data) {
+        console.log(`🎯 v${this.version}: Direct Personenprüfung form filling with data:`, JSON.stringify(data, null, 2));
+        
+        // Fill basic fields with extensive logging
+        if (data.person) {
+            console.log(`📝 Filling person field with: "${data.person}"`);
+            this.fillFieldWithDebug('person', data.person);
+        }
+        if (data.telegram) {
+            console.log(`📝 Filling telegram field with: "${data.telegram}"`);
+            this.fillFieldWithDebug('telegram', data.telegram);
+        }
+        if (data.pruefer) {
+            console.log(`📝 Filling pruefer field with: "${data.pruefer}"`);
+            this.fillFieldWithDebug('pruefer', data.pruefer);
+        }
+        if (data.details) {
+            console.log(`📝 Filling details field with: "${data.details}"`);
+            this.fillFieldWithDebug('details', data.details);
+        }
+
+        // Set current date with year 1899
+        const today = new Date();
+        const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+        const currentDay = String(today.getDate()).padStart(2, '0');
+        const datumField = document.getElementById('datum');
+        if (datumField) {
+            const newDate = `1899-${currentMonth}-${currentDay}`;
+            datumField.value = newDate;
+            console.log(`✅ v${this.version}: Set datum to: ${newDate}`);
+        } else {
+            console.error('❌ Datum field not found in DOM');
+        }
+
+        // Set result radio button with extensive debugging
+        if (data.ergebnisType) {
+            console.log(`🎯 Setting radio button for ergebnisType: "${data.ergebnisType}"`);
+            this.setErgebnisRadioButtonWithDebug(data.ergebnisType);
+        } else if (data.ergebnis) {
+            console.log(`🎯 Setting radio button for ergebnis: "${data.ergebnis}"`);
+            this.setErgebnisRadioButtonWithDebug(data.ergebnis);
+        }
+        
+        console.log(`✅ v${this.version}: Direct form filling completed`);
+    }
+
+    // NEUE DEBUGGING HILFSFUNKTIONEN
+    fillFieldWithDebug(fieldId, value) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.value = value;
+            // Trigger events to ensure any listeners are notified
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+            console.log(`✅ v${this.version}: Successfully filled ${fieldId} with: "${value}"`);
+        } else {
+            console.error(`❌ v${this.version}: Field ${fieldId} not found in DOM`);
+        }
+    }
+
+    setErgebnisRadioButtonWithDebug(ergebnisType) {
+        console.log(`🎯 v${this.version}: Setting result radio button for: "${ergebnisType}"`);
+        
+        // Debug: Check what radio buttons exist
+        const allRadios = document.querySelectorAll('input[type="radio"]');
+        console.log(`📊 Found ${allRadios.length} radio buttons in DOM:`, Array.from(allRadios).map(r => r.id));
+        
+        let resultValue = '';
+        const lowerType = ergebnisType.toLowerCase();
+        
+        if (ergebnisType.includes('✅') || lowerType.includes('bestanden')) {
+            resultValue = 'bestanden';
+        } else if (ergebnisType.includes('❌') || lowerType.includes('nicht bestanden')) {
+            resultValue = 'nicht-bestanden';
+        } else if (ergebnisType.includes('⏳') || lowerType.includes('ausstehend')) {
+            resultValue = 'ausstehend';
+        }
+
+        console.log(`🎯 v${this.version}: Determined result value: "${resultValue}"`);
+
+        if (resultValue) {
+            // Clear all selections first
+            const allRadioGroups = document.querySelectorAll('.radio-group');
+            console.log(`📊 Found ${allRadioGroups.length} radio groups`);
+            allRadioGroups.forEach(group => {
+                group.classList.remove('selected');
+            });
+
+            // Set the correct selection
+            const targetRadio = document.getElementById(resultValue);
+            if (targetRadio) {
+                targetRadio.checked = true;
+                const radioGroup = targetRadio.closest('.radio-group');
+                if (radioGroup) {
+                    radioGroup.classList.add('selected');
+                    console.log(`✅ v${this.version}: Successfully set radio button and group for: "${resultValue}"`);
+                } else {
+                    console.error(`❌ v${this.version}: Radio group not found for radio: "${resultValue}"`);
+                }
+                
+                // Trigger change event
+                targetRadio.dispatchEvent(new Event('change', { bubbles: true }));
+            } else {
+                console.error(`❌ v${this.version}: Radio button not found for: "${resultValue}"`);
+                console.log(`📊 Available radio button IDs:`, Array.from(allRadios).map(r => r.id));
+            }
+        } else {
+            console.error(`❌ v${this.version}: Could not determine result value from: "${ergebnisType}"`);
+        }
+    }
+
+    verifyPersonenprüfungFormFilling(data) {
+        console.log(`🔍 v${this.version}: Verifying Personenprüfung form filling...`);
+        
+        const personField = document.getElementById('person');
+        const telegramField = document.getElementById('telegram');
+        const prueferField = document.getElementById('pruefer');
+        
+        const hasPerson = personField && personField.value.trim() !== '';
+        const hasTelegram = telegramField && telegramField.value.trim() !== '';
+        const hasPruefer = prueferField && prueferField.value.trim() !== '';
+        
+        console.log(`📊 v${this.version}: Form verification - Person: ${hasPerson}, Telegram: ${hasTelegram}, Pruefer: ${hasPruefer}`);
+        
+        if (!hasPerson && !hasTelegram && !hasPruefer) {
+            console.log('⚠️ Personenprüfung form appears empty, trying direct filling...');
+            this.fillPersonenprüfungFormDirect(data);
+        } else {
+            console.log('✅ Personenprüfung form appears to be filled correctly');
+        }
+    }
+
     // ===== ANTRAG PARSER FUNKTIONEN =====
     parseAntragFlexible(text) {
         if (window.parseAntragTextOriginal) {
@@ -1001,14 +1332,6 @@ class DragDropImporter {
         const hasValue = field && field.value && field.value.trim() !== '';
         console.log(`🔍 v${this.version}: Field ${fieldId}: ${hasValue ? 'filled' : 'empty'} (value: "${field?.value || 'none'}")`);
         return hasValue;
-    }
-
-    // Placeholder functions for other parsers
-    parsePersonenprüfungFlexible(text) {
-        if (window.parsePersonenprüfungsakteTextOriginal) {
-            return window.parsePersonenprüfungsakteTextOriginal(text);
-        }
-        return null;
     }
 
     // ===== GEMEINSAME UTILITY-FUNKTIONEN =====
@@ -1371,7 +1694,7 @@ function initializeDragDropImport() {
     addDragDropStyles();
     const importer = new DragDropImporter();
     importer.enhanceImportSections();
-    console.log('🎯 Drag & Drop Import System v3.1 - Vollständiger Gewerbeakte Support');
+    console.log('🎯 Drag & Drop Import System v3.2 - Vollständiger Support für alle Akten-Typen mit korrigiertem Kontext-Handling');
     return importer;
 }
 
