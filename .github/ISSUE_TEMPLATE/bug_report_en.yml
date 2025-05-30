@@ -1,0 +1,140 @@
+name: 🐛 Bug Report
+description: Report a bug to help us fix the issue
+title: "[BUG]: "
+labels: ["bug", "needs-triage", "english"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please fill out this form as detailed as possible.
+        
+        **📋 Note:** For feature requests, please use the [Feature Request Template](?template=feature_request_en.yml).
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Before submitting
+      description: Please confirm the following
+      options:
+        - label: I have searched for similar issues
+          required: true
+        - label: I have tested with the latest version
+          required: true
+        - label: This is a reproducible bug
+          required: true
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browser
+      description: Which browser(s) does this issue occur in?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Opera
+        - Mobile Chrome
+        - Mobile Safari
+        - Other (please specify in description)
+      multiple: true
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      description: What device does this issue occur on?
+      options:
+        - Desktop (Windows)
+        - Desktop (macOS)
+        - Desktop (Linux)
+        - Tablet
+        - Smartphone
+        - Other (please specify in description)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Area
+      description: Which part of the application is affected?
+      options:
+        - Business License Generator
+        - Person Verification System
+        - Application Processing
+        - Import Functionality
+        - Navigation/Layout
+        - Preview/Copy
+        - General Functionality
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug as detailed as possible
+      placeholder: |
+        Example: When clicking "Generate Discord Template", no output is displayed and a JavaScript error appears in the console.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What was expected?
+      description: Describe the expected behavior
+      placeholder: |
+        Example: After clicking, a formatted Discord message should appear in the preview.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can this bug be reproduced?
+      placeholder: |
+        1. Go to [page]
+        2. Fill field [X]
+        3. Click [button]
+        4. Bug occurs
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-errors
+    attributes:
+      label: Console Errors
+      description: Are there any errors visible in the browser console? (F12 → Console)
+      placeholder: |
+        If present, copy the error messages from the browser console here:
+        
+        ```
+        TypeError: Cannot read property 'value' of null
+            at generateAkte (main.js:123)
+        ```
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any additional information that might be helpful
+      placeholder: |
+        - Screenshots
+        - Browser version
+        - Specific input data
+        - Other relevant details
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **📝 Tip:** Screenshots or videos can be very helpful! You can simply drag & drop them into this form.
+        
+        **🚀 Critical bug?** Mark the issue with the `critical` label if it blocks core functionality.

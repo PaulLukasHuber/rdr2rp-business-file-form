@@ -1,0 +1,135 @@
+name: ✨ Feature Request
+description: Suggest a new feature or improvement
+title: "[FEATURE]: "
+labels: ["enhancement", "needs-triage", "english"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your feature suggestion! Help us develop the best solution.
+        
+        **🐛 Note:** For bug reports, please use the [Bug Report Template](?template=bug_report_en.yml).
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Before submitting
+      description: Please confirm the following
+      options:
+        - label: I have searched for similar feature requests
+          required: true
+        - label: This feature does not exist yet
+          required: true
+        - label: This feature would help other RDR2RP players
+          required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: Which area does the desired feature belong to?
+      options:
+        - Business License Generator
+        - Person Verification System
+        - Application Processing
+        - Import/Export Functionality
+        - User Interface/Design
+        - Navigation/Layout
+        - Performance/Optimization
+        - New Document Types
+        - RDR2RP-specific Functions
+        - General Improvement
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low (Nice-to-have)
+        - Medium (Would make work easier)
+        - High (Important for daily use)
+        - Critical (Blocks important workflows)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem/Need
+      description: What problem does this feature solve or what need does it fulfill?
+      placeholder: |
+        Example: As a business office member, I want to be able to import multiple files at once to save time when processing many applications simultaneously.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Desired Solution
+      description: Describe your ideal solution to the problem
+      placeholder: |
+        Example: 
+        - Add a "Bulk Import" button
+        - Ability to paste multiple Discord messages at once
+        - Automatic detection and separation of different document types
+        - Overview of all imported documents with editing capability
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered other approaches?
+      placeholder: |
+        Example: Alternatively, one could also...
+        - A separate file upload system
+        - A Discord plugin
+        - Integration with external tools
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Additional information about the feature request
+      placeholder: |
+        - Mockups or sketches
+        - Examples from other tools
+        - Technical considerations
+        - RDR2RP-specific requirements
+
+  - type: dropdown
+    id: implementation
+    attributes:
+      label: Implementation Readiness
+      description: Would you like to help with the implementation?
+      options:
+        - I can only provide feedback
+        - I can help with design/UX
+        - I can help with testing
+        - I can help with programming
+        - I can implement the feature completely
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: When would this feature be successfully implemented for you?
+      placeholder: |
+        The feature is successful when:
+        - [ ] I can import 5+ files simultaneously
+        - [ ] Processing takes less than 10 seconds
+        - [ ] Faulty documents are clearly displayed
+        - [ ] All existing functions remain intact
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **💡 Tip:** The more detailed your description, the better we can implement the feature!
+        
+        **🎯 RDR2RP Focus:** Remember that all features are developed specifically for the RDR2RP community.

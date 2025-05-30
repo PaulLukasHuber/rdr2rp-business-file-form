@@ -1,0 +1,140 @@
+name: 🐛 Fehler melden
+description: Melde einen Fehler um uns zu helfen, das Problem zu beheben
+title: "[BUG]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Vielen Dank, dass du einen Fehler meldest! Bitte fülle das Formular so detailliert wie möglich aus.
+        
+        **📋 Hinweis:** Für Feature-Anfragen verwende bitte das [Feature Request Template](?template=feature_request_de.yml).
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Vor dem Einreichen
+      description: Bitte bestätige folgende Punkte
+      options:
+        - label: Ich habe nach ähnlichen Issues gesucht
+          required: true
+        - label: Ich habe die neueste Version getestet
+          required: true
+        - label: Dies ist ein reproduzierbarer Fehler
+          required: true
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browser
+      description: In welchem Browser tritt das Problem auf?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Opera
+        - Mobile Chrome
+        - Mobile Safari
+        - Andere (bitte in Beschreibung angeben)
+      multiple: true
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Gerät
+      description: Auf welchem Gerät tritt das Problem auf?
+      options:
+        - Desktop (Windows)
+        - Desktop (macOS)
+        - Desktop (Linux)
+        - Tablet
+        - Smartphone
+        - Andere (bitte in Beschreibung angeben)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Betroffener Bereich
+      description: Welcher Teil der Anwendung ist betroffen?
+      options:
+        - Gewerbeakten-Generator
+        - Personenprüfungs-System
+        - Antrags-Bearbeitung
+        - Import-Funktionalität
+        - Navigation/Layout
+        - Vorschau/Kopieren
+        - Allgemeine Funktionalität
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Was ist passiert?
+      description: Beschreibe den Fehler so detailliert wie möglich
+      placeholder: |
+        Beispiel: Beim Klicken auf "Discord Vorlage generieren" wird keine Ausgabe angezeigt und in der Konsole erscheint ein JavaScript-Fehler.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Was war erwartet?
+      description: Beschreibe das erwartete Verhalten
+      placeholder: |
+        Beispiel: Nach dem Klicken sollte eine formatierte Discord-Nachricht in der Vorschau erscheinen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Schritte zur Reproduktion
+      description: Wie kann der Fehler reproduziert werden?
+      placeholder: |
+        1. Gehe zu [Seite]
+        2. Fülle Feld [X] aus
+        3. Klicke auf [Button]
+        4. Fehler tritt auf
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-errors
+    attributes:
+      label: Konsolen-Fehler
+      description: Sind Fehler in der Browser-Konsole sichtbar? (F12 → Console)
+      placeholder: |
+        Falls vorhanden, kopiere hier die Fehlermeldungen aus der Browser-Konsole:
+        
+        ```
+        TypeError: Cannot read property 'value' of null
+            at generateAkte (main.js:123)
+        ```
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzliche Informationen
+      description: Weitere Informationen, die hilfreich sein könnten
+      placeholder: |
+        - Screenshots
+        - Browser-Version
+        - Spezielle Eingabedaten
+        - Andere relevante Details
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **📝 Tipp:** Screenshots oder Videos können sehr hilfreich sein! Du kannst sie einfach per Drag & Drop in dieses Formular ziehen.
+        
+        **🚀 Dringender Fehler?** Markiere das Issue mit dem Label `critical` wenn es die Kernfunktionalität blockiert.

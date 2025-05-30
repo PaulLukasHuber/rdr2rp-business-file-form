@@ -1,0 +1,135 @@
+name: ✨ Feature Request
+description: Schlage eine neue Funktion oder Verbesserung vor
+title: "[FEATURE]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Vielen Dank für deinen Feature-Vorschlag! Hilf uns dabei, die beste Lösung zu entwickeln.
+        
+        **🐛 Hinweis:** Für Bug-Reports verwende bitte das [Bug Report Template](?template=bug_report_de.yml).
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Vor dem Einreichen
+      description: Bitte bestätige folgende Punkte
+      options:
+        - label: Ich habe nach ähnlichen Feature Requests gesucht
+          required: true
+        - label: Diese Funktion existiert noch nicht
+          required: true
+        - label: Dieses Feature würde anderen RDR2RP-Spielern helfen
+          required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature-Kategorie
+      description: In welchen Bereich gehört das gewünschte Feature?
+      options:
+        - Gewerbeakten-Generator
+        - Personenprüfungs-System
+        - Antrags-Bearbeitung
+        - Import/Export-Funktionalität
+        - Benutzeroberfläche/Design
+        - Navigation/Layout
+        - Performance/Optimierung
+        - Neue Dokumenttypen
+        - RDR2RP-spezifische Funktionen
+        - Allgemeine Verbesserung
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorität
+      description: Wie wichtig ist dieses Feature für dich?
+      options:
+        - Niedrig (Nice-to-have)
+        - Mittel (Würde die Arbeit erleichtern)
+        - Hoch (Wichtig für tägliche Nutzung)
+        - Kritisch (Blockiert wichtige Workflows)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem/Bedarf
+      description: Welches Problem löst dieses Feature oder welchen Bedarf erfüllt es?
+      placeholder: |
+        Beispiel: Als Gewerbeamt-Mitarbeiter möchte ich mehrere Akten gleichzeitig importieren können, um Zeit zu sparen wenn ich viele Anträge auf einmal bearbeite.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Gewünschte Lösung
+      description: Beschreibe deine ideale Lösung für das Problem
+      placeholder: |
+        Beispiel: 
+        - Einen "Bulk Import" Button hinzufügen
+        - Möglichkeit mehrere Discord-Nachrichten auf einmal einzufügen
+        - Automatische Erkennung und Trennung verschiedener Dokumenttypen
+        - Übersicht aller importierten Dokumente mit Bearbeitungsmöglichkeit
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Lösungen
+      description: Hast du über andere Ansätze nachgedacht?
+      placeholder: |
+        Beispiel: Alternativ könnte man auch...
+        - Ein separates Upload-System für Dateien
+        - Ein Plugin für Discord
+        - Integration mit externen Tools
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Zusätzlicher Kontext
+      description: Weitere Informationen zum Feature-Request
+      placeholder: |
+        - Mockups oder Skizzen
+        - Beispiele aus anderen Tools
+        - Technische Überlegungen
+        - RDR2RP-spezifische Anforderungen
+
+  - type: dropdown
+    id: implementation
+    attributes:
+      label: Implementierungs-Bereitschaft
+      description: Möchtest du bei der Umsetzung helfen?
+      options:
+        - Ich kann nur Feedback geben
+        - Ich kann beim Design/UX helfen
+        - Ich kann beim Testen helfen
+        - Ich kann beim Programmieren helfen
+        - Ich kann das Feature komplett implementieren
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Akzeptanzkriterien
+      description: Wann wäre dieses Feature für dich erfolgreich implementiert?
+      placeholder: |
+        Das Feature ist erfolgreich wenn:
+        - [ ] Ich kann 5+ Akten gleichzeitig importieren
+        - [ ] Die Verarbeitung dauert weniger als 10 Sekunden
+        - [ ] Fehlerhafte Dokumente werden klar angezeigt
+        - [ ] Alle bestehenden Funktionen bleiben erhalten
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        **💡 Tipp:** Je detaillierter deine Beschreibung, desto besser können wir das Feature umsetzen!
+        
+        **🎯 RDR2RP-Fokus:** Denke daran, dass alle Features speziell für die RDR2RP-Community entwickelt werden.
