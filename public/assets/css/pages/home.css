@@ -157,3 +157,16 @@ body {
 	box-shadow: 0 6px 18px rgba(255, 130, 50, 0.4);
 	border-color: #F4C066;
 }
+
+/* Entfernt Unterstreichungen von Service-Karten Links */
+.service-card, 
+.service-card a,
+a .service-card {
+    text-decoration: none;
+}
+
+/* Zusätzlich für alle Links innerhalb der Services-Section */
+.services-section a {
+    text-decoration: none;
+    color: inherit;
+}

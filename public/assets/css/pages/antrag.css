@@ -35,63 +35,6 @@ body::before {
 	align-items: start;
 }
 
-.form-section {
-	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
-	padding: 2rem;
-	border-radius: 15px;
-	border: 1px solid rgba(255,255,255,0.1);
-	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.preview-section {
-	background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
-	padding: 2rem;
-	border-radius: 15px;
-	border: 1px solid rgba(255,255,255,0.1);
-	box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
-	height: 900px;
-	display: flex;
-	flex-direction: column;
-	position: sticky;
-	top: 2rem;
-}
-
-.preview-output {
-	background: rgba(30, 26, 23, 0.8);
-	border: 2px solid #A85F3D;
-	border-radius: 8px;
-	padding: 1.5rem;
-	font-family: 'Courier New', monospace;
-	color: #D8C5B0;
-	white-space: pre-wrap;
-	line-height: 1.6;
-	flex: 1;
-	overflow-y: auto;
-	min-height: 0;
-}
-
-.section-title {
-	font-size: 1.8rem;
-	color: #F4C066;
-	margin-bottom: 1.5rem;
-	text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-	text-align: center;
-}
-
-.copy-button {
-	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
-	color: #2C2623;
-	border: none;
-	padding: 0.8rem 1.5rem;
-	border-radius: 8px;
-	cursor: pointer;
-	font-weight: bold;
-	transition: all 0.3s ease;
-	margin-top: 1rem;
-	width: 100%;
-	flex-shrink: 0;
-}
-
 /* Form Tabs */
 .form-tabs {
 	display: flex;
@@ -197,27 +140,6 @@ body::before {
 .add-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
-}
-
-.generate-button {
-	background: linear-gradient(135deg, #C8491D 0%, #FF8232 100%);
-	color: #F5F5F5;
-	border: none;
-	padding: 1rem 2rem;
-	border-radius: 8px;
-	cursor: pointer;
-	font-weight: bold;
-	transition: all 0.3s ease;
-	border: 2px solid transparent;
-	width: 100%;
-	font-size: 1.1rem;
-	margin-top: 2rem;
-}
-
-.generate-button:hover {
-	border-color: #F4C066;
-	transform: translateY(-2px);
-	box-shadow: 0 6px 18px rgba(255, 130, 50, 0.4);
 }
 
 /* Responsive */
