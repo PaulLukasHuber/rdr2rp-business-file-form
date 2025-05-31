@@ -370,6 +370,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners if elements exist
     const importTextarea = document.getElementById('import-text');
     if (importTextarea) {
+        // Add placeholder text and styling
+        importTextarea.placeholder = `Kopieren Sie hier die komplette Akte aus Discord ein...`;
+    }
     
     // Initialize import button
     initializeImportButton();

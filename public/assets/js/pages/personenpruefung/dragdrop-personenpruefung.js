@@ -1,6 +1,7 @@
 // ===================================
 // DRAG & DROP PERSONENPRÜFUNGSAKTEN HANDLER v5.0
 // Spezialisiert für Personenprüfungsakten mit FIXED Radio Buttons & Details
+// VOLLSTÄNDIG KORRIGIERTE VERSION
 // ===================================
 
 class DragDropPersonenpruefung {
@@ -42,6 +43,50 @@ class DragDropPersonenpruefung {
 
     // ===== PARSING LOGIC =====
     parsePersonenprüfungsakte(text) {
+        console.log('🔄 v' + this.version + ': Parsing Personenprüfungsakte...');
+        console.log('📄 RAW TEXT:', text);
+        
+        const data = {};
+
+        try {
+            // Basic validation
+            const hasPersonField = /Zu überprüfende Person:/i.test(text);
+            const hasTelegramField = /Telegramm/i.test(text);
+            const hasResultField = /Prüfungsergebnis:/i.test(text);
+
+            if (!hasPersonField || !hasResultField) {
+                console.log('❌ Not a valid Personenprüfungsakte');
+                return null;
+            }
+
+            // Extract basic fields mit VERBESSERTER LOGIK
+            data.person = this.extractFieldBetweenMarkers(text, 'Zu überprüfende Person:');
+            data.telegram = this.extractTelegramField(text);
+            data.pruefer = this.extractFieldBetweenMarkers(text, 'Geprüft durch:');
+            data.datum = this.extractFieldBetweenMarkers(text, 'Geprüft am:');
+
+            // Extract Prüfungsergebnis with details
+            const ergebnisData = this.extractPruefungsergebnis(text);
+            data.ergebnisType = ergebnisData.type;
+            data.details = ergebnisData.details;
+
+            console.log('📊 v' + this.version + ': Final parsed result:', JSON.stringify(data, null, 2));
+            return data;
+
+        } catch (error) {
+            console.error('❌ v' + this.version + ': Parse error:', error);
+            return null;
+        }
+    }
+
+    // ===== VERBESSERTE FELD-EXTRAKTION =====
+    extractFieldBetweenMarkers(text, fieldName) {
+        console.log(`🔍 v${this.version}: Extracting field "${fieldName}" with improved logic`);
+        
+        try {
+            // Erstelle Regex Pattern für das spezifische Feld
+            const escapedFieldName = fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\    // ===== PARSING LOGIC =====
+    parsePersonenprüfungsakte(text) {
         console.log(`🔄 v${this.version}: Parsing Personenprüfungsakte...`);
         console.log(`📄 RAW TEXT:`, text);
         
@@ -60,7 +105,7 @@ class DragDropPersonenpruefung {
 
             // Extract basic fields
             data.person = DragDropUtils.extractSimpleField(text, 'Zu überprüfende Person');
-            data.telegram = DragDropUtils.extractSimpleField(text, 'Telegrammnummer');
+            data.telegram = this.extractTelegramField(text);
             data.pruefer = DragDropUtils.extractSimpleField(text, 'Geprüft durch');
             data.datum = DragDropUtils.extractSimpleField(text, 'Geprüft am');
 
@@ -76,6 +121,91 @@ class DragDropPersonenpruefung {
             console.error(`❌ v${this.version}: Parse error:`, error);
             return null;
         }
+    }');
+            
+            // Pattern 1: Mit Code-Blöcken ```
+            const codeBlockPattern = new RegExp(escapedFieldName + '\\s*```\\s*([^`]*?)\\s*```', 'i');
+            const codeBlockMatch = text.match(codeBlockPattern);
+            
+            if (codeBlockMatch && codeBlockMatch[1]) {
+                const content = codeBlockMatch[1].trim();
+                if (content && content !== '---') {
+                    console.log(`✅ Found "${fieldName}" in code block: "${content}"`);
+                    return content;
+                }
+            }
+            
+            // Pattern 2: Ohne Code-Blöcke - Line-by-line Suche
+            const lines = text.split('\n');
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.toLowerCase() === fieldName.toLowerCase()) {
+                    console.log(`📍 Found field "${fieldName}" at line ${i}`);
+                    
+                    // Schaue auf die nächste Zeile
+                    if (i + 1 < lines.length) {
+                        const nextLine = lines[i + 1].trim();
+                        if (nextLine && nextLine !== '---' && !nextLine.includes(':')) {
+                            console.log(`✅ Found "${fieldName}" content: "${nextLine}"`);
+                            return nextLine;
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            console.log(`❌ No content found for "${fieldName}"`);
+            return null;
+            
+        } catch (error) {
+            console.error(`❌ Error extracting "${fieldName}":`, error);
+            return null;
+        }
+    }
+
+    // ===== TELEGRAM FIELD EXTRACTION =====
+    extractTelegramField(text) {
+        console.log(`📞 v${this.version}: Special Telegram extraction for Personenprüfungsakte`);
+        
+        // Verschiedene mögliche Telegram-Feldnamen
+        const telegramVariants = [
+            'Telegrammnummer (Für Rückfragen):',
+            'Telegrammnummer (für Rückfragen):',
+            'Telegrammnummer:',
+            'Telegram:',
+            'Telegramm:'
+        ];
+        
+        // Probiere jeden Variant mit der verbesserten Extraktion
+        for (const variant of telegramVariants) {
+            const result = this.extractFieldBetweenMarkers(text, variant);
+            if (result) {
+                console.log(`✅ v${this.version}: Found Telegram with variant: "${variant}" -> "${result}"`);
+                return result;
+            }
+        }
+        
+        // Fallback: Regex-basierte Suche (für den Fall dass das Format anders ist)
+        const telegramPatterns = [
+            /Telegrammnummer.*?:\s*```\s*([^`]+?)\s*```/i,
+            /Telegrammnummer.*?:\s*([^\n]+)/i,
+            /Telegramm.*?:\s*```\s*([^`]+?)\s*```/i,
+            /Telegramm.*?:\s*([^\n]+)/i
+        ];
+        
+        for (const pattern of telegramPatterns) {
+            const match = text.match(pattern);
+            if (match && match[1] && match[1].trim() !== '---') {
+                const telegramValue = match[1].trim();
+                console.log(`✅ v${this.version}: Found Telegram via regex: "${telegramValue}"`);
+                return telegramValue;
+            }
+        }
+        
+        console.log(`❌ v${this.version}: No Telegram field found with any method`);
+        return null;
     }
 
     // ===== PRÜFUNGSERGEBNIS EXTRACTION =====
@@ -85,71 +215,18 @@ class DragDropPersonenpruefung {
         const result = { type: null, details: null };
         
         try {
-            // Find "Prüfungsergebnis:" section
-            const ergebnisIndex = text.search(/Prüfungsergebnis:/i);
-            if (ergebnisIndex === -1) {
-                console.log(`❌ "Prüfungsergebnis:" not found`);
-                return result;
+            // Extract result type - VERBESSERTE VERSION
+            result.type = this.extractFieldBetweenMarkers(text, 'Prüfungsergebnis:');
+            if (result.type) {
+                console.log(`🎯 Extracted result type: "${result.type}"`);
             }
             
-            // Extract everything after "Prüfungsergebnis:"
-            const afterErgebnis = text.substring(ergebnisIndex);
-            console.log(`📝 Text after "Prüfungsergebnis:":`, afterErgebnis);
-            
-            // Split into lines and process
-            const lines = afterErgebnis.split('\n').map(line => line.trim()).filter(line => line);
-            console.log(`📄 Ergebnis lines:`, lines);
-            
-            if (lines.length === 0) {
-                return result;
-            }
-            
-            // First line contains field name, skip it
-            let contentLines = lines.slice(1).filter(line => 
-                line !== '```' && 
-                line !== '---' && 
-                line.length > 0
-            );
-            
-            console.log(`📄 Content lines:`, contentLines);
-            
-            if (contentLines.length === 0) {
-                return result;
-            }
-            
-            // First content line is the result type
-            result.type = contentLines[0];
-            console.log(`🎯 Extracted type: "${result.type}"`);
-            
-            // Search for details with multiple markers
-            const fullErgebnisText = contentLines.join('\n');
-            console.log(`📄 Full ergebnis text for details search:`, fullErgebnisText);
-            
-            const detailsMarkers = [
-                'Detaillierte Bewertung/Anmerkungen:',
-                'Detaillierte Bewertung:',
-                'Anmerkungen:',
-                'Details:',
-                'Bewertung:',
-                'Bemerkungen:'
-            ];
-            
-            for (const marker of detailsMarkers) {
-                const markerIndex = fullErgebnisText.indexOf(marker);
-                if (markerIndex !== -1) {
-                    result.details = fullErgebnisText.substring(markerIndex + marker.length).trim();
-                    console.log(`✅ Found details with marker "${marker}": "${result.details}"`);
-                    break;
-                }
-            }
-            
-            // Fallback: if no marker, check for additional content lines
-            if (!result.details && contentLines.length > 1) {
-                const possibleDetails = contentLines.slice(1).join('\n').trim();
-                if (possibleDetails && possibleDetails.length > 5) {
-                    result.details = possibleDetails;
-                    console.log(`✅ Found details from remaining content: "${result.details}"`);
-                }
+            // Extract details - VERBESSERTE VERSION  
+            result.details = this.extractFieldBetweenMarkers(text, 'Detaillierte Bewertung/Anmerkungen:');
+            if (result.details) {
+                console.log(`✅ Found valid details: "${result.details}"`);
+            } else {
+                console.log(`⚠️ No details found or details field is empty`);
             }
             
             console.log(`📊 v${this.version}: Final ergebnis extraction:`, result);
@@ -208,14 +285,12 @@ class DragDropPersonenpruefung {
         
         console.log(`🔍 Analyzing: "${ergebnisType}" (lower: "${lowerType}")`);
         
-        // Pattern matching with detailed logging
-        if (ergebnisType.includes('✅') || lowerType.includes('bestanden')) {
-            targetId = 'bestanden';
-            console.log(`✅ Matched BESTANDEN pattern`);
-        } else if (ergebnisType.includes('❌') || 
-                   lowerType.includes('nicht bestanden') ||
-                   lowerType.includes('nicht-bestanden') ||
-                   ergebnisType.startsWith('❌')) {
+        // Pattern matching with detailed logging - KORRIGIERTE REIHENFOLGE!
+        // WICHTIG: Zuerst auf "nicht bestanden" prüfen, dann auf "bestanden"
+        if (ergebnisType.includes('❌') || 
+           lowerType.includes('nicht bestanden') ||
+           lowerType.includes('nicht-bestanden') ||
+           ergebnisType.startsWith('❌')) {
             targetId = 'nicht-bestanden';
             console.log(`❌ Matched NICHT BESTANDEN pattern`);
         } else if (ergebnisType.includes('⏳') || 
@@ -224,6 +299,10 @@ class DragDropPersonenpruefung {
                    ergebnisType.startsWith('⏳')) {
             targetId = 'ausstehend';
             console.log(`⏳ Matched AUSSTEHEND pattern`);
+        } else if (ergebnisType.includes('✅') || 
+                   (lowerType.includes('bestanden') && !lowerType.includes('nicht'))) {
+            targetId = 'bestanden';
+            console.log(`✅ Matched BESTANDEN pattern`);
         }
         
         if (!targetId) {
@@ -356,7 +435,7 @@ if (typeof window !== 'undefined') {
         return handler.fillForm(data);
     };
     
-    console.log('🎯 DragDropPersonenpruefung v5.0 ready - FIXED radio buttons & details extraction');
+    console.log('🎯 DragDropPersonenpruefung v5.0 ready - FIXED radio buttons & details extraction + CORRECTED Telegram parsing');
 }
 
 // Export
