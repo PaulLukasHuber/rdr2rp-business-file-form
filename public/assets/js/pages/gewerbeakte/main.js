@@ -1,4 +1,4 @@
-        let stellvertreterCounter = 1;
+let stellvertreterCounter = 1;
 
         // Stadt-Betrieb Zuordnung
         const stadtBetriebe = {
@@ -60,7 +60,7 @@
 
             // Maximal 2 Stellvertreter erlauben
             if (currentStellvertreter >= 2) {
-                alert('Maximal 2 Stellvertreter erlaubt!');
+                Toast.warning('Maximum erreicht', 'Maximal 2 Stellvertreter erlaubt!');
                 return;
             }
 
@@ -179,24 +179,10 @@
             return errors;
         }
 
-        // Show Form Validation Error Popup
+        // Show Form Validation Error - ERSETZT MIT TOAST
         function showFormValidationError(errors) {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Formular unvollständig';
-            icon.textContent = '📝';
-
-            let errorList = '<span style="color: #FF8232;">Bitte korrigieren Sie folgende Fehler:</span><br><br>';
-            errorList += '<div style="text-align: left; padding-left: 1rem;">';
-            errors.forEach(error => {
-                errorList += `• ${error}<br>`;
-            });
-            errorList += '</div>';
-
-            message.innerHTML = errorList;
+            Toast.validationError(errors);
+            highlightErrors();
         }
 
         // Highlight Error Fields
@@ -254,224 +240,96 @@
             }
         }
 
-        // Show Generate Popup
+        // Show Generate Popup - ERSETZT MIT TOAST
         function showGeneratePopup() {
-            const popup = document.getElementById('popup-overlay');
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
             // First validate the form
             const validationErrors = validateForm();
             if (validationErrors.length > 0) {
-                // Show popup immediately with errors
-                popup.classList.add('active');
                 showFormValidationError(validationErrors);
                 return;
             }
 
-            // Reset popup to loading state
-            title.textContent = '🔄 Vorlage wird generiert...';
-            icon.textContent = '⚙️';
-            message.textContent = 'Bitte warten Sie, während die Gewerbeakte formatiert wird...';
-            message.className = 'popup-message';
-            buttons.style.display = 'none';
+            // Loading Toast anzeigen
+            const loadingToast = Toast.generationProgress(
+                '🔄 Vorlage wird generiert...',
+                'Bitte warten Sie, während die Gewerbeakte formatiert wird...'
+            );
 
-            // Show popup
-            popup.classList.add('active');
-
-            // Simulate processing time
+            // Simulation der Generierung
             setTimeout(() => {
-                // Generate the document (validation already passed)
-                generateAkte();
+                Toast.dismiss(loadingToast);
+                generateAkte(); // Bestehende Funktion
 
-                // Check if generation was successful
+                // Prüfen ob Generation erfolgreich
                 const output = document.getElementById('preview-output').textContent;
                 if (output.includes('⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link')) {
-                    showErrorPopup();
+                    Toast.error(
+                        '⚠️ Fehler bei der Generierung',
+                        'Bitte überprüfen Sie den Vermerk-Link und stellen Sie sicher, dass alle Pflichtfelder ausgefüllt sind.'
+                    );
                 } else {
-                    showSuccessPopup();
+                    Toast.generationSuccess('Gewerbeakte');
                 }
-            }, 1500); // 1.5 second delay for better UX
+            }, 1500);
         }
 
-        // Show Success Popup
-        function showSuccessPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '✅ Vorlage erfolgreich generiert!';
-            icon.textContent = '🎉';
-            message.innerHTML = `
-                <span class="popup-success">Die Discord-Vorlage wurde erfolgreich erstellt!</span><br>
-                Sie können sie jetzt in der Vorschau sehen und kopieren.
-            `;
-            buttons.style.display = 'flex';
-        }
-
-        // Show Error Popup
-        function showErrorPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Fehler bei der Generierung';
-            icon.textContent = '❌';
-            message.innerHTML = `
-                <span style="color: #FF8232;">Bitte überprüfen Sie Ihre Eingaben:</span><br>
-                • Der Vermerk-Link muss eine gültige URL sein<br>
-                • Alle Pflichtfelder müssen ausgefüllt sein
-            `;
-            buttons.innerHTML = '<button class="popup-button" onclick="closePopup()">🔧 Eingaben korrigieren</button>';
-            buttons.style.display = 'flex';
-        }
-
-        // Close Popup
-        function closePopup() {
-            const popup = document.getElementById('popup-overlay');
-            popup.classList.remove('active');
-        }
-
-        // Copy from Popup
-        function copyFromPopup() {
-            copyToClipboard();
-            closePopup();
-        }
-
-        // Show Copy Popup
+        // Show Copy Popup - ERSETZT MIT TOAST
         function showCopyPopup() {
-            const popup = document.getElementById('popup-overlay');
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            // Reset popup to loading state
-            title.textContent = '📋 Wird kopiert...';
-            icon.textContent = '📝';
-            message.textContent = 'Die Vorlage wird in die Zwischenablage kopiert...';
-            message.className = 'popup-message';
-            buttons.style.display = 'none';
-
-            // Show popup
-            popup.classList.add('active');
-
-            // Simulate copying process
-            setTimeout(() => {
-                // Validate first
-                const vermerkInput = document.getElementById('vermerk');
-                if (!validateURL(vermerkInput)) {
-                    showCopyErrorPopup();
-                    return;
-                }
-
-                const output = document.getElementById('preview-output').textContent;
-
-                // Check if output contains error
-                if (output.includes('⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link')) {
-                    showCopyErrorPopup();
-                    return;
-                }
-
-                // Check if output is empty or default (updated check)
-                if (output.trim() === '' ||
-                    output.includes('Noch keine Vorlage generiert') ||
-                    output.includes('Klicken Sie auf')) {
-                    showEmptyContentPopup();
-                    return;
-                }
-
-                // Try to copy to clipboard
-                navigator.clipboard.writeText(output).then(() => {
-                    showCopySuccessPopup();
-                }).catch(() => {
-                    showCopyFailurePopup();
-                });
-            }, 1000); // 1 second delay
-        }
-
-        // Show Copy Success Popup
-        function showCopySuccessPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '✅ Erfolgreich kopiert!';
-            icon.textContent = '🎉';
-            message.innerHTML = `
-                <span class="popup-success">Die Gewerbeakte wurde erfolgreich in die Zwischenablage kopiert!</span><br>
-                Sie können sie jetzt in Discord oder einem anderen Programm einfügen (Strg+V).
-            `;
-        }
-
-        // Show Copy Error Popup
-        function showCopyErrorPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Kopieren nicht möglich';
-            icon.textContent = '❌';
-            message.innerHTML = `
-                <span style="color: #FF8232;">Die Vorlage kann nicht kopiert werden:</span><br>
-                • Bitte korrigieren Sie zuerst den Vermerk-Link<br>
-                • Stellen Sie sicher, dass alle Daten korrekt eingegeben sind
-            `;
-            buttons.innerHTML = '<button class="popup-button" onclick="closePopup()">🔧 Daten korrigieren</button>';
-            buttons.style.display = 'flex';
-        }
-
-        // Show Empty Content Popup
-        function showEmptyContentPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '📝 Keine Vorlage vorhanden';
-            icon.textContent = '📋';
-            message.innerHTML = `
-                <span style="color: #F4C066;">Es ist noch keine Vorlage zum Kopieren vorhanden!</span><br>
-                Bitte generieren Sie zuerst die Discord-Vorlage, bevor Sie sie kopieren.
-            `;
-        }
-
-        // Show Copy Failure Popup
-        function showCopyFailurePopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Kopieren fehlgeschlagen';
-            icon.textContent = '🔧';
-            message.innerHTML = `
-                <span style="color: #FF8232;">Das Kopieren ist fehlgeschlagen!</span><br>
-                Bitte versuchen Sie es erneut oder kopieren Sie den Text manuell aus der Vorschau.
-            `;
-            buttons.innerHTML = `
-                <button class="popup-button" onclick="retryFromPopup()">🔄 Erneut versuchen</button>
-                <button class="popup-button secondary" onclick="closePopup()">❌ Abbrechen</button>
-            `;
-            buttons.style.display = 'flex';
-        }
-
-        // Retry Copy from Popup
-        function retryFromPopup() {
-            closePopup();
-            setTimeout(() => showCopyPopup(), 300);
-        }
-        document.getElementById('popup-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePopup();
+            // Validierung
+            const vermerkInput = document.getElementById('vermerk');
+            if (!validateURL(vermerkInput)) {
+                Toast.copyError('Der Vermerk-Link ist ungültig');
+                return;
             }
-        });
+
+            const output = document.getElementById('preview-output').textContent;
+            if (output.includes('⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link')) {
+                Toast.copyError('Bitte korrigieren Sie zuerst den Vermerk-Link');
+                return;
+            }
+
+            if (output.trim() === '' || output.includes('Noch keine Vorlage generiert')) {
+                Toast.warning(
+                    '📝 Keine Vorlage vorhanden',
+                    'Bitte generieren Sie zuerst eine Vorlage, bevor Sie sie kopieren.'
+                );
+                return;
+            }
+
+            // Loading Toast
+            const loadingToast = Toast.copyProgress();
+
+            // Simulation des Kopiervorgangs
+            setTimeout(() => {
+                Toast.dismiss(loadingToast);
+
+                navigator.clipboard.writeText(output).then(() => {
+                    Toast.copySuccess('Gewerbeakte');
+                }).catch(() => {
+                    Toast.copyError('Clipboard-API nicht verfügbar. Bitte kopieren Sie den Text manuell.');
+                });
+            }, 1000);
+        }
+
+        // Legacy functions for compatibility - NO LONGER NEEDED BUT KEPT FOR SAFETY
+        function closePopup() {
+            console.log('closePopup() called - replaced by Toast system');
+        }
+
+        function copyFromPopup() {
+            if (typeof copyToClipboard === 'function') {
+                copyToClipboard();
+            }
+        }
+
+        // Click outside popup to close - NO LONGER NEEDED
+        if (document.getElementById('popup-overlay')) {
+            document.getElementById('popup-overlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePopup();
+                }
+            });
+        }
 
         // Generate Akte
         function generateAkte() {
@@ -546,12 +404,12 @@
             return date.toLocaleDateString('de-DE');
         }
 
-        // Copy to clipboard
+        // Copy to clipboard - UPDATED WITH TOAST INTEGRATION
         function copyToClipboard() {
             // Validiere URL vor dem Kopieren
             const vermerkInput = document.getElementById('vermerk');
             if (!validateURL(vermerkInput)) {
-                alert('⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link, bevor Sie kopieren können.');
+                Toast.copyError('Bitte korrigieren Sie zuerst den Vermerk-Link.');
                 return;
             }
 
@@ -559,20 +417,33 @@
 
             // Prüfen ob die Ausgabe einen Fehler enthält
             if (output.includes('⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link')) {
-                alert('⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link, bevor Sie kopieren können.');
+                Toast.copyError('Bitte korrigieren Sie zuerst den Vermerk-Link.');
+                return;
+            }
+
+            if (output.trim() === '' || output.includes('Noch keine Vorlage generiert')) {
+                Toast.warning('📝 Keine Vorlage vorhanden', 'Bitte generieren Sie zuerst eine Vorlage.');
                 return;
             }
 
             navigator.clipboard.writeText(output).then(() => {
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = '✅ Kopiert!';
-                button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
+                // Legacy button update for any existing copy buttons
+                const button = event?.target;
+                if (button) {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Kopiert!';
+                    button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = 'linear-gradient(135deg, #F4C066 0%, #D99C45 100%)';
-                }, 2000);
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = 'linear-gradient(135deg, #F4C066 0%, #D99C45 100%)';
+                    }, 2000);
+                }
+
+                // Show toast
+                Toast.copySuccess('Gewerbeakte');
+            }).catch(() => {
+                Toast.copyError('Clipboard-API nicht verfügbar. Bitte kopieren Sie den Text manuell.');
             });
         }
 
@@ -585,14 +456,14 @@
             if (value === '') {
                 // Leeres Feld ist erlaubt
                 input.style.borderColor = '#A85F3D';
-                errorElement.style.display = 'none';
+                if (errorElement) errorElement.style.display = 'none';
                 return true;
             }
 
             // Prüfen ob es mit http:// oder https:// beginnt
             if (!value.startsWith('http://') && !value.startsWith('https://')) {
                 input.style.borderColor = '#FF8232';
-                errorElement.style.display = 'block';
+                if (errorElement) errorElement.style.display = 'block';
                 return false;
             }
 
@@ -600,11 +471,11 @@
             try {
                 new URL(value);
                 input.style.borderColor = '#35A2A2'; // Grün für gültig
-                errorElement.style.display = 'none';
+                if (errorElement) errorElement.style.display = 'none';
                 return true;
             } catch (e) {
                 input.style.borderColor = '#FF8232';
-                errorElement.style.display = 'block';
+                if (errorElement) errorElement.style.display = 'block';
                 return false;
             }
         }
