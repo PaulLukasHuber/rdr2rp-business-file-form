@@ -21,6 +21,7 @@
         <link rel="stylesheet" href="assets/css/global/layout.css">
         <link rel="stylesheet" href="assets/css/global/components.css">
         <link rel="stylesheet" href="assets/css/global/animations.css">
+        <link rel="stylesheet" href="assets/css/global/dragdrop.css">
         
         <!-- Page-specific Stylesheet -->
         <link rel="stylesheet" href="assets/css/pages/antrag.css">
@@ -65,7 +66,11 @@
             <div class="import-section">
                 <div class="import-header" id="import-header" onclick="toggleImport()">
                     <div class="import-title">
-                        <i class="fa-solid fa-file-import"></i> Bestehenden Antrag importieren
+                        <i class="fa-solid fa-file-import"></i>
+                        <div class="import-title-text">
+                            <span>Bestehenden Antrag importieren<span class="beta-tag">BETA</span></span>
+                            <div class="drag-drop-hint">oder bestehenden Antrag hierher ziehen</div>
+                        </div>
                     </div>
                     <div class="import-toggle" id="import-toggle">
                         <i class="fa-solid fa-angle-down"></i>
@@ -160,7 +165,7 @@
 
                 <div class="form-group">
                     <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
-                    <input type="text" class="form-input" id="gewerbekutsche-aussteller-telegram" placeholder="Telegrammnummer des Bearbeiters...">
+                    <input type="text" class="form-input" id="gewerbekutsche-aussteller-telegram" placeholder="Telegrammnummer eingeben...">
                 </div>
 
                 <div class="form-group">
@@ -169,7 +174,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Gewerbe:</label>
+                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Für Gewerbe:</label>
                     <input type="text" class="form-input" id="gewerbekutsche-gewerbe" placeholder="Name des Gewerbes eingeben...">
                 </div>
 
@@ -274,9 +279,11 @@
         </p>
     </footer>
 
+    <!-- JavaScript -->
     <script src="assets/js/global/utils.js"></script>
+    <script src="assets/js/global/dragdrop-core.js"></script>
     <script src="assets/js/pages/antrag/main.js"></script>
     <script src="assets/js/pages/antrag/import.js"></script>
-
+    <script src="assets/js/pages/antrag/dragdrop-antrag.js"></script>
 </body>
 </html>

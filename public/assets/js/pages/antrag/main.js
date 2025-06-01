@@ -483,7 +483,7 @@
             output += `Ausstellende Person:\n\`\`\`\n${aussteller || '---'}\n\`\`\`\n`;
             output += `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${ausstellerTelegram || '---'}\n\`\`\`\n`;
             output += `Antragstellende Person:\n\`\`\`\n${person || '---'}\n\`\`\`\n`;
-            output += `Gewerbe:\n\`\`\`\n${gewerbe || '---'}\n\`\`\`\n`;
+            output += `Für Gewerbe:\n\`\`\`\n${gewerbe || '---'}\n\`\`\`\n`;
             output += `Kutschen Größe:\n\`\`\`\n${groesse || '---'}\n\`\`\`\n`;
             output += `Hiermit Genehmige ich, **${aussteller || 'NAME'}**,\nMitarbeiter des Gewerbeamts der Stadt\nSaint Denis, die Abholung der Gewerbekutsche`;
 
