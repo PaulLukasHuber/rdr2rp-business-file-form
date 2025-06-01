@@ -123,20 +123,43 @@ class SimpleDragDropPersonenpruefung {
                     }
                 }
                 
-                // Wert in den nächsten Zeilen suchen
-                for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+                // Wert in den nächsten Zeilen suchen - ABER nur bis zum nächsten Feld
+                let inCodeBlock = false;
+                for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
                     const nextLine = lines[j].trim();
                     
-                    // Skip leer, ---, ``` oder neue Felder
-                    if (!nextLine || 
-                        nextLine === '---' || 
-                        nextLine === '```' ||
-                        nextLine.includes(':')) {
-                        continue;
+                    // Code-Block Start
+                    if (nextLine === '```') {
+                        if (!inCodeBlock) {
+                            inCodeBlock = true;
+                            continue;
+                        } else {
+                            // Code-Block Ende erreicht - aufhören
+                            break;
+                        }
                     }
                     
-                    console.log(`✅ Next line value: "${nextLine}"`);
-                    return nextLine;
+                    // Wenn wir im Code-Block sind und einen Wert finden
+                    if (inCodeBlock && nextLine && nextLine !== '---') {
+                        console.log(`✅ Code block value: "${nextLine}"`);
+                        return nextLine;
+                    }
+                    
+                    // Neues Feld gefunden - aufhören
+                    if (nextLine.includes(':') && !inCodeBlock) {
+                        console.log(`🛑 Found next field, stopping search: "${nextLine}"`);
+                        break;
+                    }
+                    
+                    // Direkter Wert (falls kein Code-Block verwendet wird)
+                    if (!inCodeBlock && nextLine && 
+                        nextLine !== '---' && 
+                        nextLine !== '```' &&
+                        !nextLine.includes(':') &&
+                        nextLine.length > 1) {
+                        console.log(`✅ Direct value: "${nextLine}"`);
+                        return nextLine;
+                    }
                 }
                 
                 break; // Feld gefunden aber kein Wert
@@ -151,14 +174,22 @@ class SimpleDragDropPersonenpruefung {
     determineResultType(ergebnis) {
         const lower = ergebnis.toLowerCase();
         
-        if (ergebnis.includes('✅') || lower.includes('bestanden')) {
-            return 'bestanden';
-        } else if (ergebnis.includes('❌') || lower.includes('nicht bestanden')) {
+        console.log(`🎯 Determining result type for: "${ergebnis}" -> lowercase: "${lower}"`);
+        
+        // WICHTIG: Reihenfolge ist entscheidend! 
+        // "Nicht bestanden" MUSS vor "bestanden" geprüft werden!
+        if (ergebnis.includes('❌') || lower.includes('nicht bestanden')) {
+            console.log(`✅ Detected: NICHT BESTANDEN`);
             return 'nicht-bestanden';
+        } else if (ergebnis.includes('✅') || (lower.includes('bestanden') && !lower.includes('nicht'))) {
+            console.log(`✅ Detected: BESTANDEN`);
+            return 'bestanden';
         } else if (ergebnis.includes('⏳') || lower.includes('ausstehend')) {
+            console.log(`✅ Detected: AUSSTEHEND`);
             return 'ausstehend';
         }
         
+        console.log(`❌ Could not determine result type`);
         return null;
     }
 

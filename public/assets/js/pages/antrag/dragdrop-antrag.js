@@ -1,12 +1,12 @@
 // ===================================
-// DRAG & DROP ANTRAG HANDLER v5.0
-// Spezialisiert für alle Antragstypen
+// DRAG & DROP ANTRAG HANDLER v5.1 - BACKWARD COMPATIBLE
+// Unterstützt sowohl "Gewerbe:" als auch "Für Gewerbe:"
 // ===================================
 
 class DragDropAntrag {
     constructor() {
-        this.version = "5.0";
-        console.log(`📄 DragDropAntrag v${this.version} initialized`);
+        this.version = "5.1-backward-compatible";
+        console.log(`📄 DragDropAntrag v${this.version} initialized - Backward Compatible`);
     }
 
     // ===== MAIN IMPORT HANDLER =====
@@ -40,9 +40,9 @@ class DragDropAntrag {
         }
     }
 
-    // ===== PARSING LOGIC =====
+    // ===== PARSING LOGIC WITH BACKWARD COMPATIBILITY =====
     parseAntrag(text) {
-        console.log(`🔄 v${this.version}: Parsing Antrag...`);
+        console.log(`🔄 v${this.version}: Parsing Antrag with backward compatibility...`);
         
         const data = {};
         
@@ -63,20 +63,22 @@ class DragDropAntrag {
             
             console.log(`✅ v${this.version}: Detected Antrag type:`, data.type);
             
-            // Extract fields based on type
+            // SPEZIELLE BEHANDLUNG FÜR GEWERBEKUTSCHE (BACKWARD COMPATIBLE)
             if (data.type === 'gewerbekutsche') {
-                console.log(`🎯 v${this.version}: GEWERBEKUTSCHE - Using specialized extraction`);
+                console.log(`🎯 v${this.version}: GEWERBEKUTSCHE - Using backward compatible extraction`);
                 
                 data.nummer = DragDropUtils.extractSimpleField(text, 'Genehmigungs-Nummer');
                 data.aussteller = DragDropUtils.extractSimpleField(text, 'Ausstellende Person');
                 data.telegram = DragDropUtils.extractSimpleField(text, 'Telegrammnummer (Für Rückfragen)');
                 data.person = DragDropUtils.extractSimpleField(text, 'Antragstellende Person');
                 data.groesse = DragDropUtils.extractSimpleField(text, 'Kutschen Größe');
-                data.gewerbe = this.extractGewerbeField(text);
+                
+                // BACKWARD COMPATIBLE GEWERBE EXTRACTION
+                data.gewerbe = this.extractGewerbeBackwardCompatible(text);
                 
                 console.log(`🎯 v${this.version}: GEWERBEKUTSCHE final data:`, JSON.stringify(data, null, 2));
             } else {
-                // Use standard field mappings for other types
+                // Standard extraction für andere Typen
                 const fieldMappings = this.getFieldMappings(data.type);
                 for (const [key, fieldName] of Object.entries(fieldMappings)) {
                     const value = DragDropUtils.extractSimpleField(text, fieldName);
@@ -85,7 +87,7 @@ class DragDropAntrag {
                     }
                 }
                 
-                // Special handling for Gewerbetelegramm payment status
+                // Special handling für Gewerbetelegramm payment status
                 if (data.type === 'gewerbetelegramm' && data.bezahlt) {
                     console.log(`🎯 v${this.version}: Processing payment status for Gewerbetelegramm:`, data.bezahlt);
                     data.bezahltStatus = data.bezahlt.toLowerCase().includes('ja');
@@ -110,41 +112,55 @@ class DragDropAntrag {
         }
     }
 
-    // ===== SPECIAL GEWERBE EXTRACTION =====
-    extractGewerbeField(text) {
-        console.log(`🎯 v${this.version}: Special Gewerbe extraction for Gewerbekutsche`);
+    // ===== BACKWARD COMPATIBLE GEWERBE EXTRACTION =====
+    extractGewerbeBackwardCompatible(text) {
+        console.log(`🎯 v${this.version}: Backward compatible gewerbe extraction`);
         
+        // Erst neues Format versuchen: "Für Gewerbe:"
+        console.log(`🔍 Trying NEW format "Für Gewerbe:"...`);
+        let result = DragDropUtils.extractSimpleField(text, 'Für Gewerbe');
+        if (result) {
+            console.log(`✅ Found with NEW format "Für Gewerbe:": "${result}"`);
+            return result;
+        }
+        
+        // Dann altes Format versuchen: "Gewerbe:"
+        console.log(`🔍 Trying OLD format "Gewerbe:"...`);
+        result = DragDropUtils.extractSimpleField(text, 'Gewerbe');
+        if (result) {
+            console.log(`✅ Found with OLD format "Gewerbe:": "${result}"`);
+            return result;
+        }
+        
+        // Manuelle Zeilen-Suche als Fallback
+        console.log(`🔍 Trying manual line search for both formats...`);
         const lines = text.split('\n');
         
-        // Search for "Gewerbe:" line
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim().toLowerCase();
+            const line = lines[i].trim();
+            const lowerLine = line.toLowerCase();
             
-            if (line === 'gewerbe:') {
-                if (lines[i + 1]) {
-                    const gewerbeValue = lines[i + 1].trim();
-                    console.log(`✅ v${this.version}: GEWERBE found via line search:`, gewerbeValue);
-                    return gewerbeValue;
+            // Suche nach beiden Formaten
+            if (lowerLine === 'für gewerbe:' || lowerLine === 'gewerbe:') {
+                console.log(`📍 Found gewerbe field at line ${i}: "${line}"`);
+                
+                // Suche in den nächsten Zeilen nach dem Wert
+                for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+                    const nextLine = lines[j].trim();
+                    
+                    if (nextLine && 
+                        nextLine !== '---' && 
+                        nextLine !== '```' &&
+                        !nextLine.toLowerCase().includes(':') &&
+                        nextLine.length > 1) {
+                        console.log(`✅ Found gewerbe value at line ${j}: "${nextLine}"`);
+                        return nextLine;
+                    }
                 }
             }
         }
         
-        // Fallback: regex patterns
-        const patterns = [
-            /gewerbe:\s*\n\s*([^\n]+)/i,
-            /gewerbe:\s*([^\n]+)/i,
-            /gewerbe[:\s]+([^\n]+)/i
-        ];
-        
-        for (const pattern of patterns) {
-            const match = text.match(pattern);
-            if (match && match[1] && match[1].trim() !== '---') {
-                console.log(`✅ v${this.version}: GEWERBE found via regex:`, match[1].trim());
-                return match[1].trim();
-            }
-        }
-        
-        console.log(`❌ v${this.version}: GEWERBE not found with any method`);
+        console.log(`❌ v${this.version}: Gewerbe not found in any format`);
         return null;
     }
 
@@ -232,12 +248,17 @@ class DragDropAntrag {
                 break;
 
             case 'gewerbekutsche':
+                console.log(`🎯 v${this.version}: Filling GEWERBEKUTSCHE fields (backward compatible)...`);
                 DragDropUtils.fillField('gewerbekutsche-nummer', data.nummer);
                 DragDropUtils.fillField('gewerbekutsche-aussteller', data.aussteller);
                 DragDropUtils.fillField('gewerbekutsche-aussteller-telegram', data.telegram);
                 DragDropUtils.fillField('gewerbekutsche-person', data.person);
                 DragDropUtils.fillField('gewerbekutsche-gewerbe', data.gewerbe);
                 DragDropUtils.fillField('gewerbekutsche-groesse', data.groesse);
+                
+                if (data.gewerbe) {
+                    console.log(`✅ v${this.version}: GEWERBEKUTSCHE gewerbe field filled (backward compatible): "${data.gewerbe}"`);
+                }
                 break;
 
             case 'gewerbetelegramm':
@@ -298,6 +319,77 @@ class DragDropAntrag {
             console.error('❌ Import fehlgeschlagen!');
         }
     }
+
+    // ===== TEST FUNCTIONS =====
+    testBackwardCompatibility() {
+        console.log(`🧪 v${this.version}: Testing backward compatibility...`);
+        
+        // Test old format
+        const oldText = `Genehmigungs-Nummer:
+\`\`\`
+GK-20250601-123
+\`\`\`
+Ausstellende Person:
+\`\`\`
+Max Mustermann
+\`\`\`
+Telegrammnummer (Für Rückfragen):
+\`\`\`
+@maxmustermann
+\`\`\`
+Antragstellende Person:
+\`\`\`
+John Doe
+\`\`\`
+Gewerbe:
+\`\`\`
+Muster-Gewerbe-Alt
+\`\`\`
+Kutschen Größe:
+\`\`\`
+Klein (1500kg)
+\`\`\``;
+
+        // Test new format
+        const newText = `Genehmigungs-Nummer:
+\`\`\`
+GK-20250601-456
+\`\`\`
+Ausstellende Person:
+\`\`\`
+Max Mustermann
+\`\`\`
+Telegrammnummer (Für Rückfragen):
+\`\`\`
+@maxmustermann
+\`\`\`
+Antragstellende Person:
+\`\`\`
+John Doe
+\`\`\`
+Für Gewerbe:
+\`\`\`
+Muster-Gewerbe-Neu
+\`\`\`
+Kutschen Größe:
+\`\`\`
+Klein (1500kg)
+\`\`\``;
+
+        console.log(`📊 Testing OLD format...`);
+        const oldResult = this.parseAntrag(oldText);
+        console.log(`Old format result:`, oldResult);
+
+        console.log(`📊 Testing NEW format...`);
+        const newResult = this.parseAntrag(newText);
+        console.log(`New format result:`, newResult);
+
+        console.log(`🎯 Summary:`);
+        console.log(`Old format gewerbe:`, oldResult?.gewerbe);
+        console.log(`New format gewerbe:`, newResult?.gewerbe);
+
+        return { old: oldResult, new: newResult };
+    }
 }
 
 // ===== INTEGRATION WITH EXISTING SYSTEM =====
@@ -313,20 +405,29 @@ if (typeof window !== 'undefined') {
     // Create new handler instance
     window.DragDropAntrag = DragDropAntrag;
     
-    // Override global functions
+    // Override global functions with backward compatibility
     window.parseAntragText = function(text) {
-        console.log('🔧 Global parseAntragText called via DragDropAntrag');
+        console.log('🔧 Global parseAntragText called via DragDropAntrag (backward compatible)');
         const handler = new DragDropAntrag();
         return handler.parseAntrag(text);
     };
     
     window.fillAntragForm = function(data) {
-        console.log('🔧 Global fillAntragForm called via DragDropAntrag');
+        console.log('🔧 Global fillAntragForm called via DragDropAntrag (backward compatible)');
         const handler = new DragDropAntrag();
         return handler.fillForm(data);
     };
     
-    console.log('🎯 DragDropAntrag v5.0 ready - All Antrag types supported');
+    // Global test function
+    window.testDragDropBackwardCompatibility = function() {
+        const handler = new DragDropAntrag();
+        return handler.testBackwardCompatibility();
+    };
+    
+    console.log('🎯 DragDropAntrag v5.1 ready - Backward Compatible');
+    console.log('✅ Supports OLD format: "Gewerbe:"');
+    console.log('✅ Supports NEW format: "Für Gewerbe:"');
+    console.log('🧪 Test function: testDragDropBackwardCompatibility()');
 }
 
 // Export

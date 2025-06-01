@@ -1,34 +1,37 @@
 /* ===================================
-   DRAG & DROP IMPORT STYLES
-   Erweitert bestehende Import-Styles
+   DRAG & DROP IMPORT STYLES v2.0
+   Komplette überarbeitete Version mit abgerundeten Ecken
    =================================== */
 
-/* Drag Over States */
+/* ===== DRAG OVER STATES ===== */
 .import-section.drag-over {
     background: rgba(244, 192, 102, 0.15) !important;
     border: 2px dashed #F4C066 !important;
+    border-radius: 12px !important;
     transform: scale(1.02);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 8px 24px rgba(244, 192, 102, 0.3);
 }
 
 .import-section.drag-over .import-header {
     background: rgba(244, 192, 102, 0.3) !important;
     border-color: #F4C066 !important;
+    border-radius: 10px !important;
 }
 
 #import-text.drag-over {
     background: rgba(244, 192, 102, 0.1) !important;
     border: 2px dashed #F4C066 !important;
+    border-radius: 8px !important;
     transform: scale(1.02);
     box-shadow: 0 0 15px rgba(244, 192, 102, 0.4);
 }
 
-/* Drag & Drop Hints - Mit höherer Spezifität */
+/* ===== DRAG & DROP HINTS ===== */
 .import-section .drag-drop-hint {
     color: #D8C5B0 !important;
     font-size: 0.75rem !important;
-    font-style: normal !important; /* Kein Italic mehr */
+    font-style: normal !important;
     opacity: 0.7 !important;
     transition: opacity 0.3s ease !important;
     margin-top: 0 !important;
@@ -50,7 +53,7 @@
     margin-right: 0.3rem !important;
 }
 
-/* Import Title Container - Mit höherer Spezifität */
+/* ===== IMPORT TITLE STRUCTURE ===== */
 .import-section .import-title {
     display: flex !important;
     flex-direction: row !important;
@@ -61,7 +64,6 @@
     padding: 0 !important;
 }
 
-/* Import Title Text Container - Mit höherer Spezifität */
 .import-section .import-title-text {
     display: flex !important;
     flex-direction: column !important;
@@ -71,7 +73,6 @@
     padding: 0 !important;
 }
 
-/* Main Text Styling - Mit höherer Spezifität */
 .import-section .import-title-text > span:first-child,
 .import-section .import-title-text > :first-child:not(.drag-drop-hint) {
     font-weight: bold !important;
@@ -81,7 +82,6 @@
     padding: 0 !important;
 }
 
-/* Icon Alignment Fix - Mit höherer Spezifität */
 .import-section .import-title > i {
     margin-top: 0.1rem !important;
     margin-bottom: 0 !important;
@@ -89,11 +89,13 @@
     padding: 0 !important;
 }
 
-/* Sicherstellen dass der Toggle-Pfeil rechts bleibt */
+/* ===== IMPORT HEADER LAYOUT ===== */
 .import-section .import-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: flex-start !important;
+    border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
 .import-section .import-toggle {
@@ -101,25 +103,11 @@
     margin-top: 0.2rem !important;
 }
 
-/* Override für bestehende Styles die Konflikte verursachen könnten */
-.import-section .import-title * {
-    box-sizing: border-box !important;
-}
-
-/* Spezielle Regel um margin/padding von parent elements zu überschreiben */
-.import-section .import-title-text > * {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-}
-
-.import-section .import-title-text > .drag-drop-hint {
-    margin-top: 0 !important;
-}
-
-/* Enhanced Import Header mit Drag & Drop */
+/* ===== ENHANCED IMPORT HEADER ===== */
 .import-header-enhanced {
     position: relative;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .import-header-enhanced::after {
@@ -137,7 +125,7 @@
     left: 100%;
 }
 
-/* Drag Zone Indicator */
+/* ===== DRAG ZONE INDICATOR ===== */
 .drag-zone-indicator {
     position: absolute;
     top: 50%;
@@ -146,7 +134,7 @@
     background: rgba(244, 192, 102, 0.9);
     color: #2C2623;
     padding: 1rem 2rem;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: bold;
     display: none;
     z-index: 100;
@@ -159,11 +147,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.05); 
+    }
 }
 
-/* Confirmation Dialog Styles */
+/* ===== CONFIRMATION DIALOG ===== */
 .drag-drop-confirmation-overlay {
     position: fixed;
     top: 0;
@@ -296,10 +288,11 @@
     border-color: #F4C066;
 }
 
-/* Enhanced Import Textarea */
+/* ===== ENHANCED IMPORT TEXTAREA ===== */
 #import-text {
     position: relative;
     transition: all 0.3s ease;
+    border-radius: 8px;
 }
 
 #import-text.drag-ready {
@@ -307,7 +300,7 @@
     border-color: rgba(244, 192, 102, 0.3);
 }
 
-/* File Drop Feedback */
+/* ===== FILE DROP FEEDBACK ===== */
 .file-drop-feedback {
     position: absolute;
     top: 50%;
@@ -338,7 +331,7 @@
     display: block;
 }
 
-/* Progress Indicator für Auto-Import */
+/* ===== AUTO-IMPORT PROGRESS ===== */
 .auto-import-progress {
     width: 100%;
     height: 4px;
@@ -356,7 +349,7 @@
     border-radius: 2px;
 }
 
-/* Toast Notifications für Drag & Drop */
+/* ===== TOAST NOTIFICATIONS ===== */
 .drag-drop-toast {
     position: fixed;
     top: 2rem;
@@ -384,6 +377,7 @@
     border-left: 4px solid #F4C066;
 }
 
+/* ===== ANIMATIONS ===== */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
@@ -417,11 +411,44 @@
     }
 }
 
-/* Responsive Anpassungen */
+/* ===== HOVER ENHANCEMENTS ===== */
+.import-section:hover {
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.import-section:hover .import-header {
+    border-radius: 10px;
+}
+
+/* ===== OVERRIDE FIXES ===== */
+.import-section .import-title * {
+    box-sizing: border-box !important;
+}
+
+.import-section .import-title-text > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.import-section .import-title-text > .drag-drop-hint {
+    margin-top: 0 !important;
+}
+
+/* ===== IMPORT SECTION BASE STYLES ===== */
+.import-section {
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
     .drag-drop-confirmation {
         margin: 1rem;
         padding: 1.5rem;
+        border-radius: 12px;
     }
     
     .drag-drop-confirmation-buttons {
@@ -437,5 +464,73 @@
         right: 1rem;
         top: 1rem;
         max-width: calc(100vw - 2rem);
+        border-radius: 8px;
+    }
+    
+    .drag-zone-indicator {
+        border-radius: 10px;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .file-drop-feedback {
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        max-width: calc(100vw - 2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .import-section {
+        border-radius: 8px;
+    }
+    
+    .import-section.drag-over {
+        border-radius: 8px !important;
+    }
+    
+    .import-section .import-header {
+        border-radius: 6px;
+    }
+    
+    #import-text {
+        border-radius: 6px;
+    }
+    
+    #import-text.drag-over {
+        border-radius: 6px !important;
+    }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+    .import-section.drag-over,
+    #import-text.drag-over,
+    .drag-zone-indicator,
+    .file-drop-feedback {
+        transform: none !important;
+        animation: none !important;
+    }
+    
+    .import-section,
+    .import-header,
+    #import-text {
+        transition: none !important;
+    }
+}
+
+/* ===== HIGH CONTRAST MODE SUPPORT ===== */
+@media (prefers-contrast: high) {
+    .import-section.drag-over {
+        border: 3px dashed #F4C066 !important;
+        background: rgba(244, 192, 102, 0.25) !important;
+    }
+    
+    .drag-drop-confirmation {
+        border: 2px solid #F4C066;
+    }
+    
+    .drag-drop-toast {
+        border: 1px solid #F4C066;
     }
 }
