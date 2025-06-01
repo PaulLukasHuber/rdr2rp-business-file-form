@@ -1,11 +1,12 @@
 // ===================================
-// DRAG & DROP CORE SYSTEM v5.0
+// DRAG & DROP CORE SYSTEM v5.1 - FIXED DOUBLE TOASTS
 // Grundfunktionalität für alle Dokumenttypen
+// Entfernt doppelte Toast-Nachrichten beim Import
 // ===================================
 
 class DragDropCore {
     constructor() {
-        this.version = "5.0";
+        this.version = "5.1";
         this.currentPage = this.detectCurrentPage();
         console.log(`🚀 DragDropCore v${this.version} initializing for page: ${this.currentPage}`);
         
@@ -201,16 +202,17 @@ class DragDropCore {
                 console.log('❌ Unknown page type for auto-import:', this.currentPage);
         }
 
-        // Cleanup after import
-        this.postImportCleanup();
+        // ENTFERNT: postImportCleanup() - da die spezifischen Handler bereits ihre eigenen Success-Toasts anzeigen
+        // Nur noch das Import-Feld leeren und Button-Status aktualisieren
+        this.postImportCleanupMinimal();
     }
 
-    // ===== UI MANAGEMENT =====
-    postImportCleanup() {
+    // ===== UI MANAGEMENT (MINIMAL VERSION - OHNE DOPPELTE TOASTS) =====
+    postImportCleanupMinimal() {
         setTimeout(() => {
             this.closeImportSection();
             this.disableImportButton();
-            this.showImportSuccessToast();
+            // ENTFERNT: showImportSuccessToast() - verhindert doppelte Toast-Nachrichten
         }, 1500);
     }
 
@@ -240,23 +242,8 @@ class DragDropCore {
         }
     }
 
-    // ===== TOAST NOTIFICATIONS =====
-    showImportSuccessToast() {
-        const toast = this.createToast(
-            'success',
-            '✅ Import erfolgreich',
-            `Die ${this.currentPage} wurde korrekt importiert.`
-        );
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }
-        }, 4000);
-    }
+    // ===== ENTFERNT: showImportSuccessToast() =====
+    // Diese Methode wurde entfernt, um doppelte Toast-Nachrichten zu vermeiden
 
     showParseErrorToast() {
         const toast = this.createToast(
@@ -535,7 +522,7 @@ function initializeDragDropCore() {
     if (!window.dragDropCore) {
         window.dragDropCore = new DragDropCore();
         window.DragDropUtils = DragDropUtils;
-        console.log('🎯 DragDropCore v5.0 initialized');
+        console.log('🎯 DragDropCore v5.1 initialized - Fixed double toasts');
     }
     return window.dragDropCore;
 }

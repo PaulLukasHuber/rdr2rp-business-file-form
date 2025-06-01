@@ -1,8 +1,9 @@
 /**
- * MODULAR TOAST SYSTEM v2.0
+ * MODULAR TOAST SYSTEM v2.1 - FIXED VALIDATION DESIGN
  * - Unten rechts positioniert
  * - Keine Action Buttons
  * - Verbessertes Stacking (neue schieben alte nach oben)
+ * - EINHEITLICHES DESIGN für alle Toast-Typen
  * 
  * Features:
  * - Verschiedene Toast-Typen (success, error, warning, info, loading)
@@ -12,6 +13,7 @@
  * - Responsive design
  * - Accessibility support
  * - Verbessertes Toast stacking
+ * - KORRIGIERT: Validation Error Toast Design
  */
 
 class ToastSystem {
@@ -31,7 +33,7 @@ class ToastSystem {
         };
         
         this.init();
-        console.log('🍞 ToastSystem v2.0 initialized - Bottom right, no buttons, improved stacking');
+        console.log('🍞 ToastSystem v2.1 initialized - Fixed validation design');
     }
 
     // ===== INITIALIZATION =====
@@ -63,7 +65,7 @@ class ToastSystem {
 
     // ===== MAIN TOAST CREATION METHOD =====
     show(options) {
-        // Default options (OHNE actions)
+        // Default options
         const config = {
             type: 'info',
             title: '',
@@ -110,7 +112,7 @@ class ToastSystem {
         return toast;
     }
 
-    // ===== TOAST ELEMENT CREATION (VEREINFACHT - KEINE BUTTONS) =====
+    // ===== TOAST ELEMENT CREATION =====
     createToastElement(config) {
         const toast = document.createElement('div');
         toast.className = `toast ${config.type}`;
@@ -126,7 +128,7 @@ class ToastSystem {
             ? `<div class="toast-progress" style="animation-duration: ${config.duration}ms;"></div>` 
             : '';
 
-        // Toast HTML zusammenbauen (OHNE Actions)
+        // Toast HTML zusammenbauen
         toast.innerHTML = `
             <div class="toast-icon">${iconHtml}</div>
             <div class="toast-content">
@@ -143,7 +145,7 @@ class ToastSystem {
         return toast;
     }
 
-    // ===== EVENT LISTENERS FÜR TOAST (VEREINFACHT) =====
+    // ===== EVENT LISTENERS FÜR TOAST =====
     addToastEventListeners(toast, config) {
         // Close button
         const closeButton = toast.querySelector('.toast-close');
@@ -239,7 +241,7 @@ class ToastSystem {
         }
     }
 
-    // ===== CONVENIENCE METHODS (OHNE ACTIONS) =====
+    // ===== CONVENIENCE METHODS =====
     success(title, message, options = {}) {
         return this.show({
             type: 'success',
@@ -251,7 +253,7 @@ class ToastSystem {
 
     error(title, message, options = {}) {
         return this.show({
-            type: 'error',
+            type: 'warning',
             title,
             message,
             duration: 8000, // Errors bleiben länger
@@ -289,47 +291,51 @@ class ToastSystem {
         });
     }
 
-    // ===== SPEZIELLE METHODS FÜR FORM VALIDATION (OHNE ACTIONS) =====
+    // ===== KORRIGIERTE VALIDATION ERROR METHOD =====
     validationError(errors, options = {}) {
         const errorList = Array.isArray(errors) ? errors : [errors];
-        const message = errorList.map(error => `• ${error}`).join('<br>');
         
-        return this.error(
-            '⚠️ Formular unvollständig',
-            `Bitte korrigieren Sie folgende Fehler:<br><br>${message}`,
-            {
-                duration: 10000, // Längere Anzeigezeit für Validierungsfehler
-                ...options
-            }
-        );
+        // HTML für die Fehlerliste erstellen (mit besserer Formatierung)
+        const errorItems = errorList.map(error => `• ${error}`).join('<br>');
+        const message = `Bitte korrigieren Sie folgende Fehler:<br><br><div style="padding-left: 0.5rem; line-height: 1.6;">${errorItems}</div>`;
+        
+        return this.show({
+            type: 'warning', // Verwende error-Typ für einheitliches Design
+            title: 'Formular unvollständig',
+            message: message,
+            duration: 10000, // Längere Anzeigezeit für Validierungsfehler
+            showClose: true, // Close button anzeigen
+            autoDismiss: true, // Auto-dismiss aktivieren
+            ...options
+        });
     }
 
-    // ===== SPEZIELLE METHODS FÜR GENERATION PROCESS (OHNE ACTIONS) =====
+    // ===== SPEZIELLE METHODS FÜR GENERATION PROCESS =====
     generationProgress(title, message) {
         return this.loading(
-            title || '🔄 Wird generiert...',
+            title || 'Wird generiert...',
             message || 'Bitte warten Sie, während die Vorlage erstellt wird...'
         );
     }
 
     generationSuccess(documentType = 'Vorlage') {
         return this.success(
-            '✅ Erfolgreich generiert!',
+            'Erfolgreich generiert!',
             `Die ${documentType} wurde erfolgreich erstellt und ist in der Vorschau verfügbar.`
         );
     }
 
-    // ===== SPEZIELLE METHODS FÜR COPY PROCESS (OHNE ACTIONS) =====
+    // ===== SPEZIELLE METHODS FÜR COPY PROCESS =====
     copyProgress() {
         return this.loading(
-            '📋 Wird kopiert...',
+            'Wird kopiert...',
             'Die Vorlage wird in die Zwischenablage kopiert...'
         );
     }
 
     copySuccess(documentType = 'Vorlage') {
         return this.success(
-            '✅ Erfolgreich kopiert!',
+            'Erfolgreich kopiert!',
             `Die ${documentType} wurde in die Zwischenablage kopiert. Sie können sie jetzt einfügen (Strg+V).`
         );
     }
@@ -340,15 +346,15 @@ class ToastSystem {
             : 'Das Kopieren ist fehlgeschlagen. Bitte versuchen Sie es erneut.';
             
         return this.error(
-            '⚠️ Kopieren fehlgeschlagen',
+            'Kopieren fehlgeschlagen',
             message
         );
     }
 
-    // ===== SPEZIELLE METHODS FÜR IMPORT PROCESS (OHNE ACTIONS) =====
+    // ===== SPEZIELLE METHODS FÜR IMPORT PROCESS =====
     importSuccess(documentType = 'Akte') {
         return this.success(
-            '✅ Import erfolgreich!',
+            'Import erfolgreich!',
             `Die ${documentType} wurde erfolgreich importiert und kann jetzt bearbeitet werden.`
         );
     }
@@ -359,7 +365,7 @@ class ToastSystem {
             : `Die ${documentType} konnte nicht importiert werden. Bitte überprüfen Sie das Format.`;
             
         return this.error(
-            '⚠️ Import fehlgeschlagen',
+            'Import fehlgeschlagen',
             message
         );
     }
@@ -428,4 +434,4 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = ToastSystem;
 }
 
-console.log('🍞 Toast System v2.0 loaded - Bottom right, no buttons, improved stacking!');
+console.log('🍞 Toast System v2.1 loaded - Fixed validation error design!');
