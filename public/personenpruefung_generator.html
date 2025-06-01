@@ -22,6 +22,7 @@
         <link rel="stylesheet" href="assets/css/global/components.css">
         <link rel="stylesheet" href="assets/css/global/animations.css">
         <link rel="stylesheet" href="assets/css/global/dragdrop.css">
+        <link rel="stylesheet" href="assets/css/global/toast.css">
         
         <!-- Page-specific Stylesheet -->
         <link rel="stylesheet" href="assets/css/pages/personenpruefung.css">
@@ -164,21 +165,6 @@
         </section>
     </main>
 
-    <!-- Popup Overlay -->
-    <div class="popup-overlay" id="popup-overlay">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3 class="popup-title" id="popup-title">🔄 Prüfungsakte wird generiert...</h3>
-                <button class="popup-close" onclick="closePopup()">×</button>
-            </div>
-            <div class="popup-icon" id="popup-icon">⚙️</div>
-            <div class="popup-message" id="popup-message">
-                Bitte warten Sie, während die Personenprüfungsakte formatiert wird...
-            </div>
-            <div class="popup-buttons" id="popup-buttons" style="display: none;"></div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <p class="footer-text">
@@ -186,9 +172,12 @@
         </p>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Global JavaScript -->
     <script src="assets/js/global/utils.js"></script>
     <script src="assets/js/global/dragdrop-core.js"></script>
+    <script src="assets/js/global/toast.js"></script>
+
+    <!-- Page-specific JavaScript -->
     <script src="assets/js/pages/personenpruefung/main.js"></script>
     <script src="assets/js/pages/personenpruefung/import.js"></script>
     <script src="assets/js/pages/personenpruefung/dragdrop-personenpruefung.js"></script>

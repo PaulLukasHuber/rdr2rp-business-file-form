@@ -1,10 +1,10 @@
 // ===================================
-// ANTRAG IMPORT DEBUG FIX
-// Löst das toggleImport Problem
+// ANTRAG IMPORT LOGIC - MIT TOAST SYSTEM
+// Löst das toggleImport Problem und ersetzt Popups mit Toasts
 // ===================================
 
 // SOFORTIGE FUNKTIONS-DEFINITION (wird garantiert geladen)
-console.log('🚀 Loading Antrag Import Functions...');
+console.log('🚀 Loading Antrag Import Functions with Toast System...');
 
 // Toggle Import Section - SOFORT DEFINIERT
 function toggleImport() {
@@ -30,20 +30,20 @@ function toggleImport() {
     console.log('✅ toggleImport completed');
 }
 
-// Main Import Function - SOFORT DEFINIERT
+// Main Import Function - MIT TOAST SYSTEM
 function importAntrag() {
-    console.log('🚀 importAntrag called');
+    console.log('🚀 importAntrag called with Toast system');
     
     const importText = document.getElementById('import-text');
     if (!importText) {
         console.error('❌ import-text element not found');
-        alert('❌ Fehler: Import-Textfeld nicht gefunden');
+        Toast.error('❌ Fehler', 'Import-Textfeld nicht gefunden');
         return;
     }
 
     const textValue = importText.value.trim();
     if (!textValue) {
-        alert('📋 Bitte fügen Sie zuerst einen Antrag zum Importieren ein!');
+        Toast.warning('📋 Import-Feld leer', 'Bitte fügen Sie zuerst einen Antrag zum Importieren ein!');
         return;
     }
 
@@ -62,7 +62,7 @@ function importAntrag() {
             // Clear import field
             importText.value = '';
 
-            // Show success message
+            // Show success message mit Toast
             showAntragImportSuccessPopup();
 
             // Auto-collapse import section
@@ -70,7 +70,7 @@ function importAntrag() {
                 toggleImport();
             }, 1000);
         } else {
-            console.log('❌ Parse failed, showing error popup');
+            console.log('❌ Parse failed, showing error toast');
             showAntragImportErrorPopup();
         }
     } catch (error) {
@@ -308,54 +308,17 @@ function fillAntragForm(data) {
     }, 200);
 }
 
-// Show Success Popup
+// Show Success Popup - ERSETZT MIT TOAST
 function showAntragImportSuccessPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-
-    if (!popup || !title || !icon || !message || !buttons) {
-        alert('✅ Antrag erfolgreich importiert!');
-        return;
-    }
-
-    title.textContent = '✅ Antrag erfolgreich importiert!';
-    icon.textContent = '📥';
-    message.innerHTML = `
-        <span class="popup-success">Der Antrag wurde erfolgreich geladen!</span><br>
-        <strong>💡 Rückwärtskompatibel:</strong> Unterstützt sowohl alte als auch neue Formate!
-    `;
-    buttons.innerHTML = '<button class="popup-button" onclick="closePopup()">👍 Weiter bearbeiten</button>';
-    buttons.style.display = 'flex';
-
-    popup.classList.add('active');
+    Toast.importSuccess('Antrag');
 }
 
-// Show Error Popup
+// Show Error Popup - ERSETZT MIT TOAST
 function showAntragImportErrorPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-
-    if (!popup || !title || !icon || !message || !buttons) {
-        alert('⚠️ Import fehlgeschlagen!');
-        return;
-    }
-
-    title.textContent = '⚠️ Import fehlgeschlagen';
-    icon.textContent = '❌';
-    message.innerHTML = `
-        <span style="color: #FF8232;">Der Antrag konnte nicht importiert werden!</span><br>
-        Unterstützte Formate: "Gewerbe:" und "Für Gewerbe:"
-    `;
-    buttons.innerHTML = '<button class="popup-button" onclick="closePopup()">🔄 Erneut versuchen</button>';
-    buttons.style.display = 'flex';
-
-    popup.classList.add('active');
+    Toast.importError(
+        'Antrag',
+        'Bitte stellen Sie sicher, dass Sie einen vollständigen Antrag aus Discord kopiert haben.'
+    );
 }
 
 // Check Import Text
@@ -404,7 +367,7 @@ window.initializeImportButton = initializeImportButton;
 
 // SOFORTIGE INITIALISIERUNG
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Antrag import initialized - DEBUG VERSION');
+    console.log('🚀 Antrag import initialized with Toast system');
     initializeImportButton();
 });
 
@@ -422,4 +385,4 @@ console.log('✅ All functions loaded and globally available:', {
     fillAntragForm: typeof window.fillAntragForm
 });
 
-console.log('🎯 Debug version loaded successfully!');
+console.log('🎯 Antrag Import loaded with Toast system!');

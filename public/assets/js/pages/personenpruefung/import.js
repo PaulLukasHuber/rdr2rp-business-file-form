@@ -1,5 +1,5 @@
 // ===================================
-// PERSONENPRÜFUNGSAKTE IMPORT LOGIC
+// PERSONENPRÜFUNGSAKTE IMPORT LOGIC - MIT TOAST SYSTEM
 // Separate JavaScript-Datei für Import-Funktionen
 // KORRIGIERTE VERSION - Beste Option
 // ===================================
@@ -15,12 +15,12 @@ function toggleImport() {
     header.classList.toggle('expanded'); // Header-Klasse hinzufügen/entfernen
 }
 
-// Import Akte Function mit Validierung
+// Import Akte Function mit Validierung - MIT TOAST SYSTEM
 function importAkte() {
     const importText = document.getElementById('import-text').value.trim();
     
     if (!importText) {
-        alert('📋 Bitte fügen Sie zuerst eine Personenprüfungsakte zum Importieren ein!');
+        Toast.warning('📋 Import-Feld leer', 'Bitte fügen Sie zuerst eine Personenprüfungsakte zum Importieren ein!');
         return;
     }
     
@@ -211,62 +211,17 @@ function fillPersonenprüfungsakteForm(data) {
     console.log(`✅ Form filling completed successfully`);
 }
 
-// Show Import Success Popup für Personenprüfungsakte
+// Show Import Success Popup für Personenprüfungsakte - ERSETZT MIT TOAST
 function showImportSuccessPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-    
-    if (!popup || !title || !icon || !message || !buttons) {
-        alert('✅ Personenprüfungsakte erfolgreich importiert!\n\n📅 Datum wurde auf heute aktualisiert');
-        return;
-    }
-    
-    title.textContent = '✅ Personenprüfungsakte erfolgreich importiert!';
-    icon.textContent = '📥';
-    message.innerHTML = `
-        <span class="popup-success">Die Personenprüfungsakte wurde erfolgreich geladen!</span><br>
-        <strong>📅 Datum wurde auf heute aktualisiert</strong><br><br>
-        Sie können jetzt die Daten bearbeiten und eine aktualisierte Version generieren.
-    `;
-    buttons.innerHTML = '<button class="popup-button" onclick="closePopup()">👍 Weiter bearbeiten</button>';
-    buttons.style.display = 'flex';
-    
-    popup.classList.add('active');
+    Toast.importSuccess('Personenprüfungsakte');
 }
 
-// Show Import Error Popup für Personenprüfungsakte
+// Show Import Error Popup für Personenprüfungsakte - ERSETZT MIT TOAST
 function showPersonenprüfungImportErrorPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-    
-    if (!popup || !title || !icon || !message || !buttons) {
-        alert('⚠️ Import fehlgeschlagen!\n\nDie Personenprüfungsakte konnte nicht importiert werden.\nBitte stellen Sie sicher, dass Sie eine vollständige Personenprüfungsakte aus Discord kopiert haben.');
-        return;
-    }
-    
-    title.textContent = '⚠️ Import fehlgeschlagen';
-    icon.textContent = '❌';
-    message.innerHTML = `
-        <span style="color: #FF8232;">Die Personenprüfungsakte konnte nicht importiert werden!</span><br>
-        Bitte stellen Sie sicher, dass Sie eine vollständige Personenprüfungsakte aus Discord kopiert haben.<br><br>
-        <strong>Erforderliches Format:</strong><br>
-        • Zu überprüfende Person: \`\`\`...\`\`\`<br>
-        • Telegrammnummer (Für Rückfragen): \`\`\`...\`\`\`<br>
-        • Geprüft durch: \`\`\`...\`\`\`<br>
-        • Geprüft am: \`\`\`...\`\`\`<br>
-        • Prüfungsergebnis: \`\`\`...\`\`\`<br>
-        • Detaillierte Bewertung/Anmerkungen: \`\`\`...\`\`\` (optional)
-    `;
-    buttons.innerHTML = '<button class="popup-button" onclick="closePopup()">🔄 Erneut versuchen</button>';
-    buttons.style.display = 'flex';
-    
-    popup.classList.add('active');
+    Toast.importError(
+        'Personenprüfungsakte',
+        'Bitte stellen Sie sicher, dass Sie eine vollständige Personenprüfungsakte aus Discord kopiert haben.'
+    );
 }
 
 // Check Import Text and Update Button State
@@ -365,7 +320,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Initialize import functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Personenprüfungsakte import logic initialized (CORRECTED VERSION)');
+    console.log('🚀 Personenprüfungsakte import logic initialized with Toast system');
     
     // Add event listeners if elements exist
     const importTextarea = document.getElementById('import-text');
