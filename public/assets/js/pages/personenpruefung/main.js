@@ -307,6 +307,11 @@
             output += `Detaillierte Bewertung/Anmerkungen:\n\`\`\`\n${details || '---'}\n\`\`\``;
 
             document.getElementById('preview-output').textContent = output;
+
+            if (window.autoSaveManager) {
+                window.autoSaveManager.clearAutoSave();
+                window.autoSaveManager.updateStatus('saved', 'Vorlage generiert');
+            }
         }
 
         // Format date

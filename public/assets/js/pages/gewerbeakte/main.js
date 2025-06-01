@@ -525,6 +525,12 @@
             output += `Sonstiges:\n\`\`\`\n${sonstiges || '---'}\n\`\`\``;
 
             document.getElementById('preview-output').textContent = output;
+
+                // NEW: Clear auto-save after successful generation
+            if (window.autoSaveManager) {
+                window.autoSaveManager.clearAutoSave();
+                window.autoSaveManager.updateStatus('saved', 'Vorlage generiert');
+            }
         }
 
         // Generate license number
