@@ -308,7 +308,6 @@ class SimpleDragDropPersonenpruefung {
 
 // ===== INTEGRATION =====
 if (typeof window !== 'undefined') {
-    console.log('🔄 Integrating SimpleDragDropPersonenpruefung...');
     
     // Globale Instanz erstellen
     window.SimpleDragDropPersonenpruefung = SimpleDragDropPersonenpruefung;
@@ -328,8 +327,6 @@ if (typeof window !== 'undefined') {
         const handler = new SimpleDragDropPersonenpruefung();
         return handler.fillForm(data);
     };
-    
-    console.log('🎯 SimpleDragDropPersonenpruefung v6.0 ready - Ultra-simple approach');
 }
 
 // ===== MANUAL TEST FUNCTION =====

@@ -399,8 +399,6 @@ if (typeof window !== 'undefined') {
         const handler = new DragDropGewerbeakte();
         return handler.fillForm(data);
     };
-    
-    console.log('🎯 DragDropGewerbeakte v5.0 ready - Full Mitarbeiter support');
 }
 
 // Export

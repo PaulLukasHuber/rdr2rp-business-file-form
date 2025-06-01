@@ -331,12 +331,14 @@ let stellvertreterCounter = 1;
             });
         }
 
-        // Generate Akte
+        // Generate Akte - KORRIGIERT MIT EMPTY STATE MANAGEMENT
         function generateAkte() {
             // Validiere URL vor der Generation
             const vermerkInput = document.getElementById('vermerk');
             if (!validateURL(vermerkInput)) {
-                document.getElementById('preview-output').textContent = '⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link, bevor Sie die Vorlage generieren können.';
+                const previewOutput = document.getElementById('preview-output');
+                previewOutput.className = 'preview-output'; // Entferne empty-state für Fehlertext
+                previewOutput.textContent = '⚠️ Bitte korrigieren Sie zuerst den Vermerk-Link, bevor Sie die Vorlage generieren können.';
                 return;
             }
 
@@ -382,7 +384,9 @@ let stellvertreterCounter = 1;
             output += `Sondergenehmigung:\n\`\`\`\n${sondergenehmigung || '---'}\n\`\`\`\n`;
             output += `Sonstiges:\n\`\`\`\n${sonstiges || '---'}\n\`\`\``;
 
-            document.getElementById('preview-output').textContent = output;
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output'; // Entferne empty-state Klasse
+            previewOutput.textContent = output;
         }
 
         // Generate license number

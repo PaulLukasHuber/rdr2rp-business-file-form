@@ -308,7 +308,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Initialize import functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Import logic initialized with Toast system');
 
     // Add event listeners if elements exist
     const importTextarea = document.getElementById('import-text');
@@ -316,15 +315,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add placeholder text and styling
         importTextarea.placeholder = `Kopieren Sie hier die komplette Akte aus Discord ein...`;
     }
-
-    // Log available functions for debugging
-    console.log('Available import functions:', {
-        toggleImport: typeof toggleImport,
-        importAkte: typeof importAkte,
-        parseGewerbeakteText: typeof parseGewerbeakteText,
-        fillGewerbeakteForm: typeof fillGewerbeakteForm
-    });
-
     // Initialize import button if it exists
     initializeImportButton();
 });

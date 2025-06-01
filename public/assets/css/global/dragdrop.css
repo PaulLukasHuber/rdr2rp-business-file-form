@@ -1,6 +1,6 @@
 /* ===================================
-   DRAG & DROP IMPORT STYLES v2.0
-   Komplette überarbeitete Version mit abgerundeten Ecken
+   DRAG & DROP IMPORT STYLES v2.1
+   Komplette überarbeitete Version mit korrekten Border-Radien
    =================================== */
 
 /* ===== DRAG OVER STATES ===== */
@@ -13,10 +13,16 @@
     box-shadow: 0 8px 24px rgba(244, 192, 102, 0.3);
 }
 
+/* KORRIGIERT: Respektiert expanded Zustand bei Drag Over */
 .import-section.drag-over .import-header {
     background: rgba(244, 192, 102, 0.3) !important;
     border-color: #F4C066 !important;
     border-radius: 10px !important;
+}
+
+.import-section.drag-over .import-header.expanded {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
 }
 
 #import-text.drag-over {
@@ -94,8 +100,13 @@
     display: flex !important;
     justify-content: space-between !important;
     align-items: flex-start !important;
-    border-radius: 10px;
     transition: all 0.3s ease;
+}
+
+/* KORRIGIERT: Keine Überschreibung der Border-Radien */
+.import-section .import-header.expanded {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
 }
 
 .import-section .import-toggle {
@@ -107,9 +118,9 @@
 .import-header-enhanced {
     position: relative;
     overflow: hidden;
-    border-radius: 10px;
 }
 
+/* KORRIGIERT: Respektiert expanded Border-Radien */
 .import-header-enhanced::after {
     content: '';
     position: absolute;
@@ -413,12 +424,23 @@
 
 /* ===== HOVER ENHANCEMENTS ===== */
 .import-section:hover {
-    border-radius: 12px;
     transition: all 0.2s ease;
 }
 
+/* KORRIGIERT: Hover respektiert expanded Zustand und wirkt auf gesamte Sektion */
 .import-section:hover .import-header {
     border-radius: 10px;
+}
+
+.import-section:hover .import-header.expanded {
+    border-radius: 10px 10px 0 0 !important;
+    background: rgba(203, 131, 88, 0.2) !important;
+    border-color: #F4C066 !important;
+}
+
+.import-section:hover .import-content.expanded {
+    background: rgba(203, 131, 88, 0.08) !important;
+    border-color: #F4C066 !important;
 }
 
 /* ===== OVERRIDE FIXES ===== */
@@ -439,7 +461,7 @@
 .import-section {
     margin-bottom: 2rem;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible; /* GEÄNDERT: Erlaubt Border-Radius Änderungen */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -491,6 +513,10 @@
     
     .import-section .import-header {
         border-radius: 6px;
+    }
+    
+    .import-section .import-header.expanded {
+        border-radius: 6px 6px 0 0 !important;
     }
     
     #import-text {

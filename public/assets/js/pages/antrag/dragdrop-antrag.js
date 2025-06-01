@@ -6,7 +6,7 @@
 class DragDropAntrag {
     constructor() {
         this.version = "5.1-backward-compatible";
-        console.log(`📄 DragDropAntrag v${this.version} initialized - Backward Compatible`);
+        console.log(`📄 DragDropAntrag v${this.version} initialized`);
     }
 
     // ===== MAIN IMPORT HANDLER =====
@@ -423,11 +423,6 @@ if (typeof window !== 'undefined') {
         const handler = new DragDropAntrag();
         return handler.testBackwardCompatibility();
     };
-    
-    console.log('🎯 DragDropAntrag v5.1 ready - Backward Compatible');
-    console.log('✅ Supports OLD format: "Gewerbe:"');
-    console.log('✅ Supports NEW format: "Für Gewerbe:"');
-    console.log('🧪 Test function: testDragDropBackwardCompatibility()');
 }
 
 // Export

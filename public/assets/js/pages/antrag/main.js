@@ -65,8 +65,10 @@ let currentAntragType = '';
 
         // Clear Preview
         function clearPreview() {
-            document.getElementById('preview-output').innerHTML = `
-                <div style="text-align: center; color: #D8C5B0; font-style: italic; padding: 2rem;">
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output empty-state';
+            previewOutput.innerHTML = `
+                <div style="text-align: center; color: #D8C5B0; font-style: italic;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fa fa-clipboard"></i></div>
                     <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch kein Antrag generiert</div>
                     <div style="font-size: 0.9rem;">Wählen Sie einen Antragstyp aus und füllen Sie das Formular aus</div>
@@ -267,13 +269,14 @@ let currentAntragType = '';
             }, 1500);
         }
 
-        // Show Copy Popup - ERSETZT MIT TOAST
+        // Show Copy Popup - KORRIGIERT FÜR LEERE VALIDIERUNG
         function showCopyPopup() {
             const output = document.getElementById('preview-output').textContent;
 
-            // Check if output is empty or default
+            // KORRIGIERTE VALIDIERUNG - Prüft BEIDE möglichen Texte
             if (output.trim() === '' ||
-                output.includes('Noch kein Antrag generiert') ||
+                output.includes('Noch keine Vorlage generiert') ||  // ← Initialer HTML-Text
+                output.includes('Noch kein Antrag generiert') ||    // ← Text nach clearPreview()
                 output.includes('Wählen Sie einen Antragstyp aus')) {
                 Toast.warning(
                     '📝 Kein Antrag vorhanden',
@@ -336,7 +339,9 @@ let currentAntragType = '';
                     break;
             }
 
-            document.getElementById('preview-output').textContent = output;
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output'; // Entferne empty-state Klasse
+            previewOutput.textContent = output;
         }
 
         // Generate Gewerbeantrag
@@ -412,12 +417,14 @@ let currentAntragType = '';
             return output;
         }
 
-        // Copy to clipboard - UPDATED WITH TOAST INTEGRATION
+        // Copy to clipboard - KORRIGIERT FÜR LEERE VALIDIERUNG
         function copyToClipboard() {
             const output = document.getElementById('preview-output').textContent;
 
-            // Check if output is empty or default
-            if (output.includes('Noch kein Antrag generiert') || output.trim() === '') {
+            // KORRIGIERTE VALIDIERUNG - Prüft BEIDE möglichen Texte
+            if (output.includes('Noch keine Vorlage generiert') ||  // ← Initialer HTML-Text
+                output.includes('Noch kein Antrag generiert') ||    // ← Text nach clearPreview()
+                output.trim() === '') {
                 Toast.warning('📝 Kein Antrag vorhanden', 'Bitte generieren Sie zuerst einen Antrag!');
                 return;
             }
