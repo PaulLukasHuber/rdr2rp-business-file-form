@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-05-30
+
+### Changed
+- Improved visual consistency across user interface components
+- Enhanced footer design to match navigation bar styling
+- Removed hyperlink underlines from service cards for cleaner appearance
+- Updated business allocations data for improved accuracy
+
+### Technical
+- Consolidated duplicate CSS rules into centralized components.css file
+- Streamlined CSS architecture for better maintainability
+- Refactored business assignment logic in main.js
+- Cleaned up redundant styling declarations across page-specific stylesheets
+
+### Fixed
+- Resolved CSS duplication issues that could cause styling conflicts
+- Corrected visual inconsistencies in footer and navigation components
+
 ## [0.1.0] - 2025-05-30
 
 ### Added

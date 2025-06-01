@@ -1,4 +1,4 @@
-        // Set current date (but limited to 1899)
+// Set current date (but limited to 1899)
         const today = new Date();
         const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
         const currentDay = String(today.getDate()).padStart(2, '0');
@@ -270,7 +270,7 @@
             }
         });
 
-        // Generate Akte
+        // Generate Akte (korrigiert für separates Details-Feld)
         function generateAkte() {
             const person = document.getElementById('person').value.trim();
             const telegram = document.getElementById('telegram').value.trim();
@@ -290,7 +290,7 @@
                     case 'nicht-bestanden':
                         ergebnisText = '❌ Nicht bestanden';
                         break;
-                    case 'ausstehend': // NEUE OPTION
+                    case 'ausstehend':
                         ergebnisText = '⏳ Prüfung ausstehend';
                         break;
                     default:
@@ -298,18 +298,13 @@
                 }
             }
 
-            // Add details to result if provided
-            let fullErgebnis = ergebnisText;
-            if (details) {
-                fullErgebnis += `\n\nDetaillierte Bewertung:\n${details}`;
-            }
-
-            // Format output according to template
+            // Format output according to corrected template
             let output = `Zu überprüfende Person:\n\`\`\`\n${person || '---'}\n\`\`\`\n`;
             output += `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${telegram || '---'}\n\`\`\`\n`;
             output += `Geprüft durch:\n\`\`\`\n${pruefer || '---'}\n\`\`\`\n`;
             output += `Geprüft am:\n\`\`\`\n${formatDate(datum) || '---'}\n\`\`\`\n`;
-            output += `Prüfungsergebnis:\n\`\`\`\n${fullErgebnis || '---'}\n\`\`\``;
+            output += `Prüfungsergebnis:\n\`\`\`\n${ergebnisText || '---'}\n\`\`\`\n`;
+            output += `Detaillierte Bewertung/Anmerkungen:\n\`\`\`\n${details || '---'}\n\`\`\``;
 
             document.getElementById('preview-output').textContent = output;
         }

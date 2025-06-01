@@ -21,6 +21,7 @@
         <link rel="stylesheet" href="assets/css/global/layout.css">
         <link rel="stylesheet" href="assets/css/global/components.css">
         <link rel="stylesheet" href="assets/css/global/animations.css">
+        <link rel="stylesheet" href="assets/css/global/dragdrop.css">
         
         <!-- Page-specific Stylesheet -->
         <link rel="stylesheet" href="assets/css/pages/personenpruefung.css">
@@ -65,8 +66,11 @@
             <div class="import-section">
                 <div class="import-header" onclick="toggleImport()">
                     <div class="import-title">
-                        <span><i class="fa-solid fa-file-import"></i></span>
-                        <span>Bestehende Akte importieren</span>
+                        <i class="fa-solid fa-file-import"></i>
+                        <div class="import-title-text">
+                            <span>Bestehende Akte importieren<span class="beta-tag">BETA</span></span>
+                            <div class="drag-drop-hint">oder bestehende Akte hierher ziehen</div>
+                        </div>
                     </div>
                     <div class="import-toggle" id="import-toggle"><i class="fa-solid fa-angle-down"></i></div>
                 </div>
@@ -182,9 +186,11 @@
         </p>
     </footer>
 
+    <!-- JavaScript -->
     <script src="assets/js/global/utils.js"></script>
+    <script src="assets/js/global/dragdrop-core.js"></script>
     <script src="assets/js/pages/personenpruefung/main.js"></script>
     <script src="assets/js/pages/personenpruefung/import.js"></script>
-
+    <script src="assets/js/pages/personenpruefung/dragdrop-personenpruefung.js"></script>
 </body>
 </html>
