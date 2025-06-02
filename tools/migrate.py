@@ -262,7 +262,7 @@ if __name__ == "__main__":
         f.write(build_script)
     
     # Make executable
-    os.chmod('tools/build.py', 0o755)
+    os.chmod('tools/build.py', 0o700)
     
     print("✅ Erstellt: tools/build.py")
 
