@@ -96,27 +96,17 @@
                 <input type="text" class="form-input" id="telegram" placeholder="Telegrammnummer eingeben..." required>
             </div>
 
-            <div class="form-group">
-                <label class="form-label"><i class="fa-solid fa-user-secret"></i> Geprüft durch:</label>
-                <input type="text" class="form-input" id="pruefer" placeholder="Name des Prüfers...">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label"><i class="fa-solid fa-calendar-check"></i> Geprüft am:</label>
-                <input type="date" class="form-input" id="datum" max="1899-12-31" required>
-            </div>
-
             <div class="ergebnis-section">
-                <div class="ergebnis-title"><i class="fa-solid fa-clipboard-question"></i> Prüfungsergebnis</div>
+                <div class="ergebnis-title"><i class="fa-solid fa-clipboard-question"></i> Prüfungsstatus</div>
                 
-                <div class="radio-group" onclick="selectResult('ausstehend')">
-                    <input type="radio" name="ergebnis" value="ausstehend" id="ausstehend">
+                <div class="radio-group ausstehend-group selected" onclick="selectResult('ausstehend')">
+                    <input type="radio" name="ergebnis" value="ausstehend" id="ausstehend" checked>
                     <label for="ausstehend">
                         <i class="fa-solid fa-hourglass-half" style="color: orange;"></i>
-                        <span style="color: inherit;">Ausstehend</span>
+                        <span style="color: inherit;">Prüfung ausstehend</span>
                     </label>
                 </div>
-                <br>
+                
                 <div class="ergebnis-options">
                     <div class="radio-group" onclick="selectResult('bestanden')">
                         <input type="radio" name="ergebnis" value="bestanden" id="bestanden">
@@ -135,9 +125,27 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label"><i class="fa-solid fa-file-pen"></i> Detaillierte Bewertung/Anmerkungen:</label>
-                    <textarea class="form-input form-textarea" id="details" placeholder="Detaillierte Beschreibung des Prüfungsergebnisses, Anmerkungen, Verbesserungsvorschläge..."></textarea>
+                <!-- Conditional Fields - nur sichtbar bei "Bestanden" oder "Nicht bestanden" -->
+                <div class="conditional-fields" id="pruefungsdetails">
+                    <div class="conditional-fields-title">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        Prüfungsdetails
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-user-tie"></i> Geprüft durch:</label>
+                        <input type="text" class="form-input" id="pruefer" placeholder="Name des Prüfers...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-calendar-check"></i> Geprüft am:</label>
+                        <input type="date" class="form-input" id="datum" max="1899-12-31">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-file-pen"></i> Detaillierte Bewertung/Anmerkungen:</label>
+                        <textarea class="form-input form-textarea" id="details" placeholder="Detaillierte Beschreibung des Prüfungsergebnisses, Anmerkungen, Verbesserungsvorschläge..."></textarea>
+                    </div>
                 </div>
             </div>
 

@@ -1,217 +1,190 @@
 // ===================================
-// DRAG & DROP PERSONENPRÜFUNG HANDLER v6.0
-// KOMPLETT NEUER, EINFACHER ANSATZ
+// DRAG & DROP PERSONENPRÜFUNG HANDLER v8.0 - CLEAN REWRITE
+// Komplett neue, saubere Implementation
 // ===================================
 
 class SimpleDragDropPersonenpruefung {
     constructor() {
-        this.version = "6.0";
-        console.log(`👤 SimpleDragDropPersonenpruefung v${this.version} - Komplett neuer Ansatz`);
+        this.version = "8.0-clean";
+        console.log("SimpleDragDropPersonenpruefung v" + this.version + " - Clean rewrite");
     }
 
-    // ===== MAIN HANDLER =====
+    // ===== MAIN IMPORT HANDLER =====
     handleImport(text) {
-        console.log(`🔄 v${this.version}: Starting simple import...`);
-        console.log(`📄 Text length: ${text.length} characters`);
+        console.log("Starting import process...");
         
         try {
-            // Schritt 1: Ist es eine Personenprüfungsakte?
-            if (!this.isPersonenpruefungsakte(text)) {
-                console.log(`❌ Not a Personenprüfungsakte`);
+            // Schritt 1: Validierung
+            if (!this.isValidPersonenpruefungsakte(text)) {
+                console.log("Not a valid Personenprüfungsakte");
                 this.showError();
                 return false;
             }
             
             // Schritt 2: Daten extrahieren
-            const data = this.extractData(text);
-            console.log(`📊 Extracted data:`, data);
-            
+            const data = this.extractAllData(text);
             if (!data || Object.keys(data).length === 0) {
-                console.log(`❌ No data extracted`);
+                console.log("No data could be extracted");
                 this.showError();
                 return false;
             }
             
             // Schritt 3: Formular füllen
-            this.fillForm(data);
+            this.fillFormWithData(data);
             
-            // Schritt 4: UI aufräumen
-            this.cleanup();
+            // Schritt 4: Cleanup
+            this.performCleanup();
             
-            console.log(`✅ Import completed successfully`);
+            console.log("Import completed successfully");
             return true;
             
         } catch (error) {
-            console.error(`❌ Import error:`, error);
+            console.error("Import error:", error);
             this.showError();
             return false;
         }
     }
 
     // ===== VALIDATION =====
-    isPersonenpruefungsakte(text) {
-        console.log(`🔍 Checking if text is Personenprüfungsakte...`);
+    isValidPersonenpruefungsakte(text) {
+        const hasPersonField = text.includes("Zu überprüfende Person:");
+        const hasResultField = text.includes("Prüfungsergebnis:");
+        const hasTelegramField = text.includes("Telegramm");
         
-        // Einfache Checks
-        const hasPersonField = text.includes('Zu überprüfende Person:');
-        const hasResultField = text.includes('Prüfungsergebnis:');
-        const hasTelegramField = text.includes('Telegramm');
+        // Nicht eine Gewerbeakte
+        const isNotGewerbeakte = !text.includes("Lizenznummer:") && 
+                                !text.includes("Mitarbeiter (*Nur Inhaber") &&
+                                !text.includes("Sondergenehmigung:");
         
-        // Ausschließende Checks (keine Gewerbeakte)
-        const isNotGewerbeakte = !text.includes('Lizenznummer:') && 
-                                !text.includes('Mitarbeiter (*Nur Inhaber') &&
-                                !text.includes('Sondergenehmigung:');
-        
-        const result = hasPersonField && hasResultField && isNotGewerbeakte;
-        console.log(`📊 Validation result: ${result} (Person: ${hasPersonField}, Result: ${hasResultField}, NotGewerbe: ${isNotGewerbeakte})`);
-        
-        return result;
+        return hasPersonField && hasResultField && hasTelegramField && isNotGewerbeakte;
     }
 
-    // ===== DATA EXTRACTION - SUPER EINFACH =====
-    extractData(text) {
-        console.log(`📥 Starting data extraction...`);
-        
+    // ===== DATA EXTRACTION =====
+    extractAllData(text) {
         const data = {};
         
-        // Zeilen aufteilen
-        const lines = text.split('\n').map(line => line.trim());
-        console.log(`📄 Total lines: ${lines.length}`);
-        
-        // Jeden Feldtyp einzeln suchen
-        data.person = this.findFieldValue(lines, 'Zu überprüfende Person:');
-        data.telegram = this.findFieldValue(lines, 'Telegrammnummer');
-        data.pruefer = this.findFieldValue(lines, 'Geprüft durch:');
-        data.datum = this.findFieldValue(lines, 'Geprüft am:');
-        data.ergebnis = this.findFieldValue(lines, 'Prüfungsergebnis:');
-        data.details = this.findFieldValue(lines, 'Detaillierte Bewertung');
+        // Alle Felder extrahieren
+        data.person = this.extractFieldValue(text, "Zu überprüfende Person:");
+        data.telegram = this.extractFieldValue(text, "Telegrammnummer");
+        data.pruefer = this.extractFieldValue(text, "Geprüft durch:");
+        data.datum = this.extractFieldValue(text, "Geprüft am:");
+        data.ergebnis = this.extractFieldValue(text, "Prüfungsergebnis:");
+        data.details = this.extractFieldValue(text, "Detaillierte Bewertung");
         
         // Fallback für Details
         if (!data.details) {
-            data.details = this.findFieldValue(lines, 'Anmerkungen:');
+            data.details = this.extractFieldValue(text, "Anmerkungen:");
         }
-        
-        console.log(`📊 Raw extracted data:`, data);
         
         // Ergebnis-Typ bestimmen
         if (data.ergebnis) {
             data.ergebnisType = this.determineResultType(data.ergebnis);
-            console.log(`🎯 Determined result type: "${data.ergebnisType}"`);
         }
         
+        console.log("Extracted data:", data);
         return data;
     }
 
-    // ===== FELD-EXTRAKTION =====
-    findFieldValue(lines, fieldName) {
-        console.log(`🔍 Looking for field: "${fieldName}"`);
+    extractFieldValue(text, fieldName) {
+        const lines = text.split("\n");
         
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
+            const line = lines[i].trim();
             
-            // Feldname gefunden?
             if (line.toLowerCase().includes(fieldName.toLowerCase())) {
-                console.log(`📍 Found field "${fieldName}" at line ${i}: "${line}"`);
-                
-                // Wert in der gleichen Zeile?
-                const colonIndex = line.indexOf(':');
-                if (colonIndex !== -1) {
-                    const sameLineValue = line.substring(colonIndex + 1).trim();
-                    if (sameLineValue && sameLineValue !== '```' && sameLineValue !== '---') {
-                        console.log(`✅ Same line value: "${sameLineValue}"`);
-                        return sameLineValue;
-                    }
-                }
-                
-                // Wert in den nächsten Zeilen suchen - ABER nur bis zum nächsten Feld
-                let inCodeBlock = false;
-                for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
+                // Suche in den nächsten Zeilen
+                for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
                     const nextLine = lines[j].trim();
                     
-                    // Code-Block Start
-                    if (nextLine === '```') {
-                        if (!inCodeBlock) {
-                            inCodeBlock = true;
-                            continue;
-                        } else {
-                            // Code-Block Ende erreicht - aufhören
-                            break;
-                        }
-                    }
-                    
-                    // Wenn wir im Code-Block sind und einen Wert finden
-                    if (inCodeBlock && nextLine && nextLine !== '---') {
-                        console.log(`✅ Code block value: "${nextLine}"`);
-                        return nextLine;
-                    }
-                    
-                    // Neues Feld gefunden - aufhören
-                    if (nextLine.includes(':') && !inCodeBlock) {
-                        console.log(`🛑 Found next field, stopping search: "${nextLine}"`);
-                        break;
-                    }
-                    
-                    // Direkter Wert (falls kein Code-Block verwendet wird)
-                    if (!inCodeBlock && nextLine && 
-                        nextLine !== '---' && 
-                        nextLine !== '```' &&
-                        !nextLine.includes(':') &&
-                        nextLine.length > 1) {
-                        console.log(`✅ Direct value: "${nextLine}"`);
+                    // Code block content
+                    if (nextLine && nextLine !== "---" && nextLine !== "```" && 
+                        !nextLine.includes(":") && nextLine.length > 1) {
                         return nextLine;
                     }
                 }
-                
-                break; // Feld gefunden aber kein Wert
+                break;
             }
         }
         
-        console.log(`❌ No value found for "${fieldName}"`);
         return null;
     }
 
-    // ===== ERGEBNIS-TYP BESTIMMEN =====
     determineResultType(ergebnis) {
         const lower = ergebnis.toLowerCase();
         
-        console.log(`🎯 Determining result type for: "${ergebnis}" -> lowercase: "${lower}"`);
-        
-        // WICHTIG: Reihenfolge ist entscheidend! 
-        // "Nicht bestanden" MUSS vor "bestanden" geprüft werden!
-        if (ergebnis.includes('❌') || lower.includes('nicht bestanden')) {
-            console.log(`✅ Detected: NICHT BESTANDEN`);
-            return 'nicht-bestanden';
-        } else if (ergebnis.includes('✅') || (lower.includes('bestanden') && !lower.includes('nicht'))) {
-            console.log(`✅ Detected: BESTANDEN`);
-            return 'bestanden';
-        } else if (ergebnis.includes('⏳') || lower.includes('ausstehend')) {
-            console.log(`✅ Detected: AUSSTEHEND`);
-            return 'ausstehend';
+        if (ergebnis.includes("❌") || lower.includes("nicht bestanden")) {
+            return "nicht-bestanden";
+        } else if (ergebnis.includes("✅") || (lower.includes("bestanden") && !lower.includes("nicht"))) {
+            return "bestanden";
+        } else if (ergebnis.includes("⏳") || lower.includes("ausstehend")) {
+            return "ausstehend";
         }
         
-        console.log(`❌ Could not determine result type`);
         return null;
     }
 
-    // ===== FORMULAR FÜLLEN - ULTRA EINFACH =====
-    fillForm(data) {
-        console.log(`📝 Filling form with simple approach...`);
+    // ===== FORM FILLING =====
+    fillFormWithData(data) {
+        console.log("Filling form with data");
         
-        // Basis-Felder füllen
-        this.setFieldValue('person', data.person);
-        this.setFieldValue('telegram', data.telegram);
-        this.setFieldValue('pruefer', data.pruefer);
-        this.setFieldValue('details', data.details);
+        // Basis-Felder
+        this.setFieldValue("person", data.person);
+        this.setFieldValue("telegram", data.telegram);
+        
+        // Radio Button und conditional fields
+        if (data.ergebnisType) {
+            this.setRadioButtonAndConditionalFields(data.ergebnisType, data);
+        }
         
         // Aktuelles Datum setzen
         this.setCurrentDate();
+    }
+
+    setRadioButtonAndConditionalFields(resultType, data) {
+        console.log("Setting radio button:", resultType);
         
-        // Radio Button setzen
-        if (data.ergebnisType) {
-            this.setRadioButton(data.ergebnisType);
+        // Alle Radio-Gruppen zurücksetzen
+        document.querySelectorAll(".radio-group").forEach(function(group) {
+            group.classList.remove("selected");
+        });
+        
+        document.querySelectorAll("input[name='ergebnis']").forEach(function(radio) {
+            radio.checked = false;
+        });
+        
+        // Target Radio aktivieren
+        const targetRadio = document.getElementById(resultType);
+        if (targetRadio) {
+            targetRadio.checked = true;
+            
+            const parentGroup = targetRadio.closest(".radio-group");
+            if (parentGroup) {
+                parentGroup.classList.add("selected");
+            }
+            
+            // Conditional fields handling
+            const conditionalFields = document.getElementById("pruefungsdetails");
+            
+            if (resultType === "bestanden" || resultType === "nicht-bestanden") {
+                // Felder anzeigen
+                conditionalFields.classList.add("show");
+                
+                // Felder füllen
+                if (data.pruefer) {
+                    this.setFieldValue("pruefer", data.pruefer);
+                }
+                if (data.details) {
+                    this.setFieldValue("details", data.details);
+                }
+                
+            } else {
+                // Felder verstecken und leeren
+                conditionalFields.classList.remove("show");
+                this.setFieldValue("pruefer", "");
+                this.setFieldValue("details", "");
+                document.getElementById("datum").value = "";
+            }
         }
-        
-        console.log(`✅ Form filling completed`);
     }
 
     // ===== UTILITY FUNCTIONS =====
@@ -221,67 +194,33 @@ class SimpleDragDropPersonenpruefung {
         const field = document.getElementById(fieldId);
         if (field) {
             field.value = value;
-            field.dispatchEvent(new Event('input'));
-            console.log(`✅ Set ${fieldId}: "${value}"`);
-        } else {
-            console.log(`⚠️ Field ${fieldId} not found`);
+            field.dispatchEvent(new Event("input"));
+            console.log("Set field " + fieldId + ":", value);
         }
     }
 
     setCurrentDate() {
         const today = new Date();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        const dateValue = `1899-${month}-${day}`;
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        const dateValue = "1899-" + month + "-" + day;
         
-        const dateField = document.getElementById('datum');
+        const dateField = document.getElementById("datum");
         if (dateField) {
             dateField.value = dateValue;
-            console.log(`📅 Set date: ${dateValue}`);
-        }
-    }
-
-    setRadioButton(resultType) {
-        console.log(`🎯 Setting radio button for: "${resultType}"`);
-        
-        // Alle Gruppen deselektieren
-        document.querySelectorAll('.radio-group').forEach(group => {
-            group.classList.remove('selected');
-        });
-        
-        // Alle Radio Buttons deaktivieren
-        document.querySelectorAll('input[name="ergebnis"]').forEach(radio => {
-            radio.checked = false;
-        });
-        
-        // Target Radio finden und aktivieren
-        const targetRadio = document.getElementById(resultType);
-        if (targetRadio) {
-            targetRadio.checked = true;
-            
-            // Parent Gruppe finden und markieren
-            const parentGroup = targetRadio.closest('.radio-group');
-            if (parentGroup) {
-                parentGroup.classList.add('selected');
-                console.log(`✅ Selected radio button: ${resultType}`);
-            } else {
-                console.log(`⚠️ Parent group not found for: ${resultType}`);
-            }
-        } else {
-            console.log(`⚠️ Radio button not found: ${resultType}`);
         }
     }
 
     // ===== UI MANAGEMENT =====
-    cleanup() {
+    performCleanup() {
         // Import-Feld leeren
-        const importField = document.getElementById('import-text');
+        const importField = document.getElementById("import-text");
         if (importField) {
-            importField.value = '';
+            importField.value = "";
         }
         
         // Button-Status aktualisieren
-        if (typeof checkImportText === 'function') {
+        if (typeof checkImportText === "function") {
             checkImportText();
         }
         
@@ -290,55 +229,47 @@ class SimpleDragDropPersonenpruefung {
     }
 
     showSuccess() {
-        if (typeof showImportSuccessPopup === 'function') {
+        if (typeof showImportSuccessPopup === "function") {
             showImportSuccessPopup();
         } else {
-            console.log('✅ Import erfolgreich!');
+            console.log("Import successful!");
         }
     }
 
     showError() {
-        if (typeof showPersonenprüfungImportErrorPopup === 'function') {
+        if (typeof showPersonenprüfungImportErrorPopup === "function") {
             showPersonenprüfungImportErrorPopup();
         } else {
-            console.log('❌ Import fehlgeschlagen!');
+            console.log("Import failed!");
         }
     }
 }
 
-// ===== INTEGRATION =====
-if (typeof window !== 'undefined') {
-    
-    // Globale Instanz erstellen
+// ===== GLOBAL INTEGRATION =====
+if (typeof window !== "undefined") {
+    // Instanz erstellen
     window.SimpleDragDropPersonenpruefung = SimpleDragDropPersonenpruefung;
-    
-    // Handler Instanz für DragDropCore
     window.DragDropPersonenpruefung = SimpleDragDropPersonenpruefung;
     
-    // Globale Funktionen überschreiben
+    // Globale Funktionen
     window.parsePersonenprüfungsakteText = function(text) {
-        console.log('🔧 parsePersonenprüfungsakteText called via Simple handler');
         const handler = new SimpleDragDropPersonenpruefung();
-        return handler.extractData(text);
+        return handler.extractAllData(text);
     };
     
     window.fillPersonenprüfungsakteForm = function(data) {
-        console.log('🔧 fillPersonenprüfungsakteForm called via Simple handler');
         const handler = new SimpleDragDropPersonenpruefung();
-        return handler.fillForm(data);
+        return handler.fillFormWithData(data);
     };
-}
-
-// ===== MANUAL TEST FUNCTION =====
-if (typeof window !== 'undefined') {
+    
+    // Test-Funktion
     window.testPersonenprüfungImport = function(testText) {
-        console.log('🧪 Testing Personenprüfung import...');
         const handler = new SimpleDragDropPersonenpruefung();
         return handler.handleImport(testText);
     };
 }
 
-// Export
-if (typeof module !== 'undefined' && module.exports) {
+// Export für Module
+if (typeof module !== "undefined" && module.exports) {
     module.exports = { SimpleDragDropPersonenpruefung };
 }
