@@ -1,0 +1,569 @@
+/* ===================================
+   MODULAR TOAST SYSTEM v2.3 - FIXED CONFIRMATION DESIGN
+   - Confirmation Toast Design an normale Toasts angepasst
+   - Weniger auffällig, einheitliches Design
+   - Nur Action-Buttons als Unterschied zu normalen Toasts
+   =================================== */
+
+/* ===== TOAST CONTAINER ===== */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+    pointer-events: none;
+    max-width: 400px;
+    width: 100%;
+}
+
+/* ===== TOAST BASE STYLES ===== */
+.toast {
+    background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.4),
+        0 4px 16px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 70px;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+/* ===== TOAST SHOW ANIMATION ===== */
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* ===== TOAST HIDE ANIMATION ===== */
+.toast.hide {
+    transform: translateY(100%);
+    opacity: 0;
+    margin-top: -100px;
+    transition: all 0.3s ease;
+}
+
+/* ===== TOAST VARIANTS ===== */
+.toast.success {
+    border-left: 4px solid #35a26f;
+    background: linear-gradient(135deg, rgba(53, 162, 162, 0.1) 0%, #2C2623 50%, #1E1A17 100%);
+}
+
+.toast.error {
+    border-left: 4px solid #ff3232;
+    background: linear-gradient(135deg, rgba(255, 130, 50, 0.1) 0%, #2C2623 50%, #1E1A17 100%);
+}
+
+.toast.warning {
+    border-left: 4px solid #ff3232;
+    background: linear-gradient(135deg, rgba(244, 192, 102, 0.1) 0%, #2C2623 50%, #1E1A17 100%);
+}
+
+.toast.info {
+    border-left: 4px solid #6fcb58;
+    background: linear-gradient(135deg, rgba(203, 131, 88, 0.1) 0%, #2C2623 50%, #1E1A17 100%);
+}
+
+.toast.loading {
+    border-left: 4px solid #F4C066;
+    background: linear-gradient(135deg, rgba(244, 192, 102, 0.1) 0%, #2C2623 50%, #1E1A17 100%);
+}
+
+/* ===== CONFIRMATION TOAST - ERBT ALLES VON .toast ===== */
+.toast.confirmation-toast {
+    /* Nur die Unterschiede zu normalen Toasts */
+    max-width: 450px; /* Etwas breiter für Buttons */
+    border-left-color: #F4C066; /* Farbe der Guidelines */
+    
+    /* Glas-Effekt wird von .toast geerbt, aber zur Sicherheit nochmal explizit */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* ===== TOAST CONTENT ===== */
+.toast-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-top: 0.2rem;
+}
+
+.toast.success .toast-icon {
+    color: #35A2A2;
+}
+
+.toast.error .toast-icon {
+    color: #FF8232;
+}
+
+.toast.warning .toast-icon {
+    color: #F4C066;
+}
+
+.toast.info .toast-icon {
+    color: #CB8358;
+}
+
+.toast.loading .toast-icon {
+    color: #F4C066;
+    animation: toast-loading-spin 1s linear infinite;
+}
+
+/* Confirmation Toast Icon */
+.toast.confirmation-toast .toast-icon {
+    color: #F4C066; /* Gleiche Farbe wie Guidelines */
+}
+
+.toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-title {
+    color: #F5F5F5;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.toast-message {
+    color: #D8C5B0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.toast-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(200, 73, 29, 0.8);
+    color: #F5F5F5;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.toast-close:hover {
+    background: #C8491D;
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* ===== TOAST ACTIONS (BUTTONS) - VEREINFACHT ===== */
+.toast-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.toast-action-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+/* Confirm Button - Design Guidelines Farben */
+.toast-confirm-btn {
+    background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
+    color: #2C2623;
+    border: 1px solid transparent;
+}
+
+.toast-confirm-btn:hover {
+    background: linear-gradient(135deg, #FFD700 0%, #F4C066 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 192, 102, 0.4);
+}
+
+.toast-confirm-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(244, 192, 102, 0.4);
+}
+
+/* Cancel Button - Design Guidelines Farben */
+.toast-cancel-btn {
+    background: linear-gradient(135deg, #CB8358 0%, #A85F3D 100%);
+    color: #F5F5F5;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.toast-cancel-btn:hover {
+    background: linear-gradient(135deg, #A85F3D 0%, #8B4513 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(203, 131, 88, 0.4);
+    border-color: #F4C066;
+}
+
+.toast-cancel-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(203, 131, 88, 0.4);
+}
+
+/* ===== CONFIRMATION TOAST CONTENT ADJUSTMENTS ===== */
+.confirmation-toast .toast-content {
+    padding-right: 0; /* Kein extra Platz für Close Button */
+}
+
+.confirmation-toast .toast-title {
+    color: #F5F5F5; /* Gleiche Farbe wie normale Toasts */
+    font-size: 1rem; /* Normale Größe */
+    margin-bottom: 0.25rem; /* Normale Margins */
+}
+
+.confirmation-toast .toast-message {
+    color: #D8C5B0; /* Gleiche Farbe wie normale Toasts */
+    font-size: 0.9rem; /* Normale Größe */
+    line-height: 1.4; /* Normale Line-Height */
+}
+
+/* ===== STANDARD HOVER EFFECTS (GLEICH WIE ANDERE TOASTS) ===== */
+.toast:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+        0 12px 40px rgba(0,0,0,0.5),
+        0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Confirmation Toast hat gleiche Hover wie andere */
+.toast.confirmation-toast:hover {
+    /* Gleicher Hover-Effekt wie andere Toasts */
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+        0 12px 40px rgba(0,0,0,0.5),
+        0 6px 20px rgba(0,0,0,0.3);
+    /* ENTFERNT: Spezielle Hover-Effekte */
+}
+
+/* ===== ENTFERNTE SPEZIAL-EFFEKTE ===== */
+/* ENTFERNT: shimmer animation */
+/* ENTFERNT: confirmationPulse animation */
+/* ENTFERNT: urgent class styles */
+/* ENTFERNT: special border effects */
+
+/* ===== PROGRESS BAR (für normale Toasts) ===== */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: currentColor;
+    border-radius: 0 0 12px 12px;
+    opacity: 0.8;
+    transform-origin: left;
+    animation: toast-progress-animation linear;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    transition: opacity 0.2s ease;
+}
+
+/* Progress Bar Farben */
+.toast.success .toast-progress {
+    background: #35a26f;
+    box-shadow: 0 0 12px rgba(53, 162, 162, 0.4);
+}
+
+.toast.error .toast-progress {
+    background: #FF8232;
+    box-shadow: 0 0 12px rgba(255, 130, 50, 0.4);
+}
+
+.toast.warning .toast-progress {
+    background: #f47766;
+    box-shadow: 0 0 12px rgba(244, 192, 102, 0.4);
+}
+
+.toast.info .toast-progress {
+    background: #CB8358;
+    box-shadow: 0 0 12px rgba(203, 131, 88, 0.4);
+}
+
+.toast.loading .toast-progress {
+    background: #F4C066;
+    box-shadow: 0 0 12px rgba(244, 192, 102, 0.4);
+}
+
+@keyframes toast-progress-animation {
+    from {
+        transform: scaleX(1);
+        opacity: 0.8;
+    }
+    to {
+        transform: scaleX(0);
+        opacity: 0.4;
+    }
+}
+
+@keyframes toast-loading-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.toast:hover .toast-progress {
+    animation-play-state: paused;
+    opacity: 1;
+    height: 5px;
+    transition: all 0.2s ease;
+}
+
+/* ===== TOAST STACKING ===== */
+.toast {
+    order: 0;
+    margin-bottom: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-container .toast:nth-last-child(n+6) {
+    transform: translateY(100%) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    margin-top: -80px;
+}
+
+.toast-container .toast:nth-last-child(5) {
+    transform: translateY(0) scale(0.95);
+    opacity: 0.7;
+    filter: blur(1px);
+}
+
+.toast-container .toast:nth-last-child(4) {
+    transform: translateY(0) scale(0.97);
+    opacity: 0.8;
+    filter: blur(0.5px);
+}
+
+.toast-container .toast:nth-last-child(3) {
+    transform: translateY(0) scale(0.98);
+    opacity: 0.9;
+}
+
+.toast-container .toast:nth-last-child(2) {
+    transform: translateY(0) scale(0.99);
+    opacity: 0.95;
+}
+
+.toast-container .toast:nth-last-child(1) {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .toast-container {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+    
+    .toast {
+        padding: 0.875rem 1.25rem;
+        border-radius: 10px;
+        min-height: 60px;
+    }
+    
+    .toast.confirmation-toast {
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .toast-actions {
+        justify-content: stretch;
+    }
+    
+    .toast-action-btn {
+        flex: 1;
+        min-width: auto;
+    }
+    
+    .toast-title {
+        font-size: 0.95rem;
+    }
+    
+    .toast-message {
+        font-size: 0.85rem;
+    }
+    
+    .toast-progress {
+        height: 4px;
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 480px) {
+    .toast-container {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        left: 0.5rem;
+    }
+    
+    .toast {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        gap: 0.75rem;
+    }
+    
+    .toast-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .toast-action-btn {
+        width: 100%;
+    }
+    
+    .toast-progress {
+        height: 3px;
+        border-radius: 0 0 8px 8px;
+    }
+}
+
+/* ===== SPECIAL LOADING TOAST PROGRESS ===== */
+.toast.loading .toast-progress {
+    animation: toast-loading-progress 2s ease-in-out infinite !important;
+}
+
+@keyframes toast-loading-progress {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scaleX(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+.toast-action-btn:focus {
+    outline: 2px solid #F4C066;
+    outline-offset: 2px;
+}
+
+.toast-action-btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        transition: opacity 0.2s ease;
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+    }
+    
+    .toast.hide {
+        transform: translateY(0);
+        margin-top: 0;
+    }
+    
+    .toast:hover {
+        transform: none;
+    }
+    
+    .toast-action-btn:hover {
+        transform: none;
+    }
+    
+    .toast-progress {
+        animation: none !important;
+        opacity: 0.6;
+    }
+    
+    .toast-icon {
+        animation: none !important;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .toast {
+        border: 2px solid #F4C066;
+        background: #1E1A17;
+    }
+    
+    .toast.success {
+        border-color: #35a26f;
+    }
+    
+    .toast.error {
+        border-color: #FF8232;
+    }
+    
+    .toast.warning {
+        border-color: #F4C066;
+    }
+    
+    .toast.info {
+        border-color: #CB8358;
+    }
+    
+    .toast.confirmation-toast {
+        border: 2px solid #F4C066; /* Gleich wie andere Toasts */
+        background: #1E1A17;
+    }
+    
+    .toast-confirm-btn {
+        border: 2px solid #F4C066;
+    }
+    
+    .toast-cancel-btn {
+        border: 2px solid #CB8358;
+    }
+    
+    .toast-progress {
+        opacity: 1;
+        height: 5px;
+        border: 1px solid currentColor;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .toast {
+        background: linear-gradient(135deg, #1A1714 0%, #0F0D0B 100%);
+        border-color: rgba(255,255,255,0.15);
+    }
+    
+    .toast-progress {
+        opacity: 0.9;
+    }
+}

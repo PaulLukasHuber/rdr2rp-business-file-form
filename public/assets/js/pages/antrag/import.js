@@ -1,38 +1,65 @@
 // ===================================
-// ANTRÄGE IMPORT LOGIC
+// ANTRAG IMPORT LOGIC - MIT TOAST SYSTEM
+// Löst das toggleImport Problem und ersetzt Popups mit Toasts
 // ===================================
-// Toggle Import Section
+
+// Toggle Import Section - SOFORT DEFINIERT
 function toggleImport() {
+    console.log('🔄 toggleImport called');
+    
     const content = document.getElementById('import-content');
     const toggle = document.getElementById('import-toggle');
     const header = document.getElementById('import-header');
 
+    if (!content || !toggle || !header) {
+        console.error('❌ Import elements not found:', {
+            content: !!content,
+            toggle: !!toggle, 
+            header: !!header
+        });
+        return;
+    }
+
     content.classList.toggle('expanded');
     toggle.classList.toggle('expanded');
     header.classList.toggle('expanded');
+    
+    console.log('✅ toggleImport completed');
 }
 
-// Main Import Function
+// Main Import Function - MIT TOAST SYSTEM
 function importAntrag() {
-    const importText = document.getElementById('import-text').value.trim();
-
+    console.log('🚀 importAntrag called with Toast system');
+    
+    const importText = document.getElementById('import-text');
     if (!importText) {
-        alert('📋 Bitte fügen Sie zuerst einen Antrag zum Importieren ein!');
+        console.error('❌ import-text element not found');
+        Toast.error('❌ Fehler', 'Import-Textfeld nicht gefunden');
+        return;
+    }
+
+    const textValue = importText.value.trim();
+    if (!textValue) {
+        Toast.warning('📋 Import-Feld leer', 'Bitte fügen Sie zuerst einen Antrag zum Importieren ein!');
         return;
     }
 
     try {
+        console.log('🚀 Starting backward compatible import process...');
+        
         // Parse the imported text
-        const parsedData = parseAntragText(importText);
+        const parsedData = parseAntragText(textValue);
 
         if (parsedData && parsedData.type) {
+            console.log('✅ Parse successful, filling form...');
+            
             // Fill form with parsed data
             fillAntragForm(parsedData);
 
             // Clear import field
-            document.getElementById('import-text').value = '';
+            importText.value = '';
 
-            // Show success message
+            // Show success message mit Toast
             showAntragImportSuccessPopup();
 
             // Auto-collapse import section
@@ -40,16 +67,80 @@ function importAntrag() {
                 toggleImport();
             }, 1000);
         } else {
+            console.log('❌ Parse failed, showing error toast');
             showAntragImportErrorPopup();
         }
     } catch (error) {
-        console.error('Import error:', error);
+        console.error('❌ Import error:', error);
         showAntragImportErrorPopup();
     }
 }
 
-// Parse Antrag Text from Discord Format
+// Stelle sicher, dass Funktionen global verfügbar sind
+window.toggleImport = toggleImport;
+window.importAntrag = importAntrag;
+
+// ===================================
+// VOLLSTÄNDIGE IMPORT LOGIC
+// ===================================
+
+// SPEZIELLE GEWERBE-EXTRAKTION für Gewerbekutsche (unterstützt beide Formate)
+function extractGewerbeForGewerbekutsche(text) {
+    console.log(`\n🎯 === SPECIAL GEWERBE EXTRACTION FOR GEWERBEKUTSCHE ===`);
+    
+    // Erst das neue Format versuchen: "Für Gewerbe:"
+    console.log(`🔍 Trying NEW format "Für Gewerbe:"...`);
+    const newFormatResult = extractField(text, 'Für Gewerbe');
+    if (newFormatResult) {
+        console.log(`✅ Found with NEW format "Für Gewerbe:": "${newFormatResult}"`);
+        return newFormatResult;
+    }
+    
+    // Dann das alte Format versuchen: "Gewerbe:"
+    console.log(`🔍 Trying OLD format "Gewerbe:"...`);
+    const oldFormatResult = extractField(text, 'Gewerbe');
+    if (oldFormatResult) {
+        console.log(`✅ Found with OLD format "Gewerbe:": "${oldFormatResult}"`);
+        return oldFormatResult;
+    }
+    
+    // Manuelle Zeilen-Suche als Fallback
+    console.log(`🔍 Trying manual line search for both formats...`);
+    const lines = text.split('\n');
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const lowerLine = line.toLowerCase();
+        
+        // Suche nach beiden Formaten
+        if (lowerLine === 'für gewerbe:' || lowerLine === 'gewerbe:') {
+            console.log(`📍 Found gewerbe field at line ${i}: "${line}"`);
+            
+            // Suche in den nächsten Zeilen nach dem Wert
+            for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
+                const nextLine = lines[j].trim();
+                
+                if (nextLine && 
+                    nextLine !== '---' && 
+                    nextLine !== '```' &&
+                    !nextLine.includes(':') &&
+                    nextLine.length > 1) {
+                    console.log(`✅ Found gewerbe value at line ${j}: "${nextLine}"`);
+                    return nextLine;
+                }
+            }
+        }
+    }
+    
+    console.log(`❌ Gewerbe field not found in any format`);
+    return null;
+}
+
+// RÜCKWÄRTSKOMPATIBLE parseAntragText
 function parseAntragText(text) {
+    console.log(`\n🚀 === STARTING ANTRAG PARSING (BACKWARD COMPATIBLE) ===`);
+    console.log(`📄 Text length: ${text.length} characters`);
+
     const data = {};
 
     try {
@@ -63,60 +154,110 @@ function parseAntragText(text) {
         } else if (text.includes('Für Gewerbe:') && !text.includes('Gewerbekonzept:')) {
             data.type = 'gewerbeauslage';
         } else {
+            console.log('❌ Could not detect Antrag type');
             return null;
         }
 
-        // Extract fields using regex patterns
-        const patterns = {
-            person: /Antragstellende Person:\s*```\s*([^`]+?)\s*```/i,
-            gewerbe: /Für Gewerbe:\s*```\s*([^`]+?)\s*```/i,
-            telegram: /Telegrammnummer \(Für Rückfragen\):\s*```\s*([^`]+?)\s*```/i,
-            konzept: /Gewerbekonzept:\s*```\s*([^`]+?)\s*```/i,
-            nummer: /Genehmigungs-Nummer:\s*```\s*([^`]+?)\s*```/i,
-            aussteller: /Ausstellende Person:\s*```\s*([^`]+?)\s*```/i,
-            groesse: /Kutschen Größe:\s*```\s*([^`]+?)\s*```/i,
-            wunsch: /Gewünschte Gewerbetelegrammnummer:\s*```\s*([^`]+?)\s*```/i,
-            bezahlt: /Bearbeitungsgebühr \(100\$\) bezahlt\?:\s*```\s*([^`]+?)\s*```/i
-        };
+        console.log(`✅ Detected Antrag type: ${data.type}`);
 
-        // Extract each field
-        for (const [key, pattern] of Object.entries(patterns)) {
-            const match = text.match(pattern);
-            if (match && match[1] && match[1].trim() !== '---') {
-                data[key] = match[1].trim();
+        // SPEZIELLE BEHANDLUNG FÜR GEWERBEKUTSCHE
+        if (data.type === 'gewerbekutsche') {
+            console.log(`🎯 === GEWERBEKUTSCHE DETECTED - BACKWARD COMPATIBLE PROCESSING ===`);
+            
+            // Standard-Felder extrahieren
+            data.nummer = extractField(text, 'Genehmigungs-Nummer');
+            data.aussteller = extractField(text, 'Ausstellende Person');
+            data.telegram = extractField(text, 'Telegrammnummer (Für Rückfragen)');
+            data.person = extractField(text, 'Antragstellende Person');
+            data.groesse = extractField(text, 'Kutschen Größe');
+            
+            // SPEZIELLE GEWERBE-EXTRAKTION (unterstützt beide Formate)
+            data.gewerbe = extractGewerbeForGewerbekutsche(text);
+            
+            console.log(`🎯 GEWERBEKUTSCHE extracted data:`, JSON.stringify(data, null, 2));
+        } else {
+            // Standard-Extraktion für andere Antragstypen
+            const fieldMappings = getFieldMappings(data.type);
+            
+            for (const [key, fieldName] of Object.entries(fieldMappings)) {
+                const value = extractField(text, fieldName);
+                if (value) {
+                    data[key] = value;
+                }
             }
         }
 
-        // Special handling for payment status
-        if (data.bezahlt) {
+        // Special handling for Gewerbetelegramm payment status
+        if (data.type === 'gewerbetelegramm' && data.bezahlt) {
             data.bezahltStatus = data.bezahlt.toLowerCase().includes('ja');
-            data.ausstehendeStatus = data.bezahlt.toLowerCase().includes('ausstehend');
+            data.ausstehendeStatus = data.bezahlt.toLowerCase().includes('ausstehend') || data.bezahlt.toLowerCase().includes('nein');
         }
 
-        console.log('Parsed import data:', data);
         return data;
 
     } catch (error) {
-        console.error('Parse error:', error);
+        console.error('❌ Parse error:', error);
         return null;
     }
 }
 
-// Fill Antrag Form with Imported Data
+// Field Mappings
+function getFieldMappings(type) {
+    const mappings = {
+        'gewerbeantrag': {
+            person: 'Antragstellende Person',
+            gewerbe: 'Für Gewerbe',
+            telegram: 'Telegrammnummer (Für Rückfragen)',
+            konzept: 'Gewerbekonzept'
+        },
+        'gewerbeauslage': {
+            person: 'Antragstellende Person',
+            gewerbe: 'Für Gewerbe',
+            telegram: 'Telegrammnummer (Für Rückfragen)'
+        },
+        'gewerbetelegramm': {
+            person: 'Antragstellende Person',
+            gewerbe: 'Für Gewerbe',
+            telegram: 'Telegrammnummer (Für Rückfragen)',
+            wunsch: 'Gewünschte Gewerbetelegrammnummer',
+            bezahlt: 'Bearbeitungsgebühr (100$) bezahlt?'
+        }
+    };
+    return mappings[type] || {};
+}
+
+// Standard extractField Funktion
+function extractField(text, fieldName) {
+    const escapedFieldName = escapeRegex(fieldName);
+    const codeBlockPattern = new RegExp(`${escapedFieldName}:\\s*\`\`\`\\s*([^\`]+?)\\s*\`\`\``, 'i');
+    
+    let match = text.match(codeBlockPattern);
+    
+    if (match && match[1] && match[1].trim() !== '---') {
+        return match[1].trim();
+    }
+    
+    return null;
+}
+
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Fill Antrag Form
 function fillAntragForm(data) {
-    console.log('Filling form with data:', data);
+    console.log('🎯 Filling form with data:', data);
 
-    // Set antrag type first and trigger form switch
-    document.getElementById('antrag-type').value = data.type;
+    const antragTypeSelect = document.getElementById('antrag-type');
+    if (antragTypeSelect) {
+        antragTypeSelect.value = data.type;
+        antragTypeSelect.dispatchEvent(new Event('change'));
+        
+        if (typeof switchAntragType === 'function') {
+            switchAntragType();
+        }
+    }
 
-    // Trigger the change event to open the correct form
-    const antragSelect = document.getElementById('antrag-type');
-    antragSelect.dispatchEvent(new Event('change'));
-
-    // Also call switchAntragType directly to ensure it works
-    switchAntragType();
-
-    // Wait a moment for form to load, then fill fields
     setTimeout(() => {
         switch (data.type) {
             case 'gewerbeantrag':
@@ -147,7 +288,6 @@ function fillAntragForm(data) {
                 if (data.telegram) document.getElementById('gewerbetelegramm-telegram').value = data.telegram;
                 if (data.wunsch) document.getElementById('gewerbetelegramm-wunsch').value = data.wunsch;
 
-                // Handle payment checkboxes
                 if (data.bezahltStatus) {
                     document.getElementById('gewerbetelegramm-bezahlt').checked = true;
                     document.getElementById('gewerbetelegramm-ausstehend').checked = false;
@@ -157,96 +297,74 @@ function fillAntragForm(data) {
                 }
                 break;
         }
-
-        console.log('Form filling completed');
     }, 200);
 }
 
-// Show Import Success Popup
+// Show Success Popup - ERSETZT MIT TOAST
 function showAntragImportSuccessPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-
-    if (!popup || !title || !icon || !message || !buttons) {
-        alert('✅ Antrag erfolgreich importiert!\n\nSie können jetzt die Daten bearbeiten und den Antrag neu generieren.');
-        return;
-    }
-
-    title.textContent = '✅ Antrag erfolgreich importiert!';
-    icon.textContent = '📥';
-    message.innerHTML = `
-        <span class="popup-success">Der Antrag wurde erfolgreich geladen!</span><br>
-        Sie können jetzt die Daten bearbeiten und eine aktualisierte Version generieren.<br><br>
-        <strong>💡 Tipp:</strong> Überprüfen Sie alle Felder vor der Neugenerierung.
-    `;
-
-    popup.classList.add('active');
+    Toast.importSuccess('Antrag');
 }
 
-// Show Import Error Popup
+// Show Error Popup - ERSETZT MIT TOAST
 function showAntragImportErrorPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-
-    if (!popup || !title || !icon || !message || !buttons) {
-        alert('⚠️ Import fehlgeschlagen!\n\nDer Antrag konnte nicht importiert werden.\nBitte stellen Sie sicher, dass Sie einen vollständigen Antrag aus Discord kopiert haben.');
-        return;
-    }
-
-    title.textContent = '⚠️ Import fehlgeschlagen';
-    icon.textContent = '❌';
-    message.innerHTML = `
-        <span style="color: #FF8232;">Der Antrag konnte nicht importiert werden!</span><br>
-        Bitte stellen Sie sicher, dass Sie einen vollständigen Antrag aus Discord kopiert haben.<br><br>
-        <strong>Erforderliches Format:</strong><br>
-        • Antragstellende Person: \`\`\`...\`\`\`<br>
-        • Für Gewerbe: \`\`\`...\`\`\`<br>
-        • Telegrammnummer: \`\`\`...\`\`\`<br>
-        • etc.
-    `;
-
-    popup.classList.add('active');
+    Toast.importError(
+        'Antrag',
+        'Bitte stellen Sie sicher, dass Sie einen vollständigen Antrag aus Discord kopiert haben.'
+    );
 }
 
-// Check Import Text and Update Button State
+// Check Import Text
 function checkImportText() {
-    const importText = document.getElementById('import-text').value.trim();
+    const importText = document.getElementById('import-text');
     const importButton = document.getElementById('import-button');
 
-    if (importText.length > 0) {
-        importButton.disabled = false;
-        importButton.innerHTML = '<i class="fa-solid fa-file-import"></i> Antrag importieren';
-    } else {
-        importButton.disabled = true;
-        importButton.innerHTML = '<i class="fa-solid fa-circle-info"></i> Antrag eingeben zum Importieren';
+    if (importButton && importText) {
+        if (importText.value.trim().length > 0) {
+            importButton.disabled = false;
+            importButton.innerHTML = '<i class="fa-solid fa-file-import"></i> Antrag importieren';
+        } else {
+            importButton.disabled = true;
+            importButton.innerHTML = '<i class="fa-solid fa-circle-info"></i> Antrag eingeben zum Importieren';
+        }
     }
 }
 
-// Initialize Import Button State
+// Initialize Import Button
 function initializeImportButton() {
     const importTextarea = document.getElementById('import-text');
     const importButton = document.getElementById('import-button');
 
-    // Set initial state
-    importButton.disabled = true;
-    importButton.innerHTML = '<i class="fa-solid fa-circle-info"></i> Antrag eingeben zum Importieren';
+    if (importTextarea && importButton) {
+        importButton.disabled = true;
+        importButton.innerHTML = '<i class="fa-solid fa-circle-info"></i> Antrag eingeben zum Importieren';
 
-    // Add event listeners
-    importTextarea.addEventListener('input', checkImportText);
-    importTextarea.addEventListener('paste', function() {
-        // Delay check to allow paste to complete
-        setTimeout(checkImportText, 100);
-    });
-    importTextarea.addEventListener('keyup', checkImportText);
+        importTextarea.addEventListener('input', checkImportText);
+        importTextarea.addEventListener('paste', function() {
+            setTimeout(checkImportText, 100);
+        });
+        importTextarea.addEventListener('keyup', checkImportText);
+    }
 }
 
-// Call initialization when DOM is loaded
+// STELLE ALLE FUNKTIONEN GLOBAL BEREIT
+window.toggleImport = toggleImport;
+window.importAntrag = importAntrag;
+window.parseAntragText = parseAntragText;
+window.fillAntragForm = fillAntragForm;
+window.extractGewerbeForGewerbekutsche = extractGewerbeForGewerbekutsche;
+window.showAntragImportSuccessPopup = showAntragImportSuccessPopup;
+window.showAntragImportErrorPopup = showAntragImportErrorPopup;
+window.checkImportText = checkImportText;
+window.initializeImportButton = initializeImportButton;
+
+// SOFORTIGE INITIALISIERUNG
 document.addEventListener('DOMContentLoaded', function() {
     initializeImportButton();
 });
+
+// FALLBACK: Auch ohne DOMContentLoaded initialisieren
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeImportButton);
+} else {
+    initializeImportButton();
+}

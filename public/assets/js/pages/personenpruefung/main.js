@@ -1,4 +1,4 @@
-        // Set current date (but limited to 1899)
+// Set current date (but limited to 1899)
         const today = new Date();
         const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
         const currentDay = String(today.getDate()).padStart(2, '0');
@@ -51,24 +51,10 @@
             return errors;
         }
 
-        // Show Form Validation Error Popup
+        // Show Form Validation Error - ERSETZT MIT TOAST
         function showFormValidationError(errors) {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Formular unvollständig';
-            icon.textContent = '📝';
-
-            let errorList = '<span style="color: #FF8232;">Bitte korrigieren Sie folgende Fehler:</span><br><br>';
-            errorList += '<div style="text-align: left; padding-left: 1rem;">';
-            errors.forEach(error => {
-                errorList += `• ${error}<br>`;
-            });
-            errorList += '</div>';
-
-            message.innerHTML = errorList;
+            Toast.validationError(errors);
+            highlightErrors();
         }
 
         // Highlight Error Fields
@@ -105,172 +91,80 @@
             }
         }
 
-        // Show Generate Popup
+        // Show Generate Popup - ERSETZT MIT TOAST
         function showGeneratePopup() {
-            const popup = document.getElementById('popup-overlay');
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
             // First validate the form
             const validationErrors = validateForm();
             if (validationErrors.length > 0) {
-                // Show popup immediately with errors
-                popup.classList.add('active');
                 showFormValidationError(validationErrors);
                 return;
             }
 
-            // Reset popup to loading state
-            title.textContent = '🔄 Prüfungsakte wird generiert...';
-            icon.textContent = '⚙️';
-            message.textContent = 'Bitte warten Sie, während die Personenprüfungsakte formatiert wird...';
-            message.className = 'popup-message';
-            buttons.style.display = 'none';
+            // Loading Toast anzeigen
+            const loadingToast = Toast.generationProgress(
+                '🔄 Prüfungsakte wird generiert...',
+                'Bitte warten Sie, während die Personenprüfungsakte formatiert wird...'
+            );
 
-            // Show popup
-            popup.classList.add('active');
-
-            // Simulate processing time
+            // Simulation der Generierung
             setTimeout(() => {
-                // Generate the document (validation already passed)
-                generateAkte();
-                showSuccessPopup();
-            }, 1500); // 1.5 second delay for better UX
+                Toast.dismiss(loadingToast);
+                generateAkte(); // Bestehende Funktion
+                Toast.generationSuccess('Personenprüfungsakte');
+            }, 1500);
         }
 
-        // Show Success Popup
-        function showSuccessPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '✅ Prüfungsakte erfolgreich generiert!';
-            icon.textContent = '🎉';
-            message.innerHTML = `
-                <span class="popup-success">Die Discord-Vorlage wurde erfolgreich erstellt!</span><br>
-                Sie können sie jetzt in der Vorschau sehen und kopieren.
-            `;
-            buttons.style.display = 'flex';
-        }
-
-        // Close Popup
-        function closePopup() {
-            const popup = document.getElementById('popup-overlay');
-            popup.classList.remove('active');
-        }
-
-        // Copy from Popup
-        function copyFromPopup() {
-            copyToClipboard();
-            closePopup();
-        }
-
-        // Show Copy Popup
+        // Show Copy Popup - KORRIGIERT FÜR LEERE VALIDIERUNG
         function showCopyPopup() {
-            const popup = document.getElementById('popup-overlay');
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
+            const output = document.getElementById('preview-output').textContent;
 
-            // Reset popup to loading state
-            title.textContent = '📋 Wird kopiert...';
-            icon.textContent = '📝';
-            message.textContent = 'Die Prüfungsakte wird in die Zwischenablage kopiert...';
-            message.className = 'popup-message';
-            buttons.style.display = 'none';
-
-            // Show popup
-            popup.classList.add('active');
-
-            // Simulate copying process
-            setTimeout(() => {
-                const output = document.getElementById('preview-output').textContent;
-
-                // Check if output is empty or default
-                if (output.trim() === '' ||
-                    output.includes('Noch keine Prüfungsakte generiert') ||
-                    output.includes('Füllen Sie das Formular aus')) {
-                    showEmptyContentPopup();
-                    return;
-                }
-
-                // Try to copy to clipboard
-                navigator.clipboard.writeText(output).then(() => {
-                    showCopySuccessPopup();
-                }).catch(() => {
-                    showCopyFailurePopup();
-                });
-            }, 1000); // 1 second delay
-        }
-
-        // Show Copy Success Popup
-        function showCopySuccessPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '✅ Erfolgreich kopiert!';
-            icon.textContent = '🎉';
-            message.innerHTML = `
-                <span class="popup-success">Die Personenprüfungsakte wurde erfolgreich in die Zwischenablage kopiert!</span><br>
-                Sie können sie jetzt in Discord oder einem anderen Programm einfügen (Strg+V).
-            `;
-        }
-
-        // Show Empty Content Popup
-        function showEmptyContentPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '📝 Keine Prüfungsakte vorhanden';
-            icon.textContent = '📋';
-            message.innerHTML = `
-                <span style="color: #F4C066;">Es ist noch keine Prüfungsakte zum Kopieren vorhanden!</span><br>
-                Bitte generieren Sie zuerst die Prüfungsakte, bevor Sie sie kopieren.
-            `;
-        }
-
-        // Show Copy Failure Popup
-        function showCopyFailurePopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Kopieren fehlgeschlagen';
-            icon.textContent = '🔧';
-            message.innerHTML = `
-                <span style="color: #FF8232;">Das Kopieren ist fehlgeschlagen!</span><br>
-                Bitte versuchen Sie es erneut oder kopieren Sie den Text manuell aus der Vorschau.
-            `;
-            buttons.innerHTML = `
-                <button class="popup-button" onclick="retryFromPopup()">🔄 Erneut versuchen</button>
-                <button class="popup-button secondary" onclick="closePopup()">❌ Abbrechen</button>
-            `;
-            buttons.style.display = 'flex';
-        }
-
-        // Retry Copy from Popup
-        function retryFromPopup() {
-            closePopup();
-            setTimeout(() => showCopyPopup(), 300);
-        }
-
-        // Close popup when clicking outside
-        document.getElementById('popup-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePopup();
+            // KORRIGIERTE VALIDIERUNG - Prüft nach dem tatsächlichen HTML-Text
+            if (output.trim() === '' ||
+                output.includes('Noch keine Vorlage generiert') ||  // ← KORRIGIERT: Tatsächlicher HTML-Text
+                output.includes('Füllen Sie das Formular aus')) {
+                Toast.warning(
+                    '📝 Keine Prüfungsakte vorhanden',
+                    'Bitte generieren Sie zuerst eine Prüfungsakte, bevor Sie sie kopieren.'
+                );
+                return;
             }
-        });
 
-        // Generate Akte
+            // Loading Toast
+            const loadingToast = Toast.copyProgress();
+
+            // Simulation des Kopiervorgangs
+            setTimeout(() => {
+                Toast.dismiss(loadingToast);
+
+                navigator.clipboard.writeText(output).then(() => {
+                    Toast.copySuccess('Personenprüfungsakte');
+                }).catch(() => {
+                    Toast.copyError('Clipboard-API nicht verfügbar. Bitte kopieren Sie den Text manuell.');
+                });
+            }, 1000);
+        }
+
+        // Legacy functions for compatibility - NO LONGER NEEDED BUT KEPT FOR SAFETY
+        function closePopup() {
+            console.log('closePopup() called - replaced by Toast system');
+        }
+
+        function copyFromPopup() {
+            if (typeof copyToClipboard === 'function') {
+                copyToClipboard();
+            }
+        }
+
+        // Click outside popup to close - NO LONGER NEEDED
+        if (document.getElementById('popup-overlay')) {
+            document.getElementById('popup-overlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePopup();
+                }
+            });
+        }
+
+        // Generate Akte (korrigiert für separates Details-Feld)
         function generateAkte() {
             const person = document.getElementById('person').value.trim();
             const telegram = document.getElementById('telegram').value.trim();
@@ -290,7 +184,7 @@
                     case 'nicht-bestanden':
                         ergebnisText = '❌ Nicht bestanden';
                         break;
-                    case 'ausstehend': // NEUE OPTION
+                    case 'ausstehend':
                         ergebnisText = '⏳ Prüfung ausstehend';
                         break;
                     default:
@@ -298,20 +192,17 @@
                 }
             }
 
-            // Add details to result if provided
-            let fullErgebnis = ergebnisText;
-            if (details) {
-                fullErgebnis += `\n\nDetaillierte Bewertung:\n${details}`;
-            }
-
-            // Format output according to template
+            // Format output according to corrected template
             let output = `Zu überprüfende Person:\n\`\`\`\n${person || '---'}\n\`\`\`\n`;
             output += `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${telegram || '---'}\n\`\`\`\n`;
             output += `Geprüft durch:\n\`\`\`\n${pruefer || '---'}\n\`\`\`\n`;
             output += `Geprüft am:\n\`\`\`\n${formatDate(datum) || '---'}\n\`\`\`\n`;
-            output += `Prüfungsergebnis:\n\`\`\`\n${fullErgebnis || '---'}\n\`\`\``;
+            output += `Prüfungsergebnis:\n\`\`\`\n${ergebnisText || '---'}\n\`\`\`\n`;
+            output += `Detaillierte Bewertung/Anmerkungen:\n\`\`\`\n${details || '---'}\n\`\`\``;
 
-            document.getElementById('preview-output').textContent = output;
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output'; // Entferne empty-state Klasse
+            previewOutput.textContent = output;
         }
 
         // Format date
@@ -321,28 +212,35 @@
             return date.toLocaleDateString('de-DE');
         }
 
-        // Copy to clipboard
+        // Copy to clipboard - KORRIGIERT FÜR LEERE VALIDIERUNG
         function copyToClipboard() {
             const output = document.getElementById('preview-output').textContent;
 
-            // Check if output is empty or default
-            if (output.includes('Noch keine Prüfungsakte generiert') || output.trim() === '') {
-                alert('📝 Bitte generieren Sie zuerst eine Prüfungsakte!');
+            // KORRIGIERTE VALIDIERUNG - Prüft nach dem tatsächlichen HTML-Text
+            if (output.includes('Noch keine Vorlage generiert') ||  // ← KORRIGIERT: Tatsächlicher HTML-Text
+                output.trim() === '') {
+                Toast.warning('📝 Keine Prüfungsakte vorhanden', 'Bitte generieren Sie zuerst eine Prüfungsakte!');
                 return;
             }
 
             navigator.clipboard.writeText(output).then(() => {
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = '✅ Kopiert!';
-                button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
+                // Legacy button update for any existing copy buttons
+                const button = event?.target;
+                if (button) {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Kopiert!';
+                    button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = 'linear-gradient(135deg, #F4C066 0%, #D99C45 100%)';
-                }, 2000);
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = 'linear-gradient(135deg, #F4C066 0%, #D99C45 100%)';
+                    }, 2000);
+                }
+
+                // Show toast
+                Toast.copySuccess('Personenprüfungsakte');
             }).catch(() => {
-                alert('❌ Kopieren fehlgeschlagen. Bitte versuchen Sie es erneut.');
+                Toast.copyError('Clipboard-API nicht verfügbar. Bitte kopieren Sie den Text manuell.');
             });
         }
 

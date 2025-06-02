@@ -21,6 +21,8 @@
         <link rel="stylesheet" href="assets/css/global/layout.css">
         <link rel="stylesheet" href="assets/css/global/components.css">
         <link rel="stylesheet" href="assets/css/global/animations.css">
+        <link rel="stylesheet" href="assets/css/global/dragdrop.css">
+        <link rel="stylesheet" href="assets/css/global/toast.css">
         
         <!-- Page-specific Stylesheet -->
         <link rel="stylesheet" href="assets/css/pages/gewerbeakte.css">
@@ -67,8 +69,11 @@
             <div class="import-section">
                 <div class="import-header" onclick="toggleImport()">
                     <div class="import-title">
-                        <span><i class="fa-solid fa-file-import"></i></span>
-                        <span>Bestehende Akte importieren</span>
+                        <i class="fa-solid fa-file-import"></i>
+                        <div class="import-title-text">
+                            <span>Bestehende Akte importieren<span class="beta-tag">BETA</span></span>
+                            <div class="drag-drop-hint">oder bestehende Akte hierher ziehen</div>
+                        </div>
                     </div>
                     <div class="import-toggle" id="import-toggle"><i class="fa-solid fa-angle-down"></i></div>
                 </div>
@@ -195,8 +200,9 @@
                 Discord-Ausgabe:
             </p>
             
-            <div class="preview-output" id="preview-output">
-                <div style="text-align: center; color: #D8C5B0; font-style: italic; padding: 2rem;">
+            <div class="preview-output empty-state" id="preview-output">
+                <!-- KORRIGIERTER ZENTRIERTER PLATZHALTER MIT CSS-KLASSE -->
+                <div style="text-align: center; color: #D8C5B0; font-style: italic;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fa fa-clipboard"></i></div>
                     <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch keine Vorlage generiert</div>
                     <div style="font-size: 0.9rem;">Klicken Sie auf "<i class="fa fa-paper-plane"></i> Discord Vorlage generieren" um die formatierte Ausgabe zu sehen</div>
@@ -209,21 +215,6 @@
         </section>
     </main>
 
-    <!-- Popup Overlay -->
-    <div class="popup-overlay" id="popup-overlay">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3 class="popup-title" id="popup-title">🔄 Vorlage wird generiert...</h3>
-                <button class="popup-close" onclick="closePopup()">×</button>
-            </div>
-            <div class="popup-icon" id="popup-icon">⚙️</div>
-            <div class="popup-message" id="popup-message">
-                Bitte warten Sie, während die Gewerbeakte formatiert wird...
-            </div>
-            <div class="popup-buttons" id="popup-buttons" style="display: none;"> </div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <p class="footer-text">
@@ -231,9 +222,14 @@
         </p>
     </footer>
 
+    <!-- Global JavaScript -->
     <script src="assets/js/global/utils.js"></script>
+    <script src="assets/js/global/dragdrop-core.js"></script>
+    <script src="assets/js/global/toast.js"></script>
+
+    <!-- Page-specific JavaScript -->
     <script src="assets/js/pages/gewerbeakte/main.js"></script>
     <script src="assets/js/pages/gewerbeakte/import.js"></script>
-    
+    <script src="assets/js/pages/gewerbeakte/dragdrop-gewerbeakte.js"></script>
 </body>
 </html>

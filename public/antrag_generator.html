@@ -21,6 +21,8 @@
         <link rel="stylesheet" href="assets/css/global/layout.css">
         <link rel="stylesheet" href="assets/css/global/components.css">
         <link rel="stylesheet" href="assets/css/global/animations.css">
+        <link rel="stylesheet" href="assets/css/global/dragdrop.css">
+        <link rel="stylesheet" href="assets/css/global/toast.css">
         
         <!-- Page-specific Stylesheet -->
         <link rel="stylesheet" href="assets/css/pages/antrag.css">
@@ -65,7 +67,11 @@
             <div class="import-section">
                 <div class="import-header" id="import-header" onclick="toggleImport()">
                     <div class="import-title">
-                        <i class="fa-solid fa-file-import"></i> Bestehenden Antrag importieren
+                        <i class="fa-solid fa-file-import"></i>
+                        <div class="import-title-text">
+                            <span>Bestehenden Antrag importieren<span class="beta-tag">BETA</span></span>
+                            <div class="drag-drop-hint">oder bestehenden Antrag hierher ziehen</div>
+                        </div>
                     </div>
                     <div class="import-toggle" id="import-toggle">
                         <i class="fa-solid fa-angle-down"></i>
@@ -160,7 +166,7 @@
 
                 <div class="form-group">
                     <label class="form-label"><i class="fa-solid fa-mobile-retro"></i> Telegrammnummer (Für Rückfragen):</label>
-                    <input type="text" class="form-input" id="gewerbekutsche-aussteller-telegram" placeholder="Telegrammnummer des Bearbeiters...">
+                    <input type="text" class="form-input" id="gewerbekutsche-aussteller-telegram" placeholder="Telegrammnummer eingeben...">
                 </div>
 
                 <div class="form-group">
@@ -169,7 +175,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Gewerbe:</label>
+                    <label class="form-label"><i class="fa-solid fa-warehouse"></i> Für Gewerbe:</label>
                     <input type="text" class="form-input" id="gewerbekutsche-gewerbe" placeholder="Name des Gewerbes eingeben...">
                 </div>
 
@@ -238,11 +244,12 @@
                 Discord-Ausgabe:
             </p>
             
-            <div class="preview-output" id="preview-output">
-                <div style="text-align: center; color: #D8C5B0; font-style: italic; padding: 2rem;">
+            <div class="preview-output empty-state" id="preview-output">
+                <!-- EINFACHER ZENTRIERTER PLATZHALTER MIT CSS-KLASSE -->
+                <div style="text-align: center; color: #D8C5B0; font-style: italic;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fa fa-clipboard"></i></div>
-                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch keine Vorlage generiert</div>
-                    <div style="font-size: 0.9rem;">Klicken Sie auf "<i class="fa fa-paper-plane"></i> Discord Vorlage generieren" um die formatierte Ausgabe zu sehen</div>
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch kein Antrag generiert</div>
+                    <div style="font-size: 0.9rem;">Wählen Sie einen Antragstyp aus und füllen Sie das Formular aus</div>
                 </div>
             </div>
             
@@ -252,21 +259,6 @@
         </section>
     </main>
 
-    <!-- Popup Overlay -->
-    <div class="popup-overlay" id="popup-overlay">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3 class="popup-title" id="popup-title"><i class="fa fa-paper-plane"></i> Antrag wird generiert...</h3>
-                <button class="popup-close" onclick="closePopup()">×</button>
-            </div>
-            <div class="popup-icon" id="popup-icon">⚙️</div>
-            <div class="popup-message" id="popup-message">
-                Bitte warten Sie, während der Antrag formatiert wird...
-            </div>
-            <div class="popup-buttons" id="popup-buttons" style="display: none;"> </div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <p class="footer-text">
@@ -274,9 +266,14 @@
         </p>
     </footer>
 
+    <!-- Global JavaScript -->
     <script src="assets/js/global/utils.js"></script>
+    <script src="assets/js/global/dragdrop-core.js"></script>
+    <script src="assets/js/global/toast.js"></script>
+
+    <!-- Page-specific JavaScript -->
     <script src="assets/js/pages/antrag/main.js"></script>
     <script src="assets/js/pages/antrag/import.js"></script>
-
+    <script src="assets/js/pages/antrag/dragdrop-antrag.js"></script>
 </body>
 </html>

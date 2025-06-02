@@ -1,4 +1,4 @@
-        let currentAntragType = '';
+let currentAntragType = '';
 
         // Switch Antrag Type
         function switchAntragType() {
@@ -65,8 +65,10 @@
 
         // Clear Preview
         function clearPreview() {
-            document.getElementById('preview-output').innerHTML = `
-                <div style="text-align: center; color: #D8C5B0; font-style: italic; padding: 2rem;">
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output empty-state';
+            previewOutput.innerHTML = `
+                <div style="text-align: center; color: #D8C5B0; font-style: italic;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fa fa-clipboard"></i></div>
                     <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">Noch kein Antrag generiert</div>
                     <div style="font-size: 0.9rem;">Wählen Sie einen Antragstyp aus und füllen Sie das Formular aus</div>
@@ -161,24 +163,10 @@
             return errors;
         }
 
-        // Show Form Validation Error Popup
+        // Show Form Validation Error - ERSETZT MIT TOAST
         function showFormValidationError(errors) {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Formular unvollständig';
-            icon.textContent = '📝';
-
-            let errorList = '<span style="color: #FF8232;">Bitte korrigieren Sie folgende Fehler:</span><br><br>';
-            errorList += '<div style="text-align: left; padding-left: 1rem;">';
-            errors.forEach(error => {
-                errorList += `• ${error}<br>`;
-            });
-            errorList += '</div>';
-
-            message.innerHTML = errorList;
+            Toast.validationError(errors);
+            highlightErrors();
         }
 
         // Highlight Error Fields
@@ -258,166 +246,78 @@
             }
         }
 
-        // Show Generate Popup
+        // Show Generate Popup - ERSETZT MIT TOAST
         function showGeneratePopup() {
-            const popup = document.getElementById('popup-overlay');
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
             // First validate the form
             const validationErrors = validateForm();
             if (validationErrors.length > 0) {
-                // Show popup immediately with errors
-                popup.classList.add('active');
                 showFormValidationError(validationErrors);
                 return;
             }
 
-            // Reset popup to loading state
-            title.textContent = '🔄 Antrag wird generiert...';
-            icon.textContent = '⚙️';
-            message.textContent = 'Bitte warten Sie, während der Antrag formatiert wird...';
-            message.className = 'popup-message';
-            buttons.style.display = 'none';
+            // Loading Toast anzeigen
+            const loadingToast = Toast.generationProgress(
+                '🔄 Antrag wird generiert...',
+                'Bitte warten Sie, während der Antrag formatiert wird...'
+            );
 
-            // Show popup
-            popup.classList.add('active');
-
-            // Simulate processing time
+            // Simulation der Generierung
             setTimeout(() => {
-                // Generate the document (validation already passed)
-                generateAntrag();
-                showSuccessPopup();
-            }, 1500); // 1.5 second delay for better UX
+                Toast.dismiss(loadingToast);
+                generateAntrag(); // Bestehende Funktion
+                Toast.generationSuccess(getAntragTypeName(currentAntragType));
+            }, 1500);
         }
 
-        // Show Success Popup
-        function showSuccessPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '✅ Antrag erfolgreich generiert!';
-            icon.textContent = '🎉';
-            message.innerHTML = `
-                <span class="popup-success">Die Discord-Vorlage wurde erfolgreich erstellt!</span><br>
-                Sie können sie jetzt in der Vorschau sehen und kopieren.
-            `;
-            buttons.innerHTML = `
-                <button class="popup-button" onclick="closePopup()">✅ Verstanden</button>
-                <button class="popup-button secondary" onclick="copyFromPopup()">📋 Jetzt kopieren</button>
-            `;
-            buttons.style.display = 'flex';
-        }
-
-        // Close Popup
-        function closePopup() {
-            const popup = document.getElementById('popup-overlay');
-            popup.classList.remove('active');
-        }
-
-        // Copy from Popup
-        function copyFromPopup() {
-            copyToClipboard();
-            closePopup();
-        }
-
-        // Show Copy Popup
+        // Show Copy Popup - KORRIGIERT FÜR LEERE VALIDIERUNG
         function showCopyPopup() {
-            const popup = document.getElementById('popup-overlay');
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
+            const output = document.getElementById('preview-output').textContent;
 
-            // Reset popup to loading state
-            title.textContent = '📋 Wird kopiert...';
-            icon.textContent = '📝';
-            message.textContent = 'Der Antrag wird in die Zwischenablage kopiert...';
-            message.className = 'popup-message';
-            buttons.style.display = 'none';
+            // KORRIGIERTE VALIDIERUNG - Prüft BEIDE möglichen Texte
+            if (output.trim() === '' ||
+                output.includes('Noch keine Vorlage generiert') ||  // ← Initialer HTML-Text
+                output.includes('Noch kein Antrag generiert') ||    // ← Text nach clearPreview()
+                output.includes('Wählen Sie einen Antragstyp aus')) {
+                Toast.warning(
+                    '📝 Kein Antrag vorhanden',
+                    'Bitte generieren Sie zuerst einen Antrag, bevor Sie ihn kopieren.'
+                );
+                return;
+            }
 
-            // Show popup
-            popup.classList.add('active');
+            // Loading Toast
+            const loadingToast = Toast.copyProgress();
 
-            // Simulate copying process
+            // Simulation des Kopiervorgangs
             setTimeout(() => {
-                const output = document.getElementById('preview-output').textContent;
+                Toast.dismiss(loadingToast);
 
-                // Check if output is empty or default
-                if (output.trim() === '' ||
-                    output.includes('Noch kein Antrag generiert') ||
-                    output.includes('Wählen Sie einen Antragstyp aus')) {
-                    showEmptyContentPopup();
-                    return;
-                }
-
-                // Try to copy to clipboard
                 navigator.clipboard.writeText(output).then(() => {
-                    showCopySuccessPopup();
+                    Toast.copySuccess(getAntragTypeName(currentAntragType));
                 }).catch(() => {
-                    showCopyFailurePopup();
+                    Toast.copyError('Clipboard-API nicht verfügbar. Bitte kopieren Sie den Text manuell.');
                 });
-            }, 1000); // 1 second delay
+            }, 1000);
         }
 
-        // Show Copy Success Popup
-        function showCopySuccessPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '✅ Erfolgreich kopiert!';
-            icon.textContent = '🎉';
-            message.innerHTML = `
-                <span class="popup-success">Der Antrag wurde erfolgreich in die Zwischenablage kopiert!</span><br>
-                Sie können ihn jetzt in Discord oder einem anderen Programm einfügen (Strg+V).
-            `;
+        // Legacy functions for compatibility - NO LONGER NEEDED BUT KEPT FOR SAFETY
+        function closePopup() {
+            console.log('closePopup() called - replaced by Toast system');
         }
 
-        // Show Empty Content Popup
-        function showEmptyContentPopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '📝 Kein Antrag vorhanden';
-            icon.textContent = '📋';
-            message.innerHTML = `
-                <span style="color: #F4C066;">Es ist noch kein Antrag zum Kopieren vorhanden!</span><br>
-                Bitte generieren Sie zuerst einen Antrag, bevor Sie ihn kopieren.
-            `;
+        function copyFromPopup() {
+            if (typeof copyToClipboard === 'function') {
+                copyToClipboard();
+            }
         }
 
-        // Show Copy Failure Popup
-        function showCopyFailurePopup() {
-            const title = document.getElementById('popup-title');
-            const icon = document.getElementById('popup-icon');
-            const message = document.getElementById('popup-message');
-            const buttons = document.getElementById('popup-buttons');
-
-            title.textContent = '⚠️ Kopieren fehlgeschlagen';
-            icon.textContent = '🔧';
-            message.innerHTML = `
-                <span style="color: #FF8232;">Das Kopieren ist fehlgeschlagen!</span><br>
-                Bitte versuchen Sie es erneut oder kopieren Sie den Text manuell aus der Vorschau.
-            `;
-            buttons.innerHTML = `
-                <button class="popup-button" onclick="retryFromPopup()">🔄 Erneut versuchen</button>
-                <button class="popup-button secondary" onclick="closePopup()">❌ Abbrechen</button>
-            `;
-            buttons.style.display = 'flex';
-        }
-
-        // Retry Copy from Popup
-        function retryFromPopup() {
-            closePopup();
-            setTimeout(() => showCopyPopup(), 300);
+        // Click outside popup to close - NO LONGER NEEDED
+        if (document.getElementById('popup-overlay')) {
+            document.getElementById('popup-overlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePopup();
+                }
+            });
         }
 
         // Generate Antrag
@@ -439,7 +339,9 @@
                     break;
             }
 
-            document.getElementById('preview-output').textContent = output;
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output'; // Entferne empty-state Klasse
+            previewOutput.textContent = output;
         }
 
         // Generate Gewerbeantrag
@@ -483,7 +385,7 @@
             output += `Ausstellende Person:\n\`\`\`\n${aussteller || '---'}\n\`\`\`\n`;
             output += `Telegrammnummer (Für Rückfragen):\n\`\`\`\n${ausstellerTelegram || '---'}\n\`\`\`\n`;
             output += `Antragstellende Person:\n\`\`\`\n${person || '---'}\n\`\`\`\n`;
-            output += `Gewerbe:\n\`\`\`\n${gewerbe || '---'}\n\`\`\`\n`;
+            output += `Für Gewerbe:\n\`\`\`\n${gewerbe || '---'}\n\`\`\`\n`;
             output += `Kutschen Größe:\n\`\`\`\n${groesse || '---'}\n\`\`\`\n`;
             output += `Hiermit Genehmige ich, **${aussteller || 'NAME'}**,\nMitarbeiter des Gewerbeamts der Stadt\nSaint Denis, die Abholung der Gewerbekutsche`;
 
@@ -515,37 +417,38 @@
             return output;
         }
 
-        // Copy to clipboard
+        // Copy to clipboard - KORRIGIERT FÜR LEERE VALIDIERUNG
         function copyToClipboard() {
             const output = document.getElementById('preview-output').textContent;
 
-            // Check if output is empty or default
-            if (output.includes('Noch kein Antrag generiert') || output.trim() === '') {
-                alert('📝 Bitte generieren Sie zuerst einen Antrag!');
+            // KORRIGIERTE VALIDIERUNG - Prüft BEIDE möglichen Texte
+            if (output.includes('Noch keine Vorlage generiert') ||  // ← Initialer HTML-Text
+                output.includes('Noch kein Antrag generiert') ||    // ← Text nach clearPreview()
+                output.trim() === '') {
+                Toast.warning('📝 Kein Antrag vorhanden', 'Bitte generieren Sie zuerst einen Antrag!');
                 return;
             }
 
             navigator.clipboard.writeText(output).then(() => {
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = '✅ Kopiert!';
-                button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
+                // Legacy button update for any existing copy buttons
+                const button = event?.target;
+                if (button) {
+                    const originalText = button.textContent;
+                    button.textContent = '✅ Kopiert!';
+                    button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = 'linear-gradient(135deg, #F4C066 0%, #D99C45 100%)';
-                }, 2000);
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = 'linear-gradient(135deg, #F4C066 0%, #D99C45 100%)';
+                    }, 2000);
+                }
+
+                // Show toast
+                Toast.copySuccess(getAntragTypeName(currentAntragType));
             }).catch(() => {
-                alert('❌ Kopieren fehlgeschlagen. Bitte versuchen Sie es erneut.');
+                Toast.copyError('Clipboard-API nicht verfügbar. Bitte kopieren Sie den Text manuell.');
             });
         }
-
-        // Close popup when clicking outside
-        document.getElementById('popup-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePopup();
-            }
-        });
 
         // Remove error styling when user starts typing/selecting
         document.querySelectorAll('.form-input, .form-select').forEach(input => {

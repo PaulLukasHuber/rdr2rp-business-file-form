@@ -1,7 +1,8 @@
 // ===================================
-// GEWERBEAKTE IMPORT LOGIC
+// GEWERBEAKTE IMPORT LOGIC - MIT TOAST SYSTEM
 // Separate JavaScript-Datei für Import-Funktionen
 // ===================================
+
 // Toggle Import Section
 function toggleImport() {
     const content = document.getElementById('import-content');
@@ -13,12 +14,12 @@ function toggleImport() {
     header.classList.toggle('expanded');
 }
 
-// Main Import Function
+// Main Import Function - MIT TOAST SYSTEM
 function importAkte() {
     const importText = document.getElementById('import-text').value.trim();
 
     if (!importText) {
-        alert('📋 Bitte fügen Sie zuerst eine Gewerbeakte zum Importieren ein!');
+        Toast.warning('📋 Import-Feld leer', 'Bitte fügen Sie zuerst eine Gewerbeakte zum Importieren ein!');
         return;
     }
 
@@ -33,7 +34,7 @@ function importAkte() {
             // Clear import field
             document.getElementById('import-text').value = '';
 
-            // Show success message
+            // Show success message with toast
             showImportSuccessPopup();
         } else {
             showImportErrorPopup();
@@ -237,66 +238,22 @@ function fillGewerbeakteForm(data) {
     console.log('Form filling completed'); // Debug log
 }
 
-// Show Import Success Popup
+// Show Import Success Popup - ERSETZT MIT TOAST
 function showImportSuccessPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-
-    if (!popup || !title || !icon || !message || !buttons) {
-        // Fallback if popup elements don't exist
-        alert('✅ Gewerbeakte erfolgreich importiert!\n\n📅 Datum wurde auf heute aktualisiert\n🔢 Neue Lizenznummer wird beim Generieren erstellt');
-        return;
-    }
-
-    title.textContent = '✅ Gewerbeakte erfolgreich importiert!';
-    icon.textContent = '📥';
-    message.innerHTML = `
-        <span class="popup-success">Die Gewerbeakte wurde erfolgreich geladen!</span><br>
-        <strong>📅 Datum wurde auf heute aktualisiert</strong><br>
-        <strong>🔢 Neue Lizenznummer wird beim Generieren erstellt</strong><br><br>
-        Sie können jetzt die Daten bearbeiten und eine aktualisierte Version generieren.
-    `;
+    Toast.importSuccess('Gewerbeakte');
     
-    popup.classList.add('active');
-
-    // NEU: Import-Bereich automatisch zuklappen
+    // Import-Bereich automatisch zuklappen
     setTimeout(() => {
         toggleImport();
-    }, 1000); // Nach 1 Sekunden zuklappen
+    }, 1000);
 }
 
-// Show Import Error Popup
+// Show Import Error Popup - ERSETZT MIT TOAST
 function showImportErrorPopup() {
-    const popup = document.getElementById('popup-overlay');
-    const title = document.getElementById('popup-title');
-    const icon = document.getElementById('popup-icon');
-    const message = document.getElementById('popup-message');
-    const buttons = document.getElementById('popup-buttons');
-
-    if (!popup || !title || !icon || !message || !buttons) {
-        // Fallback if popup elements don't exist
-        alert('⚠️ Import fehlgeschlagen!\n\nDie Gewerbeakte konnte nicht importiert werden.\nBitte stellen Sie sicher, dass Sie eine vollständige Gewerbeakte aus Discord kopiert haben.');
-        return;
-    }
-
-    title.textContent = '⚠️ Import fehlgeschlagen';
-    icon.textContent = '❌';
-    message.innerHTML = `
-        <span style="color: #FF8232;">Die Akte konnte nicht importiert werden!</span><br>
-        Bitte stellen Sie sicher, dass Sie eine vollständige <strong>Gewerbeakte</strong> aus Discord kopiert haben.<br><br>
-        <strong>Erforderliches Format:</strong><br>
-        • Vermerk zum Gewerbeantrag: \`\`\`...\`\`\`<br>
-        • Lizenznummer: \`\`\`...\`\`\`<br>
-        • Betrieb: \`\`\`...\`\`\`<br>
-        • Mitarbeiter (*...MIT TELEGRAMM NUMMERN*): \`\`\`...\`\`\`<br>
-        • etc.<br><br>
-        <small style="color: #D8C5B0;">⚠️ Personenprüfungsakten oder Anträge können hier nicht importiert werden.</small>
-    `;
-
-    popup.classList.add('active');
+    Toast.importError(
+        'Gewerbeakte',
+        'Bitte stellen Sie sicher, dass Sie eine vollständige Gewerbeakte aus Discord kopiert haben.'
+    );
 }
 
 // Utility function to validate import data
@@ -351,7 +308,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Initialize import functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Import logic initialized');
 
     // Add event listeners if elements exist
     const importTextarea = document.getElementById('import-text');
@@ -359,15 +315,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add placeholder text and styling
         importTextarea.placeholder = `Kopieren Sie hier die komplette Akte aus Discord ein...`;
     }
-
-    // Log available functions for debugging
-    console.log('Available import functions:', {
-        toggleImport: typeof toggleImport,
-        importAkte: typeof importAkte,
-        parseGewerbeakteText: typeof parseGewerbeakteText,
-        fillGewerbeakteForm: typeof fillGewerbeakteForm
-    });
-
     // Initialize import button if it exists
     initializeImportButton();
 });
