@@ -177,33 +177,6 @@ body::before {
 	box-shadow: 0 6px 18px rgba(255, 130, 50, 0.4);
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-	.main-container {
-		grid-template-columns: 1fr;
-		gap: 2rem;
-	}
-	.mitarbeiter-fields {
-		grid-template-columns: 1fr;
-	}
-}
-
-@media (max-width: 768px) {
-	.nav-menu {
-		flex-direction: column;
-		gap: 1rem;
-	}
-	.nav-container {
-		flex-direction: column;
-		gap: 1rem;
-	}
-	.main-container {
-		padding: 2rem 1rem;
-	}
-	.form-tabs {
-		flex-direction: column;
-	}
-}
 /* Prüfungsergebnis Styles */
 .ergebnis-section {
 	border: 1px solid rgba(255,255,255,0.1);
@@ -248,6 +221,26 @@ body::before {
 .radio-group.selected {
 	border-color: #F4C066;
 	background: rgba(244, 192, 102, 0.2);
+	transform: translateY(-2px);
+}
+
+.radio-group:not(.selected) {
+	opacity: 0.8;
+}
+
+.radio-group.selected:not(.ausstehend-group) {
+	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
+}
+
+/* Special styling for ausstehend to indicate it's the "pending" state */
+.radio-group.ausstehend-group {
+	border-color: rgba(255, 255, 255, 0.2);
+	background: rgba(168, 95, 61, 0.1);
+}
+
+.radio-group.ausstehend-group.selected {
+	border-color: #A85F3D;
+	background: rgba(168, 95, 61, 0.2);
 }
 
 .radio-group input[type="radio"] {
@@ -264,8 +257,103 @@ body::before {
 	margin: 0;
 }
 
+/* Conditional Fields Animation */
+.conditional-fields {
+	display: none;
+	opacity: 0;
+	transform: translateY(-10px);
+	transition: all 0.3s ease;
+	margin-top: 1.5rem;
+	padding: 1.5rem 0;
+	/* border: 1px solid rgba(255,255,255,0.1); - ENTFERNT */
+	/* border-radius: 10px; - ENTFERNT */
+	/* background: rgba(244, 192, 102, 0.05); - ENTFERNT */
+}
+
+.conditional-fields.show {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+	animation: slideInDown 0.4s ease;
+}
+
+@keyframes slideInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.conditional-fields-title {
+	color: #F4C066;
+	font-weight: bold;
+	font-size: 1rem;
+	margin-bottom: 1.5rem !important;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid rgba(244, 192, 102, 0.3);
+}
+
+/* Spezifische Spacing-Regeln für conditional fields */
+.conditional-fields .form-group {
+	margin-bottom: 1.5rem !important;
+}
+
+.conditional-fields .form-group:last-child {
+	margin-bottom: 0 !important;
+}
+
+.conditional-fields .form-label {
+	margin-bottom: 0.5rem !important;
+}
+
+.conditional-fields .form-input {
+	margin-bottom: 0 !important;
+}
+
+/* Bessere Abstände zwischen Radio-Gruppen und conditional fields */
+.ergebnis-options {
+	margin-bottom: 1rem !important;
+}
+
+/* Abstand zwischen den Radio-Button Bereichen */
+.radio-group.ausstehend-group {
+	margin-bottom: 1rem !important;
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
+	.main-container {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+	.mitarbeiter-fields {
+		grid-template-columns: 1fr;
+	}
 	.ergebnis-options {
 		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 768px) {
+	.nav-menu {
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.nav-container {
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.main-container {
+		padding: 2rem 1rem;
+	}
+	.form-tabs {
+		flex-direction: column;
 	}
 }

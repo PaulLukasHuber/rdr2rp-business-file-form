@@ -1,7 +1,6 @@
 // ===================================
-// PERSONENPRÜFUNGSAKTE IMPORT LOGIC - MIT TOAST SYSTEM
-// Separate JavaScript-Datei für Import-Funktionen
-// KORRIGIERTE VERSION - Beste Option
+// PERSONENPRÜFUNGSAKTE IMPORT LOGIC v2.0 - MIT CONDITIONAL FIELDS
+// Updated für neue Struktur mit conditional fields
 // ===================================
 
 // Toggle Import Section (erweiterte Version)
@@ -12,7 +11,7 @@ function toggleImport() {
     
     content.classList.toggle('expanded');
     toggle.classList.toggle('expanded');
-    header.classList.toggle('expanded'); // Header-Klasse hinzufügen/entfernen
+    header.classList.toggle('expanded');
 }
 
 // Import Akte Function mit Validierung - MIT TOAST SYSTEM
@@ -20,7 +19,11 @@ function importAkte() {
     const importText = document.getElementById('import-text').value.trim();
     
     if (!importText) {
-        Toast.warning('📋 Import-Feld leer', 'Bitte fügen Sie zuerst eine Personenprüfungsakte zum Importieren ein!');
+        if (typeof Toast !== 'undefined') {
+            Toast.warning('📋 Import-Feld leer', 'Bitte fügen Sie zuerst eine Personenprüfungsakte zum Importieren ein!');
+        } else {
+            alert('Bitte fügen Sie eine Akte ein!');
+        }
         return;
     }
     
@@ -72,9 +75,10 @@ function isPersonenprüfungsakte(text) {
     // Optional: Details-Feld kann vorhanden sein, muss aber nicht
     const hasDetailsField = /Detaillierte Bewertung\/Anmerkungen:\s*```/i.test(text);
     
-    // Mindestens 4 von 5 Grundfeldern müssen vorhanden sein
-    const fieldCount = [hasPersonField, hasTelegramField, hasPrueferField, hasDateField, hasResultField]
-        .filter(Boolean).length;
+    // Mindestens 4 von 5 Grundfeldern müssen vorhanden sein ODER
+    // 3 Grundfelder + Details (für ausstehende Prüfungen ohne Prüfer/Datum)
+    const basicFieldCount = [hasPersonField, hasTelegramField, hasResultField].filter(Boolean).length;
+    const completedFieldCount = [hasPrueferField, hasDateField].filter(Boolean).length;
     
     // Ausschließende Kriterien für Gewerbeakte
     const isNotGewerbeakte = !text.includes('Lizenznummer:') && 
@@ -82,8 +86,10 @@ function isPersonenprüfungsakte(text) {
                             !text.includes('Anzahl der herausgebenden Lizenzen') &&
                             !text.includes('Sondergenehmigung:');
     
-    console.log(`Field count: ${fieldCount}/5, Has details: ${hasDetailsField}, Is not Gewerbeakte: ${isNotGewerbeakte}`);
-    return fieldCount >= 4 && isNotGewerbeakte;
+    console.log(`Basic fields: ${basicFieldCount}/3, Completed fields: ${completedFieldCount}/2, Details: ${hasDetailsField}, Is not Gewerbeakte: ${isNotGewerbeakte}`);
+    
+    // Mindestens die 3 Grundfelder müssen da sein
+    return basicFieldCount >= 3 && isNotGewerbeakte;
 }
 
 // Validierung der importierten Daten
@@ -135,24 +141,22 @@ function parsePersonenprüfungsakteText(text) {
     }
 }
 
-// Fill Personenprüfungsakte Form (KORRIGIERT - Beste Option)
+// Updated Fill Function für neue conditional fields Struktur
 function fillPersonenprüfungsakteForm(data) {
-    console.log(`🔧 Filling form with data:`, data); // Debug
+    console.log(`🔧 Filling form with conditional fields support:`, data);
     
     // Fill basic fields
     if (data.person) document.getElementById('person').value = data.person;
     if (data.telegram) document.getElementById('telegram').value = data.telegram;
-    if (data.pruefer) document.getElementById('pruefer').value = data.pruefer;
     if (data.details) document.getElementById('details').value = data.details;
     
     // WICHTIG: Datum auf aktuelles Datum setzen (mit Jahr 1899) - Override imported date
     const today = new Date();
     const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
     const currentDay = String(today.getDate()).padStart(2, '0');
-    document.getElementById('datum').value = `1899-${currentMonth}-${currentDay}`;
-    console.log(`📅 Set datum to: 1899-${currentMonth}-${currentDay}`);
+    const currentDate = `1899-${currentMonth}-${currentDay}`;
     
-    // Set result radio button - PRÄZISE VERSION (KORRIGIERT)
+    // Set result radio button - UPDATED FÜR CONDITIONAL FIELDS
     if (data.ergebnisType) {
         let resultValue = '';
         const cleanType = data.ergebnisType.toLowerCase().trim();
@@ -194,34 +198,66 @@ function fillPersonenprüfungsakteForm(data) {
                 if (radioGroup) {
                     radioGroup.classList.add('selected');
                     console.log(`✅ Successfully set radio button: ${resultValue} and selected group`);
+                    
+                    // TRIGGER CONDITIONAL FIELDS LOGIC
+                    const conditionalFields = document.getElementById('pruefungsdetails');
+                    
+                    if (resultValue === 'bestanden' || resultValue === 'nicht-bestanden') {
+                        // Show conditional fields
+                        console.log(`✅ Showing conditional fields for imported: ${resultValue}`);
+                        conditionalFields.classList.add('show');
+                        
+                        // Fill conditional fields if data exists
+                        if (data.pruefer) {
+                            document.getElementById('pruefer').value = data.pruefer;
+                        }
+                        
+                        // Set current date (override imported date)
+                        document.getElementById('datum').value = currentDate;
+                        console.log(`📅 Set datum to current: ${currentDate}`);
+                        
+                    } else {
+                        // Hide conditional fields for "ausstehend"
+                        console.log(`❌ Hiding conditional fields for: ${resultValue}`);
+                        conditionalFields.classList.remove('show');
+                        document.getElementById('pruefer').value = '';
+                        document.getElementById('datum').value = '';
+                        document.getElementById('details').value = '';
+                    }
+                    
                 } else {
                     console.error(`❌ Radio group not found for: ${resultValue}`);
                 }
             } else {
                 console.error(`❌ Radio button not found for: ${resultValue}`);
-                // Debug: Show all available radio buttons
-                const allRadios = document.querySelectorAll('input[type="radio"]');
-                console.log(`📊 Available radio buttons:`, Array.from(allRadios).map(r => r.id));
             }
         } else {
             console.warn(`⚠️ Could not determine result value from: "${data.ergebnisType}"`);
         }
     }
     
-    console.log(`✅ Form filling completed successfully`);
+    console.log(`✅ Form filling completed successfully with conditional fields`);
 }
 
 // Show Import Success Popup für Personenprüfungsakte - ERSETZT MIT TOAST
 function showImportSuccessPopup() {
-    Toast.importSuccess('Personenprüfungsakte');
+    if (typeof Toast !== 'undefined') {
+        Toast.importSuccess('Personenprüfungsakte');
+    } else {
+        alert('Import erfolgreich!');
+    }
 }
 
 // Show Import Error Popup für Personenprüfungsakte - ERSETZT MIT TOAST
 function showPersonenprüfungImportErrorPopup() {
-    Toast.importError(
-        'Personenprüfungsakte',
-        'Bitte stellen Sie sicher, dass Sie eine vollständige Personenprüfungsakte aus Discord kopiert haben.'
-    );
+    if (typeof Toast !== 'undefined') {
+        Toast.importError(
+            'Personenprüfungsakte',
+            'Bitte stellen Sie sicher, dass Sie eine vollständige Personenprüfungsakte aus Discord kopiert haben.'
+        );
+    } else {
+        alert('Import fehlgeschlagen! Bitte überprüfen Sie das Format.');
+    }
 }
 
 // Check Import Text and Update Button State
