@@ -1,14 +1,14 @@
 // ===================================
-// DRAG & DROP CORE SYSTEM v5.1 - FIXED DOUBLE TOASTS
-// Grundfunktionalität für alle Dokumenttypen
-// Entfernt doppelte Toast-Nachrichten beim Import
+// DRAG & DROP CORE SYSTEM v6.1 - SMART CONFIRMATION
+// Confirmation Toast nur bei Drag & Drop, nicht bei manuellem Import
+// Vereinfachtes Design passend zu anderen Toasts
 // ===================================
 
 class DragDropCore {
     constructor() {
-        this.version = "5.1";
+        this.version = "6.1";
         this.currentPage = this.detectCurrentPage();
-        console.log(`🚀 DragDropCore v${this.version} initializing for page: ${this.currentPage}`);
+        console.log(`🚀 DragDropCore v${this.version} initializing`);
         
         this.initializeDragDrop();
         this.setupEventListeners();
@@ -36,8 +36,6 @@ class DragDropCore {
         importTextareas.forEach(textarea => {
             this.makeDragDropZone(textarea);
         });
-
-        console.log(`✅ Drag & Drop zones initialized for ${importSections.length} sections`);
     }
 
     makeDragDropZone(element) {
@@ -88,6 +86,7 @@ class DragDropCore {
         const files = e.dataTransfer.files;
         const items = e.dataTransfer.items;
 
+        // First, try to get text from clipboard
         if (items.length > 0) {
             for (let item of items) {
                 if (item.kind === 'string' && item.type === 'text/plain') {
@@ -99,6 +98,7 @@ class DragDropCore {
             }
         }
 
+        // If no text, try to process files
         if (files.length > 0) {
             await this.processDroppedFiles(files);
         }
@@ -113,8 +113,14 @@ class DragDropCore {
             importTextarea.value = text;
             importTextarea.dispatchEvent(new Event('input'));
             
+            // Trigger checkImportText if available
+            if (typeof checkImportText === 'function') {
+                checkImportText();
+            }
+            
             setTimeout(() => {
-                this.autoImport(text);
+                // WICHTIG: fromDragDrop = true (zeigt Confirmation Toast)
+                this.autoImport(text, true);
             }, 500);
         }
     }
@@ -145,8 +151,8 @@ class DragDropCore {
         });
     }
 
-    // ===== AUTO-IMPORT LOGIC =====
-    autoImport(text) {
+    // ===== SMART AUTO-IMPORT LOGIC =====
+    autoImport(text, fromDragDrop = false) {
         const pageNames = {
             'gewerbeakte': 'Gewerbeakte',
             'personenpruefung': 'Personenprüfungsakte',
@@ -154,23 +160,37 @@ class DragDropCore {
         };
 
         const pageName = pageNames[this.currentPage] || 'Dokument';
-        const confirmation = this.createConfirmationDialog(
-            '📥 Import bereit',
-            `Möchten Sie die ${pageName} automatisch importieren?`,
-            () => this.executeAutoImport(text),
-            () => console.log('Auto-Import cancelled')
-        );
-
-        document.body.appendChild(confirmation);
-        setTimeout(() => {
-            if (confirmation.parentNode) {
-                confirmation.remove();
+        
+        if (fromDragDrop) {
+            // ===== DRAG & DROP: Zeige Confirmation Toast =====
+            console.log(`🔔 v${this.version}: Drag & Drop detected - showing confirmation toast for ${pageName}`);
+            
+            if (window.Toast && typeof window.Toast.importConfirmation === 'function') {
+                window.Toast.importConfirmation(
+                    pageName,
+                    () => {
+                        console.log(`✅ v${this.version}: User confirmed import for ${pageName}`);
+                        this.executeAutoImport(text, fromDragDrop);
+                    },
+                    () => {
+                        console.log(`❌ v${this.version}: User cancelled import for ${pageName}`);
+                        this.showImportCancelledToast();
+                    }
+                );
+            } else {
+                // Fallback: direkter Import ohne Bestätigung
+                console.warn(`⚠️ v${this.version}: Toast system not available, using direct import`);
+                this.executeAutoImport(text, fromDragDrop);
             }
-        }, 10000);
+        } else {
+            // ===== MANUELLER IMPORT: Direkt ohne Confirmation =====
+            console.log(`⚡ v${this.version}: Manual import detected - direct import for ${pageName}`);
+            this.executeAutoImport(text, fromDragDrop);
+        }
     }
 
-    executeAutoImport(text) {
-        console.log(`🚀 v${this.version}: Executing auto-import for: ${this.currentPage}`);
+    executeAutoImport(text, fromDragDrop = false) {
+        console.log(`🚀 v${this.version}: Executing auto-import for: ${this.currentPage} (fromDragDrop: ${fromDragDrop})`);
         
         // Load the appropriate page-specific handler
         switch (this.currentPage) {
@@ -180,14 +200,17 @@ class DragDropCore {
                     handler.handleImport(text);
                 } else {
                     console.error('❌ DragDropGewerbeakte handler not loaded');
+                    this.showHandlerError('Gewerbeakte');
                 }
                 break;
             case 'personenpruefung':
-                if (window.DragDropPersonenpruefung) {
-                    const handler = new window.DragDropPersonenpruefung();
+                if (window.DragDropPersonenpruefung || window.SimpleDragDropPersonenpruefung) {
+                    const HandlerClass = window.DragDropPersonenpruefung || window.SimpleDragDropPersonenpruefung;
+                    const handler = new HandlerClass();
                     handler.handleImport(text);
                 } else {
                     console.error('❌ DragDropPersonenpruefung handler not loaded');
+                    this.showHandlerError('Personenprüfungsakte');
                 }
                 break;
             case 'antrag':
@@ -196,23 +219,35 @@ class DragDropCore {
                     handler.handleImport(text);
                 } else {
                     console.error('❌ DragDropAntrag handler not loaded');
+                    this.showHandlerError('Antrag');
                 }
                 break;
             default:
                 console.log('❌ Unknown page type for auto-import:', this.currentPage);
+                this.showDropError('Unbekannter Seitentyp für Auto-Import.');
         }
 
-        // ENTFERNT: postImportCleanup() - da die spezifischen Handler bereits ihre eigenen Success-Toasts anzeigen
-        // Nur noch das Import-Feld leeren und Button-Status aktualisieren
-        this.postImportCleanupMinimal();
+        // Post-import cleanup (nur bei Drag & Drop)
+        if (fromDragDrop) {
+            this.postImportCleanupMinimal();
+        }
     }
 
-    // ===== UI MANAGEMENT (MINIMAL VERSION - OHNE DOPPELTE TOASTS) =====
+    // ===== PUBLIC API FÜR MANUELLEN IMPORT =====
+    /**
+     * Für manuellen Import von Import-Buttons
+     * Zeigt KEINE Confirmation
+     */
+    manualImport(text) {
+        console.log(`📝 v${this.version}: Manual import triggered`);
+        this.autoImport(text, false); // fromDragDrop = false
+    }
+
+    // ===== UI MANAGEMENT =====
     postImportCleanupMinimal() {
         setTimeout(() => {
             this.closeImportSection();
-            this.disableImportButton();
-            // ENTFERNT: showImportSuccessToast() - verhindert doppelte Toast-Nachrichten
+            this.updateImportButtonState();
         }, 1500);
     }
 
@@ -220,12 +255,13 @@ class DragDropCore {
         const importContent = document.getElementById('import-content');
         if (importContent && importContent.classList.contains('expanded')) {
             if (typeof toggleImport === 'function') {
+                console.log(`🔄 v${this.version}: Auto-closing import section`);
                 toggleImport();
             }
         }
     }
 
-    disableImportButton() {
+    updateImportButtonState() {
         const importButton = document.getElementById('import-button');
         const importTextarea = document.getElementById('import-text');
         
@@ -238,208 +274,161 @@ class DragDropCore {
             setTimeout(() => {
                 importButton.innerHTML = '<i class="fa-solid fa-circle-info"></i> Akte eingeben zum Importieren';
                 importButton.style.background = '';
+                
+                // Trigger checkImportText if available
+                if (typeof checkImportText === 'function') {
+                    checkImportText();
+                }
             }, 3000);
         }
     }
 
-    // ===== ENTFERNT: showImportSuccessToast() =====
-    // Diese Methode wurde entfernt, um doppelte Toast-Nachrichten zu vermeiden
-
-    showParseErrorToast() {
-        const toast = this.createToast(
-            'error',
-            '⚠️ Import fehlgeschlagen',
-            'Die Akte konnte nicht geparst werden.'
-        );
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }
-        }, 5000);
+    showImportCancelledToast() {
+        if (window.Toast) {
+            window.Toast.info(
+                'Import abgebrochen',
+                'Der automatische Import wurde abgebrochen. Sie können den Text manuell importieren.',
+                { duration: 4000 }
+            );
+        }
     }
 
-    createToast(type, title, message) {
-        const toast = document.createElement('div');
-        toast.className = `drag-drop-toast ${type}`;
-        toast.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 0.3rem;">${title}</div>
-            <div style="font-size: 0.9rem; opacity: 0.9;">${message}</div>
-        `;
-        return toast;
+    showHandlerError(documentType) {
+        if (window.Toast) {
+            window.Toast.error(
+                'Handler nicht verfügbar',
+                `Der ${documentType}-Handler konnte nicht geladen werden. Bitte laden Sie die Seite neu.`,
+                { duration: 8000 }
+            );
+        }
     }
 
     showDropError(message) {
-        alert(`⚠️ ${message}`);
-    }
-
-    // ===== DIALOG CREATION =====
-    createConfirmationDialog(title, message, onConfirm, onCancel) {
-        const overlay = document.createElement('div');
-        overlay.className = 'drag-drop-confirmation-overlay';
-        overlay.innerHTML = `
-            <div class="drag-drop-confirmation">
-                <div class="drag-drop-confirmation-header">
-                    <h3>${title}</h3>
-                    <button class="drag-drop-close" onclick="this.closest('.drag-drop-confirmation-overlay').remove()">×</button>
-                </div>
-                <div class="drag-drop-confirmation-body">
-                    <p>${message}</p>
-                </div>
-                <div class="drag-drop-confirmation-buttons">
-                    <button class="drag-drop-btn-confirm">✅ Ja, importieren</button>
-                    <button class="drag-drop-btn-cancel">❌ Abbrechen</button>
-                </div>
-            </div>
-        `;
-
-        const confirmBtn = overlay.querySelector('.drag-drop-btn-confirm');
-        const cancelBtn = overlay.querySelector('.drag-drop-btn-cancel');
-
-        confirmBtn.addEventListener('click', () => {
-            onConfirm();
-            overlay.remove();
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            onCancel();
-            overlay.remove();
-        });
-
-        return overlay;
+        if (window.Toast) {
+            window.Toast.error(
+                'Drag & Drop Fehler',
+                message,
+                { duration: 6000 }
+            );
+        } else {
+            // Fallback for old browsers
+            alert(`⚠️ ${message}`);
+        }
     }
 
     // ===== EVENT LISTENERS =====
     setupEventListeners() {
+        // Prevent default drag behaviors globally
         window.addEventListener('dragover', this.preventDefaults, false);
         window.addEventListener('drop', this.preventDefaults, false);
     }
 
-    // ===== STYLES =====
+    // ===== SIMPLIFIED STYLES =====
     addStyles() {
         if (document.getElementById('drag-drop-core-styles')) return;
         
         const styles = document.createElement('style');
         styles.id = 'drag-drop-core-styles';
         styles.textContent = `
+            /* ===== DRAG & DROP CORE STYLES v6.1 ===== */
             .drag-over {
+                background: rgba(244, 192, 102, 0.15) !important;
+                border: 2px dashed #F4C066 !important;
+                border-radius: 12px !important;
+                transform: scale(1.02);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 8px 24px rgba(244, 192, 102, 0.3);
+            }
+
+            .drag-over .import-header {
+                background: rgba(244, 192, 102, 0.3) !important;
+                border-color: #F4C066 !important;
+                border-radius: 10px !important;
+            }
+
+            #import-text.drag-over {
                 background: rgba(244, 192, 102, 0.1) !important;
                 border: 2px dashed #F4C066 !important;
+                border-radius: 8px !important;
                 transform: scale(1.02);
-                transition: all 0.3s ease;
+                box-shadow: 0 0 15px rgba(244, 192, 102, 0.4);
             }
 
-            .drag-drop-toast {
-                position: fixed;
-                top: 2rem;
-                right: 2rem;
-                background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
-                color: #F5F5F5;
-                padding: 1rem 1.5rem;
+            /* Enhanced hover effects */
+            .import-section:hover {
+                border-radius: 12px;
+                transition: all 0.2s ease;
+            }
+
+            .import-section:hover .import-header {
                 border-radius: 10px;
-                border: 1px solid rgba(255,255,255,0.1);
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-                z-index: 3000;
-                animation: slideInRight 0.3s ease;
-                max-width: 300px;
             }
 
-            .drag-drop-toast.success {
-                border-left: 4px solid #35A2A2;
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .drag-over {
+                    transform: scale(1.01);
+                }
             }
 
-            .drag-drop-toast.error {
-                border-left: 4px solid #FF8232;
+            /* High contrast mode support */
+            @media (prefers-contrast: high) {
+                .drag-over {
+                    border: 3px dashed #F4C066 !important;
+                    background: rgba(244, 192, 102, 0.25) !important;
+                }
             }
 
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-
-            .drag-drop-confirmation-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(30, 26, 23, 0.9);
-                backdrop-filter: blur(5px);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 2000;
-            }
-
-            .drag-drop-confirmation {
-                background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
-                border: 1px solid rgba(255,255,255,0.1);
-                border-radius: 15px;
-                padding: 2rem;
-                max-width: 450px;
-                width: 90%;
-                text-align: center;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            }
-
-            .drag-drop-confirmation-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1.5rem;
-            }
-
-            .drag-drop-confirmation-header h3 {
-                color: #F4C066;
-                margin: 0;
-            }
-
-            .drag-drop-close {
-                background: #C8491D;
-                color: #F5F5F5;
-                border: none;
-                width: 28px;
-                height: 28px;
-                border-radius: 50%;
-                cursor: pointer;
-            }
-
-            .drag-drop-confirmation-buttons {
-                display: flex;
-                gap: 1rem;
-                justify-content: center;
-            }
-
-            .drag-drop-btn-confirm {
-                background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
-                color: #2C2623;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-            }
-
-            .drag-drop-btn-cancel {
-                background: linear-gradient(135deg, #CB8358 0%, #A85F3D 100%);
-                color: #F5F5F5;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
+            /* Reduced motion support */
+            @media (prefers-reduced-motion: reduce) {
+                .drag-over {
+                    transform: none !important;
+                    transition: none !important;
+                }
             }
         `;
         
         document.head.appendChild(styles);
+    }
+
+    // ===== UTILITY METHODS =====
+    getVersion() {
+        return this.version;
+    }
+
+    getCurrentPage() {
+        return this.currentPage;
+    }
+
+    isToastSystemAvailable() {
+        return !!(window.Toast && typeof window.Toast.importConfirmation === 'function');
+    }
+
+    // ===== DEBUG METHODS =====
+    debugInfo() {
+        console.log(`🐛 DragDropCore Debug Info v${this.version}:`);
+        console.log(`   Current Page: ${this.currentPage}`);
+        console.log(`   Toast System Available: ${this.isToastSystemAvailable()}`);
+        console.log(`   Active Toasts: ${window.Toast ? window.Toast.count() : 'N/A'}`);
+        console.log(`   Available Handlers:`, {
+            gewerbeakte: !!window.DragDropGewerbeakte,
+            personenpruefung: !!(window.DragDropPersonenpruefung || window.SimpleDragDropPersonenpruefung),
+            antrag: !!window.DragDropAntrag
+        });
+        console.log(`   Public Methods:`);
+        console.log(`     - dragDropCore.manualImport(text) // Für manuellen Import ohne Confirmation`);
+        console.log(`     - dragDropCore.autoImport(text, fromDragDrop) // Für programmatischen Import`);
+    }
+
+    // ===== TEST METHODS =====
+    testDragDropImport() {
+        console.log(`🧪 Testing Drag & Drop import (shows confirmation)...`);
+        this.autoImport('Test text for drag drop', true);
+    }
+
+    testManualImport() {
+        console.log(`🧪 Testing Manual import (no confirmation)...`);
+        this.autoImport('Test text for manual import', false);
     }
 }
 
@@ -447,7 +436,7 @@ class DragDropCore {
 class DragDropUtils {
     static fillField(fieldId, value) {
         if (!value) {
-            console.log(`⚠️ No value for ${fieldId}`);
+            console.log(`⚠️ DragDropUtils: No value for ${fieldId}`);
             return;
         }
         
@@ -456,9 +445,9 @@ class DragDropUtils {
             field.value = value;
             field.dispatchEvent(new Event('input', { bubbles: true }));
             field.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log(`✅ Filled ${fieldId}: "${value}"`);
+            console.log(`✅ DragDropUtils: Filled ${fieldId}: "${value}"`);
         } else {
-            console.error(`❌ Field ${fieldId} not found`);
+            console.error(`❌ DragDropUtils: Field ${fieldId} not found`);
         }
     }
 
@@ -469,12 +458,12 @@ class DragDropUtils {
         const datumField = document.getElementById('datum');
         if (datumField) {
             datumField.value = `1899-${currentMonth}-${currentDay}`;
-            console.log(`✅ Set current date: 1899-${currentMonth}-${currentDay}`);
+            console.log(`✅ DragDropUtils: Set current date: 1899-${currentMonth}-${currentDay}`);
         }
     }
 
     static extractSimpleField(text, fieldName) {
-        console.log(`🔍 Extracting "${fieldName}"`);
+        console.log(`🔍 DragDropUtils: Extracting "${fieldName}"`);
         
         const lines = text.split('\n');
         
@@ -484,14 +473,14 @@ class DragDropUtils {
             const lowerField = fieldName.toLowerCase();
             
             if (lowerLine.includes(lowerField + ':')) {
-                console.log(`📍 Found field "${fieldName}" at line ${i}: "${line}"`);
+                console.log(`📍 DragDropUtils: Found field "${fieldName}" at line ${i}: "${line}"`);
                 
                 // Value on same line after colon
                 const colonIndex = line.indexOf(':');
                 if (colonIndex !== -1) {
                     const sameLineValue = line.substring(colonIndex + 1).trim();
                     if (sameLineValue && sameLineValue !== '---' && sameLineValue !== '```') {
-                        console.log(`✅ Same line value: "${sameLineValue}"`);
+                        console.log(`✅ DragDropUtils: Same line value: "${sameLineValue}"`);
                         return sameLineValue;
                     }
                 }
@@ -504,7 +493,7 @@ class DragDropUtils {
                         nextLine !== '```' &&
                         !nextLine.toLowerCase().includes(':') &&
                         nextLine.length > 1) {
-                        console.log(`✅ Next line value: "${nextLine}"`);
+                        console.log(`✅ DragDropUtils: Next line value: "${nextLine}"`);
                         return nextLine;
                     }
                 }
@@ -512,29 +501,56 @@ class DragDropUtils {
             }
         }
         
-        console.log(`❌ No value found for "${fieldName}"`);
+        console.log(`❌ DragDropUtils: No value found for "${fieldName}"`);
         return null;
+    }
+
+    static showToast(type, title, message) {
+        if (window.Toast) {
+            return window.Toast[type](title, message);
+        } else {
+            console.warn(`Toast system not available: ${type} - ${title}: ${message}`);
+        }
+    }
+
+    static debugLogField(fieldId, value, success = true) {
+        const status = success ? '✅' : '❌';
+        const action = success ? 'Filled' : 'Failed to fill';
+        console.log(`${status} DragDropUtils: ${action} ${fieldId}: "${value}"`);
     }
 }
 
-// Initialize the core system
+// ===== INITIALIZATION FUNCTIONS =====
 function initializeDragDropCore() {
     if (!window.dragDropCore) {
         window.dragDropCore = new DragDropCore();
         window.DragDropUtils = DragDropUtils;
-        console.log('🎯 DragDropCore v5.1 initialized - Fixed double toasts');
+        
+        // Make debug and test functions globally available
+        window.debugDragDrop = () => window.dragDropCore.debugInfo();
+        window.testDragDropImport = () => window.dragDropCore.testDragDropImport();
+        window.testManualImport = () => window.dragDropCore.testManualImport();
     }
     return window.dragDropCore;
 }
 
-// Auto-Initialize
+// ===== AUTO-INITIALIZE =====
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeDragDropCore);
 } else {
     initializeDragDropCore();
 }
 
-// Export
+// Add a delay to ensure Toast system is loaded
+setTimeout(() => {
+    if (window.dragDropCore && !window.dragDropCore.isToastSystemAvailable()) {
+        console.warn('⚠️ Toast system not available after initialization. Some features may be limited.');
+    }
+}, 1000);
+
+// ===== EXPORT =====
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { DragDropCore, DragDropUtils, initializeDragDropCore };
 }
+
+console.log('🎯 DragDropCore v6.1 initialized');

@@ -3,9 +3,6 @@
 // Löst das toggleImport Problem und ersetzt Popups mit Toasts
 // ===================================
 
-// SOFORTIGE FUNKTIONS-DEFINITION (wird garantiert geladen)
-console.log('🚀 Loading Antrag Import Functions with Toast System...');
-
 // Toggle Import Section - SOFORT DEFINIERT
 function toggleImport() {
     console.log('🔄 toggleImport called');
@@ -82,11 +79,6 @@ function importAntrag() {
 // Stelle sicher, dass Funktionen global verfügbar sind
 window.toggleImport = toggleImport;
 window.importAntrag = importAntrag;
-
-console.log('✅ Critical functions loaded:', {
-    toggleImport: typeof toggleImport,
-    importAntrag: typeof importAntrag
-});
 
 // ===================================
 // VOLLSTÄNDIGE IMPORT LOGIC
@@ -367,7 +359,6 @@ window.initializeImportButton = initializeImportButton;
 
 // SOFORTIGE INITIALISIERUNG
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Antrag import initialized with Toast system');
     initializeImportButton();
 });
 
@@ -377,12 +368,3 @@ if (document.readyState === 'loading') {
 } else {
     initializeImportButton();
 }
-
-console.log('✅ All functions loaded and globally available:', {
-    toggleImport: typeof window.toggleImport,
-    importAntrag: typeof window.importAntrag,
-    parseAntragText: typeof window.parseAntragText,
-    fillAntragForm: typeof window.fillAntragForm
-});
-
-console.log('🎯 Antrag Import loaded with Toast system!');

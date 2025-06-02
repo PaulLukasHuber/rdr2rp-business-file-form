@@ -36,7 +36,7 @@ async function copyToClipboard(text, button = null) {
         
         if (button) {
             const originalText = button.textContent;
-            button.textContent = '✅ Kopiert!';
+            button.textContent = ' Kopiert!';
             button.style.background = 'linear-gradient(135deg, #35A2A2 0%, #6F3E96 100%)';
             
             setTimeout(() => {

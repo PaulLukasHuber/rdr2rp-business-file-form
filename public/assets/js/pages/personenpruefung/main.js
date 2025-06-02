@@ -114,13 +114,13 @@
             }, 1500);
         }
 
-        // Show Copy Popup - ERSETZT MIT TOAST
+        // Show Copy Popup - KORRIGIERT FÜR LEERE VALIDIERUNG
         function showCopyPopup() {
             const output = document.getElementById('preview-output').textContent;
 
-            // Check if output is empty or default
+            // KORRIGIERTE VALIDIERUNG - Prüft nach dem tatsächlichen HTML-Text
             if (output.trim() === '' ||
-                output.includes('Noch keine Prüfungsakte generiert') ||
+                output.includes('Noch keine Vorlage generiert') ||  // ← KORRIGIERT: Tatsächlicher HTML-Text
                 output.includes('Füllen Sie das Formular aus')) {
                 Toast.warning(
                     '📝 Keine Prüfungsakte vorhanden',
@@ -200,7 +200,9 @@
             output += `Prüfungsergebnis:\n\`\`\`\n${ergebnisText || '---'}\n\`\`\`\n`;
             output += `Detaillierte Bewertung/Anmerkungen:\n\`\`\`\n${details || '---'}\n\`\`\``;
 
-            document.getElementById('preview-output').textContent = output;
+            const previewOutput = document.getElementById('preview-output');
+            previewOutput.className = 'preview-output'; // Entferne empty-state Klasse
+            previewOutput.textContent = output;
         }
 
         // Format date
@@ -210,12 +212,13 @@
             return date.toLocaleDateString('de-DE');
         }
 
-        // Copy to clipboard - UPDATED WITH TOAST INTEGRATION
+        // Copy to clipboard - KORRIGIERT FÜR LEERE VALIDIERUNG
         function copyToClipboard() {
             const output = document.getElementById('preview-output').textContent;
 
-            // Check if output is empty or default
-            if (output.includes('Noch keine Prüfungsakte generiert') || output.trim() === '') {
+            // KORRIGIERTE VALIDIERUNG - Prüft nach dem tatsächlichen HTML-Text
+            if (output.includes('Noch keine Vorlage generiert') ||  // ← KORRIGIERT: Tatsächlicher HTML-Text
+                output.trim() === '') {
                 Toast.warning('📝 Keine Prüfungsakte vorhanden', 'Bitte generieren Sie zuerst eine Prüfungsakte!');
                 return;
             }

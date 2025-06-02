@@ -320,7 +320,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Initialize import functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Personenprüfungsakte import logic initialized with Toast system');
     
     // Add event listeners if elements exist
     const importTextarea = document.getElementById('import-text');
@@ -331,13 +330,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize import button
     initializeImportButton();
-    
-    // Log available functions for debugging
-    console.log('Available import functions:', {
-        toggleImport: typeof toggleImport,
-        importAkte: typeof importAkte,
-        parsePersonenprüfungsakteText: typeof parsePersonenprüfungsakteText,
-        fillPersonenprüfungsakteForm: typeof fillPersonenprüfungsakteForm,
-        testErgebnisDetection: typeof testErgebnisDetection
-    });
 });

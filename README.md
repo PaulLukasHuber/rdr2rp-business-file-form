@@ -1,6 +1,6 @@
 # 📜 RDR2RP Gewerbeakten Generator
 
-![Version](https://img.shields.io/badge/Version-0.1.1-gold)
+![Version](https://img.shields.io/badge/Version-0.1.2-gold)
 ![License](https://img.shields.io/badge/Lizenz-MIT-blue)
 
 **Languages / Sprachen:** [🇩🇪 Deutsch](#deutsch) | [🇬🇧 English](#english)

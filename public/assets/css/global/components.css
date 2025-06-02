@@ -124,7 +124,7 @@
 	box-shadow: none;
 }
 
-/* Preview */
+/* ZURÜCK ZU URSPRÜNGLICHER PREVIEW-KONFIGURATION */
 .preview-output {
 	background: rgba(30, 26, 23, 0.8);
 	border: 1px solid rgba(255,255,255,0.1);
@@ -139,6 +139,18 @@
 	overflow-y: auto;
 	word-break: break-all;
 	max-width: 100%;
+}
+
+/* EINFACHE UND KOMPATIBLE LÖSUNG FÜR LEEREN ZUSTAND */
+.preview-output.empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+.preview-output.empty-state > div {
+	padding: 2rem;
 }
 
 .preview-section {
@@ -165,6 +177,7 @@
 	transition: all 0.3s ease;
 	margin-top: 1rem;
 	width: 100%;
+	flex-shrink: 0;
 }
 
 .copy-button:hover {
@@ -211,9 +224,21 @@
 	border-color: #F4C066;
 }
 
+/* KORRIGIERT: Entfernt untere Border-Radien wenn aufgeklappt */
 .import-header.expanded {
-	border-radius: 10px 10px 0 0;
-	border-bottom: none;
+	border-radius: 10px 10px 0 0 !important;
+	border-bottom: none !important;
+}
+
+/* KORRIGIERT: Hover-Effekt für gesamte Import-Sektion wenn aufgeklappt */
+.import-section:hover .import-header.expanded {
+	background: rgba(203, 131, 88, 0.2) !important;
+	border-color: #F4C066 !important;
+}
+
+.import-section:hover .import-content.expanded {
+	background: rgba(203, 131, 88, 0.08) !important;
+	border-color: #F4C066 !important;
 }
 
 .import-title {
@@ -243,6 +268,7 @@
 	background: rgba(203, 131, 88, 0.05);
 	display: none;
 	animation: slideDown 0.3s ease;
+	transition: all 0.3s ease;
 }
 
 .import-content.expanded {

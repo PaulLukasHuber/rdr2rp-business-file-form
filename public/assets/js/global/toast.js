@@ -1,19 +1,17 @@
 /**
- * MODULAR TOAST SYSTEM v2.1 - FIXED VALIDATION DESIGN
- * - Unten rechts positioniert
- * - Keine Action Buttons
- * - Verbessertes Stacking (neue schieben alte nach oben)
- * - EINHEITLICHES DESIGN für alle Toast-Typen
+ * MODULAR TOAST SYSTEM v2.3 - SIMPLIFIED CONFIRMATION TOAST
+ * - Confirmation Toast Design an normale Toasts angepasst
+ * - Entfernte überflüssige Spezial-Effekte
+ * - Einheitliches Design für alle Toast-Typen
  * 
  * Features:
  * - Verschiedene Toast-Typen (success, error, warning, info, loading)
+ * - Confirmation Toasts mit Ja/Nein Buttons (vereinfachtes Design)
  * - Auto-dismiss mit konfigurierbarer Zeit
  * - Manual dismiss
  * - Progress bar
  * - Responsive design
  * - Accessibility support
- * - Verbessertes Toast stacking
- * - KORRIGIERT: Validation Error Toast Design
  */
 
 class ToastSystem {
@@ -33,7 +31,7 @@ class ToastSystem {
         };
         
         this.init();
-        console.log('🍞 ToastSystem v2.1 initialized - Fixed validation design');
+        console.log('🍞 ToastSystem v2.3 initializing');
     }
 
     // ===== INITIALIZATION =====
@@ -143,6 +141,119 @@ class ToastSystem {
         this.addToastEventListeners(toast, config);
 
         return toast;
+    }
+
+    // ===== SIMPLIFIED CONFIRMATION TOAST METHOD =====
+    confirmation(options) {
+        const config = {
+            type: 'info', // Normale Info-Toast Basis
+            title: 'Bestätigung erforderlich',
+            message: 'Möchten Sie fortfahren?',
+            autoDismiss: false, // Bleibt bis der User eine Aktion wählt
+            showClose: false,   // Kein Standard-Close Button
+            duration: 0,
+            confirmText: ' Ja',
+            cancelText: ' Abbrechen',
+            onConfirm: () => {},
+            onCancel: () => {},
+            // ENTFERNT: urgent option
+            ...options
+        };
+
+        // Toast Element erstellen
+        const toast = this.createConfirmationToastElement(config);
+        
+        // Toast zur Liste hinzufügen
+        this.toasts.push({
+            element: toast,
+            config: config,
+            timeoutId: null
+        });
+
+        // Toast zum Container hinzufügen
+        this.container.insertBefore(toast, this.container.firstChild);
+
+        // Toast anzeigen
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        // Auto-dismiss nach längerer Zeit (falls User nicht reagiert)
+        if (config.autoDismiss !== false) {
+            const autoDismissTime = config.duration || 15000; // 15 Sekunden default
+            this.setupAutoDismiss(toast, autoDismissTime);
+        }
+
+        return toast;
+    }
+
+    // ===== SIMPLIFIED CONFIRMATION TOAST ELEMENT CREATION =====
+    createConfirmationToastElement(config) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${config.type} confirmation-toast`; // ENTFERNT: urgent class
+        
+        const iconHtml = config.icon || this.icons[config.type] || this.icons.info;
+
+        toast.innerHTML = `
+            <div class="toast-icon">${iconHtml}</div>
+            <div class="toast-content">
+                ${config.title ? `<div class="toast-title">${config.title}</div>` : ''}
+                ${config.message ? `<div class="toast-message">${config.message}</div>` : ''}
+                <div class="toast-actions">
+                    <button class="toast-action-btn toast-confirm-btn">${config.confirmText}</button>
+                    <button class="toast-action-btn toast-cancel-btn">${config.cancelText}</button>
+                </div>
+            </div>
+        `;
+
+        // Event listeners hinzufügen
+        this.addConfirmationEventListeners(toast, config);
+
+        return toast;
+    }
+
+    // ===== CONFIRMATION EVENT LISTENERS =====
+    addConfirmationEventListeners(toast, config) {
+        const confirmBtn = toast.querySelector('.toast-confirm-btn');
+        const cancelBtn = toast.querySelector('.toast-cancel-btn');
+
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (config.onConfirm) {
+                    config.onConfirm();
+                }
+                this.dismiss(toast);
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (config.onCancel) {
+                    config.onCancel();
+                }
+                this.dismiss(toast);
+            });
+        }
+
+        // ENTFERNT: Spezielle Hover-Effekte für Confirmation Toast
+        // Standard Toast hover wird verwendet
+
+        // Keyboard navigation
+        confirmBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                cancelBtn.focus();
+            }
+        });
+
+        cancelBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                confirmBtn.focus();
+            }
+        });
     }
 
     // ===== EVENT LISTENERS FÜR TOAST =====
@@ -291,7 +402,21 @@ class ToastSystem {
         });
     }
 
-    // ===== KORRIGIERTE VALIDATION ERROR METHOD =====
+    // ===== SIMPLIFIED IMPORT CONFIRMATION METHOD =====
+    importConfirmation(documentType, onConfirm, onCancel) {
+        return this.confirmation({
+            type: 'info', // Standard info-Toast Design
+            title: ' Import bereit',
+            message: `Möchten Sie die ${documentType} automatisch importieren und das Formular ausfüllen?`,
+            confirmText: ' Ja, importieren',
+            cancelText: ' Abbrechen',
+            onConfirm: onConfirm,
+            onCancel: onCancel
+            // ENTFERNT: urgent option
+        });
+    }
+
+    // ===== VALIDATION ERROR METHOD =====
     validationError(errors, options = {}) {
         const errorList = Array.isArray(errors) ? errors : [errors];
         
@@ -300,12 +425,12 @@ class ToastSystem {
         const message = `Bitte korrigieren Sie folgende Fehler:<br><br><div style="padding-left: 0.5rem; line-height: 1.6;">${errorItems}</div>`;
         
         return this.show({
-            type: 'warning', // Verwende error-Typ für einheitliches Design
+            type: 'warning',
             title: 'Formular unvollständig',
             message: message,
             duration: 10000, // Längere Anzeigezeit für Validierungsfehler
-            showClose: true, // Close button anzeigen
-            autoDismiss: true, // Auto-dismiss aktivieren
+            showClose: true,
+            autoDismiss: true,
             ...options
         });
     }
@@ -434,4 +559,4 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = ToastSystem;
 }
 
-console.log('🍞 Toast System v2.1 loaded - Fixed validation error design!');
+console.log('🍞 Toast System v2.3 initialized');
