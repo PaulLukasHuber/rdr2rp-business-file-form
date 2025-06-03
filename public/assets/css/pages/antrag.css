@@ -188,7 +188,7 @@ body::before {
 }
 
 /* ===================================
-   ANTRAG HEADER - EXAKT WIE IMPORT BEREICH
+   ANTRAG HEADER - MIT BORDER-RADIEN FIX
    =================================== */
 
 /* Vertikaler Header - nutzt bestehende import-title Struktur */
@@ -198,6 +198,22 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(203, 131, 88, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* FIX: Header hat gerade untere Ecken wenn Content aufgeklappt ist */
+#antrag-creation-section .antrag-header-vertical:has(~ #antrag-creation-content.expanded) {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
+}
+
+/* FALLBACK für Browser ohne :has() Support */
+#antrag-creation-section .antrag-header-vertical.expanded {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
 }
 
 .antrag-header-vertical .import-title {
@@ -246,6 +262,43 @@ body::before {
     color: #F5F5F5;
     padding: 0.5rem;
 }
+
+/* Content-Bereich hat nur untere runde Ecken */
+#antrag-creation-content {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 1.5rem;
+    background: rgba(203, 131, 88, 0.05);
+    display: none;
+    transition: all 0.3s ease;
+}
+
+#antrag-creation-content.expanded {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+/* Hover-Effekte respektieren den expanded Zustand */
+#antrag-creation-section:hover .antrag-header-vertical {
+    background: rgba(203, 131, 88, 0.2);
+    border-color: #F4C066;
+}
+
+#antrag-creation-section:hover .antrag-header-vertical.expanded,
+#antrag-creation-section:hover .antrag-header-vertical:has(~ #antrag-creation-content.expanded) {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
+}
+
+#antrag-creation-section:hover #antrag-creation-content.expanded {
+    background: rgba(203, 131, 88, 0.08);
+    border-color: #F4C066;
+}
+
+/* ===================================
+   DYNAMIC FORMS
+   =================================== */
 
 /* Dynamic Forms */
 .dynamic-form {
@@ -316,17 +369,6 @@ body::before {
 	opacity: 1;
 }
 
-/* Antrag Creation Content */
-#antrag-creation-content {
-	display: none;
-	transition: all 0.3s ease;
-}
-
-#antrag-creation-content.expanded {
-	display: block;
-	animation: slideDown 0.3s ease;
-}
-
 /* Checkbox Groups */
 .checkbox-group {
 	display: flex;
@@ -358,7 +400,21 @@ body::before {
 	margin: 0;
 }
 
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
 /* Responsive für Antrag Header - Dropdown bleibt breit */
+@media (max-width: 1024px) {
+	.main-container {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+	.mitarbeiter-fields {
+		grid-template-columns: 1fr;
+	}
+}
+
 @media (max-width: 768px) {
 	.nav-menu {
 		flex-direction: column;
@@ -453,11 +509,11 @@ body::before {
 }
 
 @media (prefers-contrast: high) {
-	#antrag-creation-section .import-header {
+	#antrag-creation-section .antrag-header-vertical {
 		border: 2px solid #F4C066;
 	}
 	
-	.antrag-dropdown-container .form-select {
+	.antrag-dropdown-wrapper .form-select {
 		border: 2px solid #F4C066;
 		background: #1E1A17;
 	}
@@ -465,4 +521,8 @@ body::before {
 	.generate-button {
 		border: 2px solid #F4C066;
 	}
+}
+
+#antrag-creation-section {
+    margin-bottom: 0 !important;
 }
