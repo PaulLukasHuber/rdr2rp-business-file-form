@@ -1,3 +1,8 @@
+/* ===================================
+   ANTRAG GENERATOR - KOMPLETTE CSS
+   Basierend auf bestehenden Styles mit Verbesserungen
+   =================================== */
+
 * {
 	margin: 0;
 	padding: 0;
@@ -33,6 +38,25 @@ body::before {
 	grid-template-columns: 1fr 1fr;
 	gap: 3rem;
 	align-items: start;
+}
+
+.copy-button {
+	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
+	color: #2C2623;
+	border: none;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: all 0.3s ease;
+	margin-top: 1rem;
+	width: 100%;
+	flex-shrink: 0;
+}
+
+.copy-button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
 }
 
 /* Form Tabs */
@@ -142,7 +166,245 @@ body::before {
 	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
 }
 
-/* Responsive */
+/* ===================================
+   NEUE ANTRAG-SPEZIFISCHE STYLES
+   =================================== */
+
+/* Antrag Selector Styles */
+.antrag-selector {
+	border: 1px solid rgba(255,255,255,0.1);
+	border-radius: 12px;
+	padding: 1.5rem;
+	margin-bottom: 2rem;
+	background: rgba(203, 131, 88, 0.1);
+}
+
+.antrag-title {
+	color: #F4C066;
+	font-weight: bold;
+	font-size: 1.2rem;
+	margin-bottom: 1rem;
+	text-align: left;
+}
+
+/* ===================================
+   ANTRAG HEADER - MIT BORDER-RADIEN FIX
+   =================================== */
+
+/* Vertikaler Header - nutzt bestehende import-title Struktur */
+.antrag-header-vertical {
+    cursor: default;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(203, 131, 88, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* FIX: Header hat gerade untere Ecken wenn Content aufgeklappt ist */
+#antrag-creation-section .antrag-header-vertical:has(~ #antrag-creation-content.expanded) {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
+}
+
+/* FALLBACK für Browser ohne :has() Support */
+#antrag-creation-section .antrag-header-vertical.expanded {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
+}
+
+.antrag-header-vertical .import-title {
+    /* Nutzt die bestehenden .import-title Styles */
+    flex: none; /* Überschreibt flex: 1 */
+    margin-right: 0; /* Überschreibt margin-right */
+    margin-bottom: 0;
+}
+
+/* Dropdown unter dem Title - BREITERE VERSION */
+.antrag-dropdown-wrapper {
+    width: 100%;
+    max-width: 100%; /* Nutzt die volle verfügbare Breite */
+    align-self: stretch; /* Streckt sich über die volle Breite */
+}
+
+.antrag-dropdown-wrapper .form-select {
+    margin: 0;
+    padding: 0.8rem;
+    width: 100%;
+    background: rgba(30, 26, 23, 0.8);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: #F5F5F5;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.antrag-dropdown-wrapper .form-select:hover {
+    border-color: #F4C066;
+    background: rgba(30, 26, 23, 0.95);
+    box-shadow: 0 2px 8px rgba(244, 192, 102, 0.2);
+}
+
+.antrag-dropdown-wrapper .form-select:focus {
+    outline: none;
+    border-color: #F4C066;
+    box-shadow: 0 0 0 3px rgba(244, 192, 102, 0.2);
+    background: rgba(30, 26, 23, 1);
+}
+
+.antrag-dropdown-wrapper .form-select option {
+    background: #1E1A17;
+    color: #F5F5F5;
+    padding: 0.5rem;
+}
+
+/* Content-Bereich hat nur untere runde Ecken */
+#antrag-creation-content {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 1.5rem;
+    background: rgba(203, 131, 88, 0.05);
+    display: none;
+    transition: all 0.3s ease;
+}
+
+#antrag-creation-content.expanded {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+/* Hover-Effekte respektieren den expanded Zustand */
+#antrag-creation-section:hover .antrag-header-vertical {
+    background: rgba(203, 131, 88, 0.2);
+    border-color: #F4C066;
+}
+
+#antrag-creation-section:hover .antrag-header-vertical.expanded,
+#antrag-creation-section:hover .antrag-header-vertical:has(~ #antrag-creation-content.expanded) {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none !important;
+}
+
+#antrag-creation-section:hover #antrag-creation-content.expanded {
+    background: rgba(203, 131, 88, 0.08);
+    border-color: #F4C066;
+}
+
+/* ===================================
+   DYNAMIC FORMS
+   =================================== */
+
+/* Dynamic Forms */
+.dynamic-form {
+	display: none;
+	border: 1px solid rgba(255,255,255,0.1);
+	border-radius: 10px;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	background: rgba(203, 131, 88, 0.05);
+	opacity: 0;
+	transform: translateY(-10px);
+	transition: all 0.3s ease;
+}
+
+.dynamic-form.active {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+	animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.form-subtitle {
+	color: #D8C5B0;
+	font-weight: bold;
+	font-size: 1.1rem;
+	margin-bottom: 1rem;
+	border-bottom: 2px solid #CB8358;
+	padding-bottom: 0.5rem;
+}
+
+/* Generate Button - EINFACH UND FUNKTIONAL */
+.generate-button {
+	background: linear-gradient(135deg, #F4C066 0%, #D99C45 100%);
+	color: #2C2623;
+	border: none;
+	padding: 0.8rem 1.5rem;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: bold;
+	margin-top: 1rem;
+	width: 100%;
+	transition: all 0.3s ease;
+	display: block; /* Immer sichtbar */
+}
+
+.generate-button:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(244, 192, 102, 0.3);
+}
+
+.generate-button:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.generate-button:not(:disabled) {
+	opacity: 1;
+}
+
+/* Checkbox Groups */
+.checkbox-group {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.8rem;
+	border: 1px solid rgba(255,255,255,0.1);
+	border-radius: 8px;
+	background: rgba(30, 26, 23, 0.5);
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.checkbox-group:hover {
+	border-color: #F4C066;
+	background: rgba(244, 192, 102, 0.1);
+}
+
+.checkbox-group input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: #F4C066;
+}
+
+.checkbox-group label {
+	color: #F5F5F5;
+	font-weight: 500;
+	cursor: pointer;
+	margin: 0;
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+/* Responsive für Antrag Header - Dropdown bleibt breit */
 @media (max-width: 1024px) {
 	.main-container {
 		grid-template-columns: 1fr;
@@ -168,4 +430,99 @@ body::before {
 	.form-tabs {
 		flex-direction: column;
 	}
+	
+	/* Antrag Header - nutzt bestehende responsive Styles */
+	.antrag-header-vertical {
+		padding: 1rem;
+		gap: 0.75rem;
+	}
+	
+	.antrag-dropdown-wrapper {
+		max-width: 100%; /* Bleibt breit auch auf Mobile */
+	}
+	
+	.antrag-dropdown-wrapper .form-select {
+		padding: 0.7rem;
+		font-size: 0.95rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.antrag-header-vertical {
+		padding: 0.75rem;
+		gap: 0.5rem;
+	}
+	
+	.antrag-dropdown-wrapper .form-select {
+		padding: 0.7rem;
+		font-size: 0.9rem;
+	}
+}
+
+/* ===================================
+   ANIMATIONS
+   =================================== */
+
+@keyframes gradientShift {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ===================================
+   ERROR HANDLING
+   =================================== */
+
+.form-input.error,
+.form-select.error {
+	border-color: #FF8232 !important;
+	box-shadow: 0 0 8px rgba(255, 130, 50, 0.3) !important;
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	.dynamic-form,
+	.generate-button,
+	#antrag-creation-content,
+	body {
+		transition: none !important;
+		animation: none !important;
+	}
+	
+	.dynamic-form.active {
+		transform: none !important;
+	}
+}
+
+@media (prefers-contrast: high) {
+	#antrag-creation-section .antrag-header-vertical {
+		border: 2px solid #F4C066;
+	}
+	
+	.antrag-dropdown-wrapper .form-select {
+		border: 2px solid #F4C066;
+		background: #1E1A17;
+	}
+	
+	.generate-button {
+		border: 2px solid #F4C066;
+	}
+}
+
+#antrag-creation-section {
+    margin-bottom: 0 !important;
 }
