@@ -101,6 +101,69 @@ body {
 	opacity: 0.7;
 }
 
+.dropdown {
+    position: relative;
+    list-style: none;
+}
+
+/* Menü ausblenden */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    padding: 0.5rem 0;
+    min-width: 220px;
+    z-index: 1000;
+}
+
+/* Menüeinträge */
+.dropdown-menu li {
+    list-style: none;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #f5c979;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+}
+
+.dropdown-menu li a:hover {
+    background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);
+    color: #fff;
+    border-left: 2px solid #f5c979;
+}
+
+/* Hover aktiviert Menü */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Styling für den Hauptbutton */
+.nav-button.dropdown-toggle {
+	background: none;
+	border: none;
+	padding: 0;
+	color: #f5c979;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	cursor: pointer;
+	position: relative;
+}
+
+.nav-button.dropdown-toggle:hover {
+	color: #ffffff;
+}
+
 /* FOOTER - Updated to match navbar design */
 .footer {
     background: linear-gradient(135deg, #2C2623 0%, #1E1A17 100%);

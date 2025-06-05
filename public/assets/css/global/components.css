@@ -360,6 +360,18 @@
   text-transform: uppercase;
 }
 
+.alpha-tag {
+  background-color: #f0594e; 
+  color: white;
+  font-size: 0.5em;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 .form-input.error {
 	border-color: #FF8232 !important;
 	box-shadow: 0 0 8px rgba(255, 130, 50, 0.3) !important;
