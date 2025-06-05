@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gewerberegister - Gewerbeamt Saint Denis</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/img/favicon.ico" sizes="128x128">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Global Stylesheets -->
+    <link rel="stylesheet" href="assets/css/global/base.css">
+    <link rel="stylesheet" href="assets/css/global/components.css">
+    <link rel="stylesheet" href="assets/css/global/layout.css">
+    <link rel="stylesheet" href="assets/css/global/animations.css">
+    <link rel="stylesheet" href="assets/css/global/toast.css">
+    
+    <!-- Page-specific Stylesheet -->
+     <link rel="stylesheet" href="assets/css/pages/gewerberegister.css">
+</head>
+<body>
+    <!-- Navigation -->
+<nav class="navbar">
+    <div class="navbar-logo">
+        <i class="fas fa-scroll"></i> Gewerbeamt
+    </div>
+    <ul class="navbar-links">
+        <li>
+            <a href="index.html" class="nav-button">
+                <i class="fa fa-house"></i> Startseite
+            </a>
+        </li>
+        <li class="dropdown">
+            <a href="gewerbeakte_generator.html" class="nav-button dropdown-toggle">
+                <i class="fa fa-id-card-alt"></i> Gewerbeakte erstellen <i class="fa fa-angle-down"></i>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="gewerberegister.html">Gewerberegister <span class="alpha-tag">Alpha</span></a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="personenpruefung_generator.html" class="nav-button">
+                <i class="fa fa-user-check"></i> Personenprüfungsakte erstellen
+            </a>
+        </li>
+        <li>
+            <a href="antrag_generator.html" class="nav-button">
+                <i class="fa fa-file-alt"></i> Antrag erstellen
+            </a>
+        </li>
+    </ul>
+</nav>
+
+    <!-- Main Content -->
+    <main class="register-container">
+        <!-- Header -->
+        <div class="register-header">
+            <h1 class="register-title">
+                <i class="fa fa-book"></i> Gewerberegister Saint Denis <span class="alpha-tag">Alpha</span>
+            </h1>
+            <p class="register-description">
+                Zentrales Register aller registrierten Gewerbebetriebe in der Stadt Saint Denis und Umgebung.
+                Hier finden Sie alle ausgestellten Gewerbeakten mit aktuellen Inhaberdaten und Betriebsinformationen.
+            </p>
+        </div>
+
+        <!-- Statistiken -->
+        <div class="stats-grid" id="stats-container">
+            <div class="stat-card">
+                <div class="stat-number" id="total-akten">-</div>
+                <div class="stat-label">Gewerbeakten gesamt</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="new-this-week">-</div>
+                <div class="stat-label">Neue diese Woche</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-cities">-</div>
+                <div class="stat-label">Aktive Städte</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-businesses">-</div>
+                <div class="stat-label">Verschiedene Betriebe</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-section">
+            <input type="text" class="search-box" id="search-input" placeholder="Suchen nach Lizenznummer, Betrieb, Stadt oder Personen...">
+            <button class="btn" onclick="loadGewerbeakten()">
+                <i class="fa fa-refresh"></i> Aktualisieren
+            </button>
+            <a href="gewerbeakte_generator.html" class="btn btn-secondary">
+                <i class="fa fa-plus"></i> Neue Akte
+            </a>
+        </div>
+
+        <!-- Register Table -->
+        <div class="register-table">
+            <div class="table-header">
+                <div>Lizenznummer</div>
+                <div>Stadt</div>
+                <div>Betrieb</div>
+                <div>Inhaber</div>
+                <div>Erstellt</div>
+                <div>Aktionen</div>
+            </div>
+            <div id="register-content">
+                <!-- Loading state -->
+                <div class="loading-state" id="loading-state">
+                    <div class="loading-spinner">
+                        <i class="fa fa-spinner"></i>
+                    </div>
+                    <div>Lade Gewerberegister...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" style="text-align: center; margin-top: 2rem; display: none;">
+            <button class="btn btn-secondary" id="prev-page" onclick="changePage(-1)">
+                <i class="fa fa-chevron-left"></i> Vorherige
+            </button>
+            <span style="margin: 0 1rem; color: #D8C5B0;" id="page-info">Seite 1</span>
+            <button class="btn btn-secondary" id="next-page" onclick="changePage(1)">
+                Nächste <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- Detail View Modal -->
+    <div class="modal-overlay" id="detail-modal-overlay" onclick="closeDetailModal()">
+        <div class="detail-modal" onclick="event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="detail-modal-header">
+                <h2 class="detail-modal-title">
+                    <i class="fa fa-id-card-alt"></i>
+                    <span id="detail-modal-title">Gewerbeakte Details</span>
+                </h2>
+                <button class="detail-modal-close" onclick="closeDetailModal()">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="detail-modal-content" id="detail-modal-content">
+                <!-- Loading State -->
+                <div class="detail-loading" id="detail-loading">
+                    <div class="loading-spinner">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </div>
+                    <p>Lade Gewerbeakte-Details...</p>
+                </div>
+
+                <!-- Content Container -->
+                <div class="detail-content" id="detail-content" style="display: none;">
+                    <!-- Basic Information -->
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">
+                            <i class="fa fa-info-circle"></i> Grundinformationen
+                        </h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Lizenznummer:</label>
+                                <span id="detail-lizenznummer" class="detail-value lizenznummer">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Stadt:</label>
+                                <span id="detail-stadt" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Betrieb:</label>
+                                <span id="detail-betrieb" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Ausgestellt am:</label>
+                                <span id="detail-datum" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Anzahl Lizenzen:</label>
+                                <span id="detail-anzahl" class="detail-value">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Erstellt am:</label>
+                                <span id="detail-erstellt" class="detail-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mitarbeiter Information -->
+                    <div class="detail-section">
+                        <h3 class="detail-section-title">
+                            <i class="fa fa-users"></i> Mitarbeiter
+                        </h3>
+                        <div class="detail-mitarbeiter" id="detail-mitarbeiter">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+
+                    <!-- Vermerk -->
+                    <div class="detail-section" id="detail-vermerk-section" style="display: none;">
+                        <h3 class="detail-section-title">
+                            <i class="fa fa-link"></i> Vermerk zum Gewerbeantrag
+                        </h3>
+                        <div class="detail-vermerk">
+                            <a id="detail-vermerk-link" href="#" target="_blank" class="detail-link">
+                                <i class="fa fa-external-link-alt"></i>
+                                <span id="detail-vermerk-text">Link öffnen</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Sondergenehmigungen -->
+                    <div class="detail-section" id="detail-sonder-section" style="display: none;">
+                        <h3 class="detail-section-title">
+                            <i class="fa fa-certificate"></i> Sondergenehmigung
+                        </h3>
+                        <div class="detail-text-content">
+                            <p id="detail-sondergenehmigung">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Sonstiges -->
+                    <div class="detail-section" id="detail-sonstiges-section" style="display: none;">
+                        <h3 class="detail-section-title">
+                            <i class="fa fa-sticky-note"></i> Sonstiges
+                        </h3>
+                        <div class="detail-text-content">
+                            <p id="detail-sonstiges">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div class="detail-error" id="detail-error" style="display: none;">
+                    <div class="detail-error-icon">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Fehler beim Laden</h3>
+                    <p id="detail-error-message">Die Gewerbeakte-Details konnten nicht geladen werden.</p>
+                    <button class="btn" onclick="closeDetailModal()">
+                        <i class="fa fa-arrow-left"></i> Zurück
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="detail-modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailModal()">
+                    <i class="fa fa-times"></i> Schließen
+                </button>
+                <button class="btn btn-edit" onclick="editAkte()">
+                    <i class="fa fa-edit"></i> Bearbeiten
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            © 2025 Tobias Schmidt | Internes Verwaltungssystem | Nur für Sundown Rising
+        </p>
+    </footer>
+
+    <!-- Global JavaScript -->
+    <script src="assets/js/global/utils.js"></script>
+    <script src="assets/js/global/toast.js"></script>
+    <!-- Page-specific JavaScript -->
+    <script src="assets/js/pages/gewerberegister/main.js"></script>
+</body>
+</html>

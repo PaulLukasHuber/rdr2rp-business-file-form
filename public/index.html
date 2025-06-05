@@ -19,6 +19,7 @@
         <!-- Global Stylesheets -->
         <link rel="stylesheet" href="assets/css/global/base.css">
         <link rel="stylesheet" href="assets/css/global/layout.css">
+        <link rel="stylesheet" href="assets/css/global/components.css">
         <link rel="stylesheet" href="assets/css/global/animations.css">
         
         <!-- Page-specific Stylesheet -->
@@ -36,19 +37,22 @@
                 <i class="fa fa-house"></i> Startseite
             </a>
         </li>
-        <li>
-            <a href="gewerbeakte_generator.html" class="nav-button">
-                <i class="fa fa-id-card-alt"></i> Gewerbeakten erstellen
+        <li class="dropdown">
+            <a href="gewerbeakte_generator.html" class="nav-button dropdown-toggle">
+                <i class="fa fa-id-card-alt"></i> Gewerbeakte erstellen <i class="fa fa-angle-down"></i>
             </a>
+            <ul class="dropdown-menu">
+                <li><a href="gewerberegister.html">Gewerberegister <span class="alpha-tag">Alpha</span></a></li>
+            </ul>
         </li>
         <li>
             <a href="personenpruefung_generator.html" class="nav-button">
-                <i class="fa fa-user-check"></i> Personenprüfungsakten erstellen
+                <i class="fa fa-user-check"></i> Personenprüfungsakte erstellen
             </a>
         </li>
         <li>
             <a href="antrag_generator.html" class="nav-button">
-                <i class="fa fa-file-alt"></i> Anträge erstellen
+                <i class="fa fa-file-alt"></i> Antrag erstellen
             </a>
         </li>
     </ul>
